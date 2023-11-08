@@ -1,9 +1,10 @@
-import openai
+from openai import OpenAI
 import time
+import os
 
 GPT_3 = "gpt-3.5-turbo-1106"
 DEFAULT_SYS = "You are a helpful assistant."
-openai.api_key = ""
+api_key = os.environ["OPENAI_API_KEY"] # set api key with this env var and api will automatically pick it up
 
 
 class Model:
@@ -20,12 +21,14 @@ class Model:
         start = time.time()
         for _ in range(self.num_retries):
             try:
-                output = openai.ChatCompletion.create(
+                client = OpenAI()
+                output = client.chat.completions.create(
                     model=self.model_type,
                     messages=self.base_message
+                    # + [{"role": "assistant", "content": "SELECT * FROM table"}] # apparently you can also use assistant
                     + [{"role": "user", "content": question}],
                 )
-                answer = output["choices"][0]["message"]["content"]
+                answer = output.choices[0].message.content
                 if verbose:
                     print("API call time: " + str(time.time() - start))
                 break  # no errors, move on to next question
