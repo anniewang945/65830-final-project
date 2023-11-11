@@ -1,0 +1,52 @@
+===============
+total number of tokens in the current prompt:383
+
+Generated query:
+
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
+FROM station_orders so
+WHERE so.distance_from_last_station_miles >= 1
+ORDER BY distance_from_last_station_miles DESC, route_id, station_id;
+
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0
+
+time taken: 1.822411060333252 seconds
+===============
+total number of tokens in the current prompt:383
+
+Generated query:
+
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
+FROM station_orders so
+WHERE so.distance_from_last_station_miles >= 1
+ORDER BY so.distance_from_last_station_miles DESC, so.route_id, so.station_id;
+
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0
+
+time taken: 1.7520902156829834 seconds
+===============
+total number of tokens in the current prompt:383
+
+Generated query:
+
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
+FROM station_orders so
+JOIN (
+    SELECT ro.route_id, so.station_id, so.stop_order, so.distance_from_last_station_miles
+    FROM station_orders so
+    JOIN routes ro ON so.route_id = ro.route_id
+    JOIN station_orders pr ON so.route_id = pr.route_id
+        AND so.stop_order = pr.stop_order + 1
+    WHERE so.distance_from_last_station_miles >= 1
+) filtered ON so.route_id = filtered.route_id
+    AND so.station_id = filtered.station_id
+ORDER BY filtered.distance_from_last_station_miles DESC,
+         filtered.route_id ASC,
+         so.station_id ASC;
+
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0
+
+time taken: 4.075495958328247 seconds

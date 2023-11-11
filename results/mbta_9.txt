@@ -1,0 +1,60 @@
+===============
+total number of tokens in the current prompt:498
+
+Generated query:
+
+SELECT s.station_name, l.line_name, 
+    MAX((CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.total_ons) + SUM(rr.total_offs))) / CAST(SUM(rr.average_flow) AS REAL)) AS max_bypass_ratio
+FROM rail_ridership rr
+JOIN stations s ON rr.station_id = s.station_id
+JOIN lines l ON rr.line_id = l.line_id
+WHERE rr.season = 'Fall 2019'
+GROUP BY l.line_name, s.station_name
+ORDER BY l.line_name ASC;
+
+error running sql query:  misuse of aggregate function SUM()
+===============
+total number of tokens in the current prompt:498
+
+Generated query:
+
+SELECT 
+    s.station_name AS station_name,
+    l.line_name AS line_name,
+    (CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.average_ons) + SUM(rr.average_offs))) / CAST(SUM(rr.average_flow) AS REAL) AS bypassed_ratio
+FROM
+    rail_ridership rr
+JOIN
+    stations s ON rr.station_id = s.station_id
+JOIN
+    lines l ON rr.line_id = l.line_id
+WHERE
+    rr.season = 'Fall 2019'
+GROUP BY
+    s.station_name,
+    l.line_name
+ORDER BY
+    l.line_name;
+
+
+Accuracy of test results (length 119) vs target results (length 4) is -27.75
+
+time taken: 2.3573689460754395 seconds
+===============
+total number of tokens in the current prompt:498
+
+Generated query:
+
+SELECT s.station_name, l.line_name, 
+  (CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.total_ons) + SUM(rr.total_offs))) / CAST(SUM(rr.average_flow) AS REAL) AS bypassed_ratio
+FROM rail_ridership rr
+JOIN stations s ON rr.station_id = s.station_id
+JOIN lines l ON rr.line_id = l.line_id
+WHERE rr.season = 'Fall 2019'
+GROUP BY s.station_name, l.line_name
+ORDER BY l.line_name;
+
+
+Accuracy of test results (length 119) vs target results (length 4) is -29.75
+
+time taken: 2.0462939739227295 seconds

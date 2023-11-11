@@ -1,0 +1,61 @@
+===============
+total number of tokens in the current prompt:377
+
+Generated query:
+
+SELECT 
+  l.line_name AS line_name,
+  r.direction_desc AS direction_name,
+  s1.station_name AS first_station_name,
+  s2.station_name AS last_station_name
+FROM routes r
+JOIN lines l ON r.line_id = l.line_id
+JOIN stations s1 ON r.first_station_id = s1.station_id
+JOIN stations s2 ON r.last_station_id = s2.station_id
+ORDER BY 
+  l.line_name ASC, 
+  r.direction_desc ASC, 
+  s1.station_name ASC, 
+  s2.station_name ASC;
+
+
+Accuracy of test results (length 18) vs target results (length 18) is 1.0
+
+time taken: 2.189365863800049 seconds
+===============
+total number of tokens in the current prompt:377
+
+Generated query:
+
+SELECT l.line_name, r.direction_desc, s1.station_name AS first_station, s2.station_name AS last_station
+FROM routes r
+JOIN lines l ON r.line_id = l.line_id
+JOIN stations s1 ON r.first_station_id = s1.station_id
+JOIN stations s2 ON r.last_station_id = s2.station_id
+ORDER BY l.line_name, r.direction_desc, first_station, last_station;
+
+
+Accuracy of test results (length 18) vs target results (length 18) is 1.0
+
+time taken: 2.3143668174743652 seconds
+===============
+total number of tokens in the current prompt:377
+
+Generated query:
+
+SELECT l.line_name, 
+       r.direction_desc, 
+       s1.station_name AS first_station_name, 
+       s2.station_name AS last_station_name
+FROM routes r
+JOIN lines l ON r.line_id = l.line_id
+JOIN station_orders so1 ON r.route_id = so1.route_id AND r.first_station_id = so1.station_id
+JOIN station_orders so2 ON r.route_id = so2.route_id AND r.last_station_id = so2.station_id
+JOIN stations s1 ON so1.station_id = s1.station_id
+JOIN stations s2 ON so2.station_id = s2.station_id
+ORDER BY l.line_name, r.direction_desc, s1.station_name, s2.station_name;
+
+
+Accuracy of test results (length 18) vs target results (length 18) is 1.0
+
+time taken: 2.857761859893799 seconds

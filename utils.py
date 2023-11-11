@@ -17,4 +17,4 @@ def compare_accuracy(test, target):
     # it returns a boolean, but here we want to return accuracy
     incorrect = len(set(target).symmetric_difference(set(test)))
     overall = len(target)
-    return "accuracy of test results (length {}) vs target results (length {}) is {}".format(len(test), len(target), (overall-incorrect)/overall)
+    return "Accuracy of test results (length {}) vs target results (length {}) is {}".format(len(test), len(target), (overall-incorrect)/overall)

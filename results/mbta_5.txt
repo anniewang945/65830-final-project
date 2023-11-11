@@ -1,0 +1,52 @@
+===============
+total number of tokens in the current prompt:386
+
+Generated query:
+
+SELECT station_name, SUM(gated_entries) AS total_gated_entries
+FROM gated_station_entries
+JOIN stations ON gated_station_entries.station_id = stations.station_id
+WHERE service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY station_name
+ORDER BY total_gated_entries DESC
+LIMIT 1;
+
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+time taken: 1.4098479747772217 seconds
+
+===============
+total number of tokens in the current prompt:386
+
+Generated query:
+
+SELECT station_name, SUM(gated_entries) AS total_entries
+FROM gated_station_entries
+JOIN stations ON gated_station_entries.station_id = stations.station_id
+WHERE service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY station_name
+ORDER BY total_entries DESC
+LIMIT 1;
+
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+time taken: 1.9611289501190186 seconds
+===============
+total number of tokens in the current prompt:386
+
+Generated query:
+
+SELECT station_name, SUM(gated_entries) AS total_gated_entries
+FROM gated_station_entries
+JOIN stations ON gated_station_entries.station_id = stations.station_id
+WHERE service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY station_name
+ORDER BY total_gated_entries DESC
+LIMIT 1;
+
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+time taken: 2.0957329273223877 seconds
