@@ -107,7 +107,10 @@ select season, line_id, direction, total_ons from rail_ridership as r join time_
 """
 
 try:
+    start = time.time()
     target_result = c.execute(target_query).fetchall()
+    end = time.time()
+    print("time taken with running expected query:", end-start, "seconds")
     # comment until next 3 lines if don't want to see results
     print("results from expected query".upper())
     print(target_result)
@@ -116,7 +119,10 @@ try:
     print("running sql query(s) from model:".upper())
     for t in test_queries:
         print(t)
+        start = time.time()
         test_result = c.execute(t).fetchall()
+        end = time.time()
+        print("time taken with running model query:", end-start, "seconds")
         # comment until next 3 lines if don't want to see results
         print("results from sql query above".upper())
         print(test_result)
