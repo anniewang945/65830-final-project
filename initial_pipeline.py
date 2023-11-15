@@ -1,6 +1,7 @@
-from model import Model, GPT_3
+from model import Model, GPT_4
 from utils import num_tokens_from_string, compare_accuracy
 import sqlite3
+import time
 
 # following https://platform.openai.com/examples/default-sql-translate and https://stackoverflow.com/questions/76053920/how-do-i-extract-only-code-content-from-chat-gpt-response
 # adding a system promot let's chatgpt know what to return (in this case, a sql query, but we can also ask it to include explanations as well as it did in the UI)
@@ -69,11 +70,18 @@ user_prompt = """Find all stations which are at least 1 mile away from the previ
 (in miles) to the previous station, sorted by decreasing distance. Break ties in distance by sorting by route ID and then
 station ID, both in ascending order."""
 
-print("total number of tokens in the current prompt:", num_tokens_from_string(system_knowledge + user_prompt))
+print("total number of tokens in the current prompt:".upper(), num_tokens_from_string(system_knowledge + user_prompt))
 
-model = Model(GPT_3, system_prompt=system_knowledge)
+model = Model(GPT_4, system_prompt=system_knowledge)
+start = time.time()
 answer = model.query(user_prompt)
-test_query = answer.removeprefix("```sql").removesuffix("```")
+end = time.time()
+print("model's answer:".upper(), answer, "\n(took", end-start, "seconds)\n")
+print("===================================\n")
+
+test_query = answer[answer.find("```sql") + len("```sql"):]
+test_query = test_query[:test_query.find("```")]
+# test_query = answer.removeprefix("```sql").removesuffix("```")
 
 mbta_db = '../lab0/mbta.sqlite' # replace with your path to mbta
 conn = sqlite3.connect(mbta_db)
@@ -85,10 +93,19 @@ select station_id, route_id, distance_from_last_station_miles as distance from s
 """
 
 try:
-    print("running sql query from model:", test_query)
+    print("running sql query from model:".upper(), test_query)
+    print()
+    print("===================================\n")
     test_result = c.execute(test_query).fetchall()
-    print("comparing query accuracy with target")
+    print("results from sql query from model".upper())
+    print(test_result)
+    print()
     target_result = c.execute(target_query).fetchall()
+    print("results from expected query".upper())
+    print(target_result)
+    print()
+    print("===================================\n")
+    print("comparing query accuracy with target".upper())
     print(compare_accuracy(test_result, target_result))
 except Exception as e:
-    print("error running sql query: ", e)
+    print("error running sql query: ".upper(), e)

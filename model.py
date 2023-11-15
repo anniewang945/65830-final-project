@@ -3,6 +3,7 @@ import time
 import os
 
 GPT_3 = "gpt-3.5-turbo-1106"
+GPT_4 = "gpt-4-1106-preview"
 DEFAULT_SYS = "You are a helpful assistant."
 api_key = os.environ["OPENAI_API_KEY"] # set api key with this env var and api will automatically pick it up
 
