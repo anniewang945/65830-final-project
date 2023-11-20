@@ -76,9 +76,12 @@ Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|
 # but it didn't work
 
 # need to change this based on the prompt you are trying for
-user_prompt = """Report the historical total ons on weekdays between 4:00 PM and 6:29 PM (time period 6) per season for the “Kendall/MIT”
-Red Line station. Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending
-order."""
+user_prompt = """For each line, in the Fall 2019 season, find the station with “maximally bypassed ratio”. That is, the station “s” that
+has the largest ratio “(a - b)/a”, where “a” is the the sum of average flow values for all time periods and all directions
+of “s” and “b” is the total sum of: the sum of its average ons and sum of its average offs values. Therefore, the
+ratio “(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name,
+and its bypassed ratio. HINT: You may need to use function CAST(total flow AS REAL) to cast the summation of flows
+(i.e. “a” above) to real number."""
 
 print("total number of tokens in the current prompt:".upper(), num_tokens_from_string(system_knowledge + user_prompt))
 
@@ -86,7 +89,8 @@ model = Model(GPT_4, system_prompt=system_knowledge)
 start = time.time()
 answer = model.query(user_prompt)
 end = time.time()
-print("model's answer:".upper(), answer, "\n(took", end-start, "seconds)\n")
+print("model's answer:".upper(), answer, "\n(took", end-start, "seconds)")
+print("total number of tokens in the output:".upper(), num_tokens_from_string(answer))
 print("===================================\n")
 
 # sometimes gpt-4 provides multiple queries with explanations, we want to extract all sql queries presented
@@ -103,7 +107,8 @@ c = conn.cursor()
 
 # replace with the correct query you are looking for based on the prompt
 target_query = """
-select season, line_id, direction, total_ons from rail_ridership as r join time_periods as t on r.time_period_id = t.time_period_id join stations as s on r.station_id = s.station_id where day_type = "weekday" and period_start_time between '16:00:00' AND '18:30:00' and station_name = "Kendall/MIT" order by season, direction;
+with sums as (select station_id, line_id, cast(sum(average_flow) as real) as a, cast(sum(average_ons) + sum(average_offs) as real) as b from rail_ridership where season = "Fall 2019" group by station_id)
+select station_name, line_name, max((a-b)/a) from sums join lines on sums.line_id = lines.line_id join stations on sums.station_id = stations.station_id group by sums.line_id order by line_name;
 """
 
 try:
