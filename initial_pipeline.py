@@ -5,7 +5,7 @@ import time
 
 # following https://platform.openai.com/examples/default-sql-translate and https://stackoverflow.com/questions/76053920/how-do-i-extract-only-code-content-from-chat-gpt-response
 # adding a system prompt let's chatgpt know what to return (in this case, a sql query, but we can also ask it to include explanations as well as it did in the UI)
-system_knowledge = """Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+system_knowledge = """Given the following SQL tables schemas, your job is to write queries given a user’s request.
 CREATE TABLE routes (
   route_id INTEGER,
   line_id TEXT,
@@ -16,7 +16,6 @@ CREATE TABLE routes (
   route_name TEXT,
   PRIMARY KEY (route_id)
 );
-Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
 CREATE TABLE gated_station_entries (
   service_date TEXT,
   time TEXT,
@@ -25,19 +24,16 @@ CREATE TABLE gated_station_entries (
   gated_entries REAL,
   PRIMARY KEY (service_date, time, station_id, line_id)
 );
-Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
 CREATE TABLE lines (
   line_id TEXT,
   line_name TEXT,
   PRIMARY KEY (line_id)
 );
-Example row for lines: blue|Blue Line
 CREATE TABLE stations (
   station_id TEXT,
   station_name TEXT,
   PRIMARY KEY (station_id)
 );
-Example row for stations: place-aport|Airport
 CREATE TABLE station_orders (
   route_id INTEGER,
   station_id TEXT,
@@ -45,7 +41,6 @@ CREATE TABLE station_orders (
   distance_from_last_station_miles REAL,
   PRIMARY KEY (route_id, station_id)
 );
-Example row for station_orders: 0|place-wondl|1|0.0
 CREATE TABLE rail_ridership (
   season TEXT,
   line_id TEXT,
@@ -60,7 +55,6 @@ CREATE TABLE rail_ridership (
   average_flow INTEGER,
   PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
 );
-Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
 CREATE TABLE time_periods (
   time_period_id TEXT,
   day_type TEXT,
@@ -69,7 +63,6 @@ CREATE TABLE time_periods (
   period_end_time TEXT,
   PRIMARY KEY (time_period_id)
 );
-Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59 
 """
 
 # Tried including "Do not attempt to format on the result apart from selecting the correct columns. Selecting from the table gives the expected display output regardless of what the prompt says."
