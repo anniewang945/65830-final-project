@@ -1,0 +1,311 @@
+Testing prompt 7:
+Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1094
+
+Model's answer:
+To achieve this, we will need to perform the following steps:
+
+1. Calculate the average number of `total_ons` for all Orange Line stations during `time_period_01` in `Fall 2018` and in the `direction` of 0.
+2. Find each Orange Line station during `time_period_01` in `Fall 2018` and in the `direction` of 0 with a `total_ons` passenger count greater than the average calculated above.
+3. Return the name of these stations and their `total_ons` value.
+4. Sort the resulting set by `total_ons` in descending order and then by station name in ascending order.
+
+Here's how the SQL query would look like:
+
+```sql
+WITH AverageOns AS (
+  SELECT AVG(rr.total_ons) as avg_total_ons
+  FROM rail_ridership rr
+  INNER JOIN lines l ON rr.line_id = l.line_id
+  WHERE rr.time_period_id = 'time_period_01'
+  AND rr.season = 'Fall 2018'
+  AND rr.direction = 0
+  AND l.line_name = 'Orange Line'
+)
+
+SELECT s.station_name, rr.total_ons
+FROM rail_ridership rr
+INNER JOIN lines l ON rr.line_id = l.line_id
+INNER JOIN stations s ON rr.station_id = s.station_id,
+AverageOns ao
+WHERE rr.time_period_id = 'time_period_01'
+AND rr.season = 'Fall 2018'
+AND rr.direction = 0
+AND l.line_name = 'Orange Line'
+AND rr.total_ons > ao.avg_total_ons
+ORDER BY rr.total_ons DESC, s.station_name ASC;
+```
+
+Explanation of the Query:
+- The `WITH` clause is used to create a temporary table (CTE - common table expression) called `AverageOns` that calculates the average of `total_ons` for all the Orange Line stations for the specified condition.
+- The main `SELECT` query joins the `rail_ridership`, `lines`, and `stations` tables to get the `total_ons` values along with matching station names, considering only the Orange Line (`line_name = 'Orange Line'`), specific season (`'Fall 2018'`), time period (`'time_period_01'`), and direction (`0`).
+- The `WHERE` clause filters for only those stations with `total_ons` greater than the average calculated in the CTE.
+- The `ORDER BY` clause sorts the results first in descending order by `total_ons` and then in ascending order by `station_name`.
+
+TIME TAKEN TO GENERATE ANSWER: 31.713155031204224 seconds
+===================================
+Target query:
+WITH this_ridership AS (
+    SELECT station_id, total_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+)
+SELECT station_name, total_ons
+FROM this_ridership JOIN stations
+ON this_ridership.station_id = stations.station_id
+WHERE total_ons > (SELECT AVG(total_ons) FROM this_ridership)
+ORDER BY total_ons DESC, station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.00047588348388671875 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH AverageOns AS (
+  SELECT AVG(rr.total_ons) as avg_total_ons
+  FROM rail_ridership rr
+  INNER JOIN lines l ON rr.line_id = l.line_id
+  WHERE rr.time_period_id = 'time_period_01'
+  AND rr.season = 'Fall 2018'
+  AND rr.direction = 0
+  AND l.line_name = 'Orange Line'
+)
+
+SELECT s.station_name, rr.total_ons
+FROM rail_ridership rr
+INNER JOIN lines l ON rr.line_id = l.line_id
+INNER JOIN stations s ON rr.station_id = s.station_id,
+AverageOns ao
+WHERE rr.time_period_id = 'time_period_01'
+AND rr.season = 'Fall 2018'
+AND rr.direction = 0
+AND l.line_name = 'Orange Line'
+AND rr.total_ons > ao.avg_total_ons
+ORDER BY rr.total_ons DESC, s.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0005617141723632812 seconds
+Accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+==========END OF TEST==========
+
+Testing prompt 7:
+Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1094
+
+Model's answer:
+To retrieve the stations fulfilling the criteria, we first need to determine the average number of passengers getting on (total_ons) at all Orange Line stations during Fall 2018, in time_period_01, and in direction 0. We then need to compare this value against individual station values.
+
+Here's how we can do this with an SQL query:
+
+```sql
+WITH OrangeLineAvg AS (
+    SELECT
+        AVG(rr.total_ons) AS average_total_ons
+    FROM
+        rail_ridership rr
+    INNER JOIN
+        lines l ON rr.line_id = l.line_id
+    WHERE
+        rr.season = 'Fall 2018'
+        AND rr.time_period_id = 'time_period_01'
+        AND rr.direction = 0
+        AND l.line_name = 'Orange Line'
+)
+SELECT
+    s.station_name,
+    rr.total_ons
+FROM
+    rail_ridership rr
+INNER JOIN
+    stations s ON rr.station_id = s.station_id
+INNER JOIN
+    lines l ON rr.line_id = l.line_id
+CROSS JOIN
+    OrangeLineAvg ola
+WHERE
+    rr.season = 'Fall 2018'
+    AND rr.time_period_id = 'time_period_01'
+    AND rr.direction = 0
+    AND l.line_name = 'Orange Line'
+    AND rr.total_ons > ola.average_total_ons
+ORDER BY
+    rr.total_ons DESC,
+    s.station_name ASC;
+```
+
+This query performs the following steps:
+
+1. In a common table expression (CTE) named `OrangeLineAvg`, the average `total_ons` for the Orange Line during the specified conditions is calculated.
+2. In the main query:
+   - We join the `rail_ridership` table with the `stations` and `lines` tables to get the station names for the Orange Line.
+   - We use the average `total_ons` from our `OrangeLineAvg` CTE as a threshold for comparison.
+   - We only select records that match the conditions given by your request: Fall 2018, time_period_01, direction 0, and for the Orange Line.
+   - Then we filter out the stations where `total_ons` is greater than the computed average value.
+3. The results are ordered by `total_ons` in descending order and station names in ascending order.
+
+TIME TAKEN TO GENERATE ANSWER: 24.233556985855103 seconds
+===================================
+Target query:
+WITH this_ridership AS (
+    SELECT station_id, total_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+)
+SELECT station_name, total_ons
+FROM this_ridership JOIN stations
+ON this_ridership.station_id = stations.station_id
+WHERE total_ons > (SELECT AVG(total_ons) FROM this_ridership)
+ORDER BY total_ons DESC, station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.000823974609375 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH OrangeLineAvg AS (
+    SELECT
+        AVG(rr.total_ons) AS average_total_ons
+    FROM
+        rail_ridership rr
+    INNER JOIN
+        lines l ON rr.line_id = l.line_id
+    WHERE
+        rr.season = 'Fall 2018'
+        AND rr.time_period_id = 'time_period_01'
+        AND rr.direction = 0
+        AND l.line_name = 'Orange Line'
+)
+SELECT
+    s.station_name,
+    rr.total_ons
+FROM
+    rail_ridership rr
+INNER JOIN
+    stations s ON rr.station_id = s.station_id
+INNER JOIN
+    lines l ON rr.line_id = l.line_id
+CROSS JOIN
+    OrangeLineAvg ola
+WHERE
+    rr.season = 'Fall 2018'
+    AND rr.time_period_id = 'time_period_01'
+    AND rr.direction = 0
+    AND l.line_name = 'Orange Line'
+    AND rr.total_ons > ola.average_total_ons
+ORDER BY
+    rr.total_ons DESC,
+    s.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0018839836120605469 seconds
+Accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+==========END OF TEST==========
+
+Testing prompt 7:
+Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1094
+
+Model's answer:
+To solve this request, we need to:
+
+1. Identify the `time_period_id` that corresponds to `time_period_01`.
+2. Determine the average of `total_ons` for all Orange Line stations during `time_period_01` in Fall 2018 and direction 0.
+3. Select all stations with a `total_ons` greater than this calculated average.
+4. Join necessary tables to get the station names and relevant data.
+5. Sort the resulting stations by `total_ons` in descending order and then by station name in ascending order.
+
+Here's the SQL query that accomplishes this:
+
+```sql
+WITH orange_line_avg AS (
+  SELECT AVG(r.total_ons) as avg_ons
+  FROM rail_ridership r
+  JOIN lines l ON r.line_id = l.line_id
+  WHERE r.season = 'Fall 2018' 
+    AND r.time_period_id = 'time_period_01' 
+    AND r.direction = 0
+    AND l.line_name = 'Orange Line'
+)
+SELECT s.station_name, r.total_ons
+FROM rail_ridership r
+JOIN lines l ON r.line_id = l.line_id
+JOIN stations s ON r.station_id = s.station_id, orange_line_avg
+WHERE r.season = 'Fall 2018'
+  AND r.time_period_id = 'time_period_01'
+  AND r.direction = 0
+  AND l.line_name = 'Orange Line'
+  AND r.total_ons > orange_line_avg.avg_ons
+ORDER BY r.total_ons DESC, s.station_name ASC;
+```
+
+Explanation:
+
+- The first part of the query creates a Common Table Expression (CTE) named `orange_line_avg` to calculate the average `total_ons` for all Orange Line stations during the specified conditions.
+- We then select the required fields (`station_name` and `total_ons`) and join the `rail_ridership`, `lines`, and `stations` tables to retrieve station names.
+- The `WHERE` clause filters records to match the specified season, time period, direction, and line name. It also filters out results where `total_ons` is less than or equal to the average.
+- Finally, we sort the results according to the requested criteria.
+
+Execution of this query will return each Orange Line station with higher than average `total_ons` during the particular constraints, ordered by `total_ons` descending and `station_name` ascending as requested.
+
+TIME TAKEN TO GENERATE ANSWER: 35.231082916259766 seconds
+===================================
+Target query:
+WITH this_ridership AS (
+    SELECT station_id, total_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+)
+SELECT station_name, total_ons
+FROM this_ridership JOIN stations
+ON this_ridership.station_id = stations.station_id
+WHERE total_ons > (SELECT AVG(total_ons) FROM this_ridership)
+ORDER BY total_ons DESC, station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0006959438323974609 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH orange_line_avg AS (
+  SELECT AVG(r.total_ons) as avg_ons
+  FROM rail_ridership r
+  JOIN lines l ON r.line_id = l.line_id
+  WHERE r.season = 'Fall 2018' 
+    AND r.time_period_id = 'time_period_01' 
+    AND r.direction = 0
+    AND l.line_name = 'Orange Line'
+)
+SELECT s.station_name, r.total_ons
+FROM rail_ridership r
+JOIN lines l ON r.line_id = l.line_id
+JOIN stations s ON r.station_id = s.station_id, orange_line_avg
+WHERE r.season = 'Fall 2018'
+  AND r.time_period_id = 'time_period_01'
+  AND r.direction = 0
+  AND l.line_name = 'Orange Line'
+  AND r.total_ons > orange_line_avg.avg_ons
+ORDER BY r.total_ons DESC, s.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0013921260833740234 seconds
+Accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+==========END OF TEST==========
+

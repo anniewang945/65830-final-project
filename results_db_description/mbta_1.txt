@@ -1,0 +1,225 @@
+Testing prompt 1:
+Find the first and last station for each route on each line. Report the line name, route direction name, and first and last station name. Sort the results by the line name, direction name, first station name, and then last station name, all in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1064
+
+Model's answer:
+To get the first and last station for each route on each line, we need to join together data from multiple tables: `lines`, `routes`, `stations`, and perhaps the `station_orders` table if we need to confirm the order of the stations. However, since we're given the IDs of the first and last stations in the `routes` table, we may not need `station_orders`.
+
+Here is the SQL query that performs the necessary joins and fetches the required information:
+
+```sql
+SELECT 
+    l.line_name,
+    r.direction_desc AS route_direction_name,
+    fs.station_name AS first_station_name,
+    ls.station_name AS last_station_name
+FROM 
+    routes r
+INNER JOIN 
+    lines l ON r.line_id = l.line_id
+INNER JOIN 
+    stations fs ON r.first_station_id = fs.station_id
+INNER JOIN 
+    stations ls ON r.last_station_id = ls.station_id
+ORDER BY 
+    l.line_name ASC, 
+    r.direction_desc ASC,
+    fs.station_name ASC,
+    ls.station_name ASC;
+```
+
+This query joins the `routes` table with the `lines` table on the `line_id` to get the line names, then joins with the `stations` table twice - once on the `first_station_id` and once on the `last_station_id` to get the names of the first and last stations for each route. Finally, the results are ordered according to the specifications in the request.
+
+TIME TAKEN TO GENERATE ANSWER: 17.18524718284607 seconds
+===================================
+Target query:
+SELECT line_name, direction_desc, x.station_name, y.station_name
+FROM routes JOIN lines ON routes.line_id = lines.line_id
+JOIN stations x
+ON x.station_id = first_station_id
+JOIN stations y
+ON y.station_id = last_station_id
+ORDER BY line_name, direction_desc, x.station_name, y.station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0008840560913085938 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT 
+    l.line_name,
+    r.direction_desc AS route_direction_name,
+    fs.station_name AS first_station_name,
+    ls.station_name AS last_station_name
+FROM 
+    routes r
+INNER JOIN 
+    lines l ON r.line_id = l.line_id
+INNER JOIN 
+    stations fs ON r.first_station_id = fs.station_id
+INNER JOIN 
+    stations ls ON r.last_station_id = ls.station_id
+ORDER BY 
+    l.line_name ASC, 
+    r.direction_desc ASC,
+    fs.station_name ASC,
+    ls.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0002541542053222656 seconds
+Accuracy of test results (length 18) vs target results (length 18) is 1.0
+
+==========END OF TEST==========
+
+Testing prompt 1:
+Find the first and last station for each route on each line. Report the line name, route direction name, and first and last station name. Sort the results by the line name, direction name, first station name, and then last station name, all in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1064
+
+Model's answer:
+The information requested involves joining multiple tables: `lines`, `routes`, and `stations`. We want first and last station names for each route, which requires us to know which stations correspond to the `first_station_id` and `last_station_id` in the `routes` table. Additionally, we need to join the `routes` table with the `lines` table to get the line names. 
+
+Here is the SQL query to accomplish this:
+
+```sql
+SELECT 
+    l.line_name,
+    r.direction_desc,
+    fs.station_name AS first_station_name,
+    ls.station_name AS last_station_name
+FROM 
+    routes r
+JOIN 
+    lines l ON r.line_id = l.line_id
+JOIN 
+    stations fs ON r.first_station_id = fs.station_id
+JOIN 
+    stations ls ON r.last_station_id = ls.station_id
+ORDER BY 
+    l.line_name ASC, 
+    r.direction_desc ASC, 
+    fs.station_name ASC, 
+    ls.station_name ASC;
+```
+
+This SQL query should produce the desired result, listing the first and last stations of each route, along with the line name and route direction description, sorted according to the requirements.
+
+TIME TAKEN TO GENERATE ANSWER: 12.900875091552734 seconds
+===================================
+Target query:
+SELECT line_name, direction_desc, x.station_name, y.station_name
+FROM routes JOIN lines ON routes.line_id = lines.line_id
+JOIN stations x
+ON x.station_id = first_station_id
+JOIN stations y
+ON y.station_id = last_station_id
+ORDER BY line_name, direction_desc, x.station_name, y.station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0008051395416259766 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT 
+    l.line_name,
+    r.direction_desc,
+    fs.station_name AS first_station_name,
+    ls.station_name AS last_station_name
+FROM 
+    routes r
+JOIN 
+    lines l ON r.line_id = l.line_id
+JOIN 
+    stations fs ON r.first_station_id = fs.station_id
+JOIN 
+    stations ls ON r.last_station_id = ls.station_id
+ORDER BY 
+    l.line_name ASC, 
+    r.direction_desc ASC, 
+    fs.station_name ASC, 
+    ls.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0002639293670654297 seconds
+Accuracy of test results (length 18) vs target results (length 18) is 1.0
+
+==========END OF TEST==========
+
+Testing prompt 1:
+Find the first and last station for each route on each line. Report the line name, route direction name, and first and last station name. Sort the results by the line name, direction name, first station name, and then last station name, all in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1064
+
+Model's answer:
+To retrieve the first and last station for each route on each line, and provide the result with the specified sorting, we need to join several tables: the `lines` table to get the line name, the `routes` table to get route and direction information, and the `stations` table twice - once to get the first station name and once to get the last station name.
+
+Here is the SQL query to achieve this:
+
+```sql
+SELECT 
+    l.line_name,
+    r.direction_desc AS route_direction_name,
+    sf.station_name AS first_station_name,
+    sl.station_name AS last_station_name
+FROM 
+    routes r
+INNER JOIN lines l ON
+    r.line_id = l.line_id
+INNER JOIN stations sf ON
+    r.first_station_id = sf.station_id
+INNER JOIN stations sl ON
+    r.last_station_id = sl.station_id
+ORDER BY 
+    l.line_name ASC, 
+    r.direction_desc ASC, 
+    sf.station_name ASC, 
+    sl.station_name ASC;
+```
+
+This SQL query joins the necessary tables based on their foreign key relationships and selects the corresponding information for the line name, route direction name, and the names of the first and last stations of each route. It then orders the results by line name, route direction name, first station name, and last station name, all in ascending order.
+
+TIME TAKEN TO GENERATE ANSWER: 15.314342260360718 seconds
+===================================
+Target query:
+SELECT line_name, direction_desc, x.station_name, y.station_name
+FROM routes JOIN lines ON routes.line_id = lines.line_id
+JOIN stations x
+ON x.station_id = first_station_id
+JOIN stations y
+ON y.station_id = last_station_id
+ORDER BY line_name, direction_desc, x.station_name, y.station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0006940364837646484 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT 
+    l.line_name,
+    r.direction_desc AS route_direction_name,
+    sf.station_name AS first_station_name,
+    sl.station_name AS last_station_name
+FROM 
+    routes r
+INNER JOIN lines l ON
+    r.line_id = l.line_id
+INNER JOIN stations sf ON
+    r.first_station_id = sf.station_id
+INNER JOIN stations sl ON
+    r.last_station_id = sl.station_id
+ORDER BY 
+    l.line_name ASC, 
+    r.direction_desc ASC, 
+    sf.station_name ASC, 
+    sl.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.00016307830810546875 seconds
+Accuracy of test results (length 18) vs target results (length 18) is 1.0
+
+==========END OF TEST==========
+

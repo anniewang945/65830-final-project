@@ -1,0 +1,292 @@
+Testing prompt 8:
+Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1084
+
+Model's answer:
+To find the station with the most number of routes passing through it, we need to join the `station_orders` table with the `stations` and `routes` tables. This will allow us to count the distinct routes for each station. Then, we can order the results based on the number of routes passing through each station to find out which one has the most. We'll also order the results as requested by `line_id` and then `route_id`.
+
+Here's the SQL query to achieve that:
+
+```sql
+SELECT 
+    sta.station_name,
+    so.route_id,
+    ro.line_id,
+    COUNT(DISTINCT so.route_id) as total_routes
+FROM 
+    station_orders so
+INNER JOIN 
+    stations sta ON so.station_id = sta.station_id
+INNER JOIN 
+    routes ro ON so.route_id = ro.route_id
+GROUP BY 
+    sta.station_name,
+    so.route_id,
+    ro.line_id
+ORDER BY 
+    total_routes DESC,
+    ro.line_id ASC,
+    so.route_id ASC
+LIMIT 1;
+```
+
+Please note that this query will return only one station—the one with the highest total number of routes passing through it, as requested. If there are multiple stations with the same highest number of routes, this query will return the one that comes first based on the sorting by `line_id` and then `route_id`. If you want all stations with the highest number, you would first run a query to determine the highest count, then use that in a `HAVING` clause to filter for all stations with that count.
+
+However, the query above has one limitation: it assumes that each direction of a route counts as a separate route. If we instead want to count each route only once, regardless of the direction, we would need to modify the query to use `COUNT(DISTINCT ro.route_id)` instead. Furthermore, the instructions ask for stations with multiple routes, but not necessarily in both directions, so it's ambiguous whether we should count the directions separately or not. The provided query counts each direction separately as distinct routes. If this is not the desired behavior, the query should be adjusted accordingly.
+
+TIME TAKEN TO GENERATE ANSWER: 24.970473051071167 seconds
+===================================
+Target query:
+WITH aggr_routes_by_stations AS (
+    SELECT station_id, COUNT(route_id) AS num_routes
+    FROM station_orders
+    GROUP BY station_id
+),
+max_routes_stations AS (
+    SELECT station_id, num_routes
+    FROM aggr_routes_by_stations
+    WHERE num_routes = (SELECT MAX(num_routes) FROM aggr_routes_by_stations)
+)
+SELECT station_name, routes.route_id, line_id, num_routes
+FROM max_routes_stations
+JOIN stations
+ON max_routes_stations.station_id = stations.station_id
+JOIN station_orders
+ON max_routes_stations.station_id = station_orders.station_id
+JOIN routes
+ON station_orders.route_id = routes.route_id
+ORDER BY line_id, routes.route_id;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0016016960144042969 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT 
+    sta.station_name,
+    so.route_id,
+    ro.line_id,
+    COUNT(DISTINCT so.route_id) as total_routes
+FROM 
+    station_orders so
+INNER JOIN 
+    stations sta ON so.station_id = sta.station_id
+INNER JOIN 
+    routes ro ON so.route_id = ro.route_id
+GROUP BY 
+    sta.station_name,
+    so.route_id,
+    ro.line_id
+ORDER BY 
+    total_routes DESC,
+    ro.line_id ASC,
+    so.route_id ASC
+LIMIT 1;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0008373260498046875 seconds
+Accuracy of test results (length 1) vs target results (length 12) is -0.08333333333333333
+
+==========END OF TEST==========
+
+Testing prompt 8:
+Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1084
+
+Model's answer:
+To find the station with the most number of routes passing through it, we need to count the distinct routes for each station and then retrieve the station with the maximum count. The SQL query involves selecting data from `station_orders` and `stations` and joining them to get the station names and counting the distinct routes for each station using a GROUP BY clause. Then we'll need to retrieve the list of routes and the associated line IDs for the highest count station.
+
+Here is the query to achieve the task:
+
+```sql
+SELECT
+  s.station_name,
+  so.route_id,
+  r.line_id,
+  COUNT(DISTINCT so.route_id) OVER (PARTITION BY so.station_id) AS total_routes
+FROM
+  station_orders so
+JOIN
+  stations s ON so.station_id = s.station_id
+JOIN
+  routes r ON so.route_id = r.route_id
+GROUP BY
+  so.station_id, s.station_name, so.route_id, r.line_id
+ORDER BY
+  MAX(total_routes) DESC,
+  r.line_id ASC,
+  so.route_id ASC
+LIMIT 1;
+```
+
+First, we join `station_orders` with `stations` and `routes` on `station_id` and `route_id` to get the required attributes. Then we count the distinct `route_id` for each `station_id`. We use window function `COUNT() OVER (PARTITION BY station_id)` to get the count for each station next to the station's row data. We sort the stations with the most routes at the top using `ORDER BY MAX(total_routes) DESC` which maximizes the `total_routes`, and then sort by `line_id` and `route_id` as per the instructions. Finally, we use `LIMIT 1` to get the top result. 
+
+Please note that this will give us one station with the most routes. If multiple stations have the same highest number of routes passing through, this query will return only one of them randomly. If the requirement is to show all such stations, we would need to use a subquery to first find the maximum count and then filter for stations matching that count.
+
+TIME TAKEN TO GENERATE ANSWER: 36.58563280105591 seconds
+===================================
+Target query:
+WITH aggr_routes_by_stations AS (
+    SELECT station_id, COUNT(route_id) AS num_routes
+    FROM station_orders
+    GROUP BY station_id
+),
+max_routes_stations AS (
+    SELECT station_id, num_routes
+    FROM aggr_routes_by_stations
+    WHERE num_routes = (SELECT MAX(num_routes) FROM aggr_routes_by_stations)
+)
+SELECT station_name, routes.route_id, line_id, num_routes
+FROM max_routes_stations
+JOIN stations
+ON max_routes_stations.station_id = stations.station_id
+JOIN station_orders
+ON max_routes_stations.station_id = station_orders.station_id
+JOIN routes
+ON station_orders.route_id = routes.route_id
+ORDER BY line_id, routes.route_id;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0021169185638427734 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT
+  s.station_name,
+  so.route_id,
+  r.line_id,
+  COUNT(DISTINCT so.route_id) OVER (PARTITION BY so.station_id) AS total_routes
+FROM
+  station_orders so
+JOIN
+  stations s ON so.station_id = s.station_id
+JOIN
+  routes r ON so.route_id = r.route_id
+GROUP BY
+  so.station_id, s.station_name, so.route_id, r.line_id
+ORDER BY
+  MAX(total_routes) DESC,
+  r.line_id ASC,
+  so.route_id ASC
+LIMIT 1;
+
+
+error running sql query: DISTINCT is not supported for window functions
+
+
+==========END OF TEST==========
+
+Testing prompt 8:
+Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1084
+
+Model's answer:
+To find the station with the most number of routes passing through it, we need to count the distinct `route_id` for each `station_id` from the `station_orders` table and then join this with the `stations` and `routes` table to get the `station_name`, `route_id`, and `line_id`. After we count the routes per station, we will identify the station with the maximum count, but since there might be a tie, we need to consider multiple stations with the same maximum count.
+
+Let's begin by finding stations with their corresponding count of distinct routes:
+
+```sql
+SELECT so.station_id, COUNT(DISTINCT so.route_id) as route_count
+FROM station_orders so
+GROUP BY so.station_id
+```
+
+This will give us the count of distinct routes passing through each station. Now we need to join this with the `stations` table to get the `station_name`, and then join with the `routes` table to get the `route_id` and `line_id`. We can then find the maximum route count and use that to filter out the stations of interest:
+
+```sql
+WITH RouteCounts AS (
+    SELECT so.station_id, COUNT(DISTINCT so.route_id) as total_routes
+    FROM station_orders so
+    GROUP BY so.station_id
+),
+MaxRouteCount AS (
+    SELECT MAX(total_routes) as max_routes
+    FROM RouteCounts
+),
+TopStations AS (
+    SELECT rc.station_id, rc.total_routes
+    FROM RouteCounts rc
+    JOIN MaxRouteCount mrc ON rc.total_routes = mrc.max_routes
+)
+SELECT s.station_name, r.route_id, r.line_id, ts.total_routes
+FROM TopStations ts
+JOIN stations s ON ts.station_id = s.station_id
+JOIN station_orders so ON ts.station_id = so.station_id
+JOIN routes r ON so.route_id = r.route_id
+GROUP BY s.station_name, r.route_id, r.line_id, ts.total_routes
+ORDER BY r.line_id ASC, r.route_id ASC;
+```
+
+This SQL query first calculates the `total_routes` for each station, then finds the station(s) with the maximum number of routes. After that, we select and group the relevant data by `station_name`, `route_id`, `line_id`, and `total_routes`. Finally, we conclude with ordering the results by `line_id` in ascending order and then `route_id` in ascending order. The presented result will show each station with the highest number of routes once, along with each of those routes, sorted as requested.
+
+TIME TAKEN TO GENERATE ANSWER: 23.029144048690796 seconds
+===================================
+Target query:
+WITH aggr_routes_by_stations AS (
+    SELECT station_id, COUNT(route_id) AS num_routes
+    FROM station_orders
+    GROUP BY station_id
+),
+max_routes_stations AS (
+    SELECT station_id, num_routes
+    FROM aggr_routes_by_stations
+    WHERE num_routes = (SELECT MAX(num_routes) FROM aggr_routes_by_stations)
+)
+SELECT station_name, routes.route_id, line_id, num_routes
+FROM max_routes_stations
+JOIN stations
+ON max_routes_stations.station_id = stations.station_id
+JOIN station_orders
+ON max_routes_stations.station_id = station_orders.station_id
+JOIN routes
+ON station_orders.route_id = routes.route_id
+ORDER BY line_id, routes.route_id;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0012059211730957031 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT so.station_id, COUNT(DISTINCT so.route_id) as route_count
+FROM station_orders so
+GROUP BY so.station_id
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0003790855407714844 seconds
+Accuracy of test results (length 121) vs target results (length 12) is -10.083333333333334------------
+Generated query 1:
+
+WITH RouteCounts AS (
+    SELECT so.station_id, COUNT(DISTINCT so.route_id) as total_routes
+    FROM station_orders so
+    GROUP BY so.station_id
+),
+MaxRouteCount AS (
+    SELECT MAX(total_routes) as max_routes
+    FROM RouteCounts
+),
+TopStations AS (
+    SELECT rc.station_id, rc.total_routes
+    FROM RouteCounts rc
+    JOIN MaxRouteCount mrc ON rc.total_routes = mrc.max_routes
+)
+SELECT s.station_name, r.route_id, r.line_id, ts.total_routes
+FROM TopStations ts
+JOIN stations s ON ts.station_id = s.station_id
+JOIN station_orders so ON ts.station_id = so.station_id
+JOIN routes r ON so.route_id = r.route_id
+GROUP BY s.station_name, r.route_id, r.line_id, ts.total_routes
+ORDER BY r.line_id ASC, r.route_id ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0007140636444091797 seconds
+Accuracy of test results (length 12) vs target results (length 12) is 1.0
+
+==========END OF TEST==========
+

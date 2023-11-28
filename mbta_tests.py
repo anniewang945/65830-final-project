@@ -1,4 +1,16 @@
-system_knowledge = """Given the following SQL tables, your job is to write queries given a user’s request.
+database_description = """
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+"""
+
+database_schema = """The SQL table schemas of the database are shown below.
 CREATE TABLE routes (
   route_id INTEGER,
   line_id TEXT,
@@ -58,44 +70,43 @@ CREATE TABLE time_periods (
 );
 """
 
+system_knowledge = """Given the following information, your job is to write SQL queries given a user’s request.""" + database_description + database_schema
+
 user_prompts = []
 # Q1
-user_prompts.append("""Find all stations which are at least 1 mile away from the previous station. Report the station ID, route ID, and distance
-(in miles) to the previous station, sorted by decreasing distance. Break ties in distance by sorting by route ID and then
-station ID, both in ascending order.""")
+user_prompts.append("""Find all stations which are at least 1 mile away from the previous station. Report the station ID, route ID, and distance (in miles) to the previous station, sorted by decreasing distance. Break ties in distance by sorting by route ID and then station ID, both in ascending order.""")
 
 # Q2
-user_prompts.append("""Find the first and last station for each route on each line. Report the line name, route direction name, and first and last station name. Sort the results by the line name, direction name, first station name, and then last station name—all in ascending order.""")
+user_prompts.append("""Find the first and last station for each route on each line. Report the line name, route direction name, and first and last station name. Sort the results by the line name, direction name, first station name, and then last station name, all in ascending order.""")
 
 # Q3
-# user_prompts.append("""Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the “Kendall/MIT” Red Line station. Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.""")
+user_prompts.append("""Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the “Kendall/MIT” Red Line station. Report the season, line ID, direction, and total_ons, sorted by the season and direction in ascending order.""")
 # user_prompts.append("""Consider only weekdays between 16:00:00 and 18::29::59 per season for the Red Line station with the station name “Kendall/MIT”. Report the season, line ID, direction, and total_ons, sorted by the season and direction in ascending order.""")
 # user_prompts.append("""Consider only weekdays between 16:00:00 and 18::29::59 per season for the station with the line ID "red" and the station name “Kendall/MIT”. Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.""")
-user_prompts.append("""Consider only weekdays with period start time at 16:00:00 and period end time at 18::29::59 per season, and only the station with the line ID "red" and the station name “Kendall/MIT”. Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.""")
+# user_prompts.append("""Consider only weekdays with period start time at 16:00:00 and period end time at 18::29::59 per season, and only the station with the line ID "red" and the station name “Kendall/MIT”. Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.""")
 
 # Q4
-user_prompts.append("""Find the total length in miles and number of stations of each line’s routes. Report the route id, direction, route - name, number of stations, and length in miles for each route. Exclude the Green Line since the distance between stations is missing. Sort the results by total number of stations in descending order (break tie using total length in miles in descending).""")
+user_prompts.append("""Find the total length in miles and number of stations of each line’s routes. Report the route_id, direction, route_name, number of stations, and length in miles for each route. Exclude the Green Line since the distance between stations is missing. Sort the results by total number of stations in descending order (break tie using total length in miles in descending).""")
 
 # Q5
-user_prompts.append("""For each station in each season, find the average number of line service days. (That is, find the average of the number of number service days over different lines, directions and time periods, but do not sum over different values for season.) Report the station name, season, and averaged number service days value, sorted by that average value in descending order. Break ties by sorting by season and then station name, both in ascending order.""")
+user_prompts.append("""For each station in each season, find the average number of line service days. (That is, find the average of the number of number_service_days over different lines, directions and time periods, but do not sum over different values for season.) Report the station name, season, and averaged number_service_days value, sorted by that average value in descending order. Break ties by sorting by season and then station name, both in ascending order.""")
 
 # Q6
-user_prompts.append("""Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021). Report the station
-6.5830/6.5831 Problem Set 1 (Fall 2023) 4 name(s) and the number of gated entries.""")
+user_prompts.append("""Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021). Report the station name(s) and the number of gated entries.""")
 
 # Q7
-user_prompts.append("""Find the station, time period, and season with the largest number of people who get off (the largest “total offs”). A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total offs (e.g., the total offs for Kendall/MIT with a direction of 0 should be considered separately from the total offs for Kendall/MIT with a direction of 1 when you are computing the largest total offs). Report the day type, period start time, season, line id, station name, and total offs for this station.""")
+user_prompts.append("""Find the station, time period, and season with the largest number of people who get off (the largest “total_offs”). A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total_offs (e.g., the total_offs for Kendall/MIT with a direction of 0 should be considered separately from the total_offs for Kendall/MIT with a direction of 1 when you are computing the largest total_offs). Report the day_type, period_start time, season, line_id, station_name, and total_offs for this station.""")
 
 # Q8
-# user_prompts.append("""Find every Orange Line station in Fall 2018 that, during time period 01 and the direction of 0, had a total ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total ons value. Sort the results by total ons in descending order and then station name in ascending order.""")
+user_prompts.append("""Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.""")
 # user_prompts.append("""Find every station on the line with line ID "orange" in Fall 2018 that, during time period with ID "time_period_01" and the direction of 0, had a total ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total ons value. Sort the results by total ons in descending order and then station name in ascending order.""")
-user_prompts.append("""Find every station on the line with line ID "orange" in Fall 2018 that, during time period with ID "time_period_01" and the direction of 0, had a total ons passenger count that was greater than the average total_ons for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total ons value. Sort the results by total ons in descending order and then station name in ascending order.""")
+# user_prompts.append("""Find every station on the line with line ID "orange" in Fall 2018 that, during time period with ID "time_period_01" and the direction of 0, had a total ons passenger count that was greater than the average total_ons for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total ons value. Sort the results by total ons in descending order and then station name in ascending order.""")
 
 # Q9
-user_prompts.append("""Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station name, route id, line id, and total number of routes passing through the station. Sort the results by line id in ascending order and then route id in ascending order.""")
+user_prompts.append("""Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.""")
 
 # Q10
-user_prompts.append("""For each line, in the Fall 2019 season, find the station with “maximally bypassed ratio”. That is, the station “s” that has the largest ratio “(a - b)/a”, where “a” is the the sum of average flow values for all time periods and all directions of “s” and “b” is the total sum of: the sum of its average ons and sum of its average offs values. Therefore, the ratio “(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name, and its bypassed ratio. Sort the results by line name in ascending order. HINT: You may need to use function CAST(total flow AS REAL) to cast the summation of flows (i.e. “a” above) to real number.""")
+user_prompts.append("""For each line, in the Fall 2019 season, find the station with “maximally bypassed ratio”. That is, the station “s” that has the largest ratio “(a - b)/a”, where “a” is the the sum of average_flow values for all time periods and all directions of “s” and “b” is the total sum of: the sum of its average_ons and sum of its average_offs values. Therefore, the ratio “(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name, and its bypassed ratio. Sort the results by line name in ascending order. HINT: You may need to use function CAST(total_flow AS REAL) to cast the summation of flows (i.e. “a” above) to real number.""")
 
 target_queries = []
 # Q1
@@ -251,4 +262,4 @@ ON bypassed_ratios_ridership.line_id = lines.line_id
 ORDER BY line_name;""")
 
 if __name__ == "__main__":
-    print(target_queries[-1])
+    print(system_knowledge)

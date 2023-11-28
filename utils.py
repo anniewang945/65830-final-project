@@ -18,3 +18,8 @@ def compare_accuracy(test, target):
     incorrect = len(set(target).symmetric_difference(set(test)))
     overall = len(target)
     return "Accuracy of test results (length {}) vs target results (length {}) is {}".format(len(test), len(target), (overall-incorrect)/overall)
+
+def print_and_append(file_path, text):
+    with open(file_path, 'a') as f:
+        f.write(text)
+    print(text)
