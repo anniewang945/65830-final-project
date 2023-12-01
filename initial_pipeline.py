@@ -74,8 +74,9 @@ for i in range(0, 10):
       # print(test_result)
       # print()
       out_str += compare_accuracy(test_result, target_result)
+      out_str += "\n"
       print_and_append(results_path, out_str)
       ctr += 1
   except Exception as e:
       print_and_append(results_path, f"error running sql query: {e}\n")
-  print_and_append(results_path, "\n\n==========END OF TEST==========\n\n")
+  print_and_append(results_path, "\n==========END OF TEST==========\n\n")

@@ -222,7 +222,8 @@ LIMIT
 
 
 TIME TAKEN TO RUN MODEL QUERY: 1.7499871253967285 seconds
-Accuracy of test results (length 1) vs target results (length 1) is 1.0------------
+Accuracy of test results (length 1) vs target results (length 1) is 1.0
+------------
 Generated query 1:
 
 WHERE 
