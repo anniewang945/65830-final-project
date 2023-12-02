@@ -9,11 +9,7 @@ questions = open("dev_questions.txt")
 questions_and_tables = dict()
 table_and_schemas = dict()
 target_queries = []
-count = 0
 for l in questions.readlines():
-    count += 1
-    if count > 5 * 3:
-        break
     if l.startswith("Question"):
         question = l[l.find(": ") + len(": "):l.find(" ||| ")]
         table = l[l.find(" ||| ") + len(" ||| "):].strip()
