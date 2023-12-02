@@ -24,16 +24,19 @@ for l in questions.readlines():
         for r in schema_results:
             for s in r:
                 schema += s
-        # print("Question: {}\nSchema: {}".format(question, schema))
+                table_name = s[len("CREATE TABLE "):s.find("(")]
+                schema_results = c.execute("SELECT * FROM {} LIMIT 1".format(table_name)).fetchone()
+                schema += "\nExample row for {}: {}\n".format(table_name, schema_results)
+        print("Question: {}\nSchema: {}".format(question, schema))
         questions_and_tables[question] = table
         if table not in table_and_schemas:
             table_and_schemas[table] = schema
     elif l.startswith("SQL"):
         target_query = l[l.find("SQL:  ") + len("SQL:  "):]
-        # print("Target Query: {}\n".format(target_query))
+        print("Target Query: {}\n".format(target_query))
         target_queries.append(target_query)
-    # else:
-    #     print()
+    else:
+        print()
 
 for q, t in zip(questions_and_tables, target_queries):
     # add more context to schema if needed
