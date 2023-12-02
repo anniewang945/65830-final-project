@@ -1,0 +1,44 @@
+Question 9:  What are all distinct countries where singers above age 20 are from ? ||| concert_singer
+SQL:  select distinct country from singer where age  >  20
+
+Question 10:  What are the different countries with singers above age 20 ? ||| concert_singer
+SQL:  select distinct country from singer where age  >  20
+
+Question 13:  List all song names by singers above the average age . ||| concert_singer
+SQL:  select song_name from singer where age  >  (select avg(age) from singer)
+
+Question 25:  Show the stadium name and capacity with most number of concerts in year 2014 or after . ||| concert_singer
+SQL:  select t2.name ,  t2.capacity from concert as t1 join stadium as t2 on t1.stadium_id  =  t2.stadium_id where t1.year  >=  2014 group by t2.stadium_id order by count(*) desc limit 1
+
+Question 30:  What are the names of the stadiums without any concerts ? ||| concert_singer
+SQL:  select name from stadium where stadium_id not in (select stadium_id from concert)
+
+Question 34:  Show the name and theme for all concerts and the number of singers in each concert . ||| concert_singer
+SQL:  select t2.concert_name ,  t2.theme ,  count(*) from singer_in_concert as t1 join concert as t2 on t1.concert_id  =  t2.concert_id group by t2.concert_id
+
+Question 36:  List singer names and number of concerts for each singer . ||| concert_singer
+SQL:  select t2.name ,  count(*) from singer_in_concert as t1 join singer as t2 on t1.singer_id  =  t2.singer_id group by t2.singer_id
+
+Question 41:  What is the name and country of origin of every singer who has a song with the word 'Hey ' in its title ? ||| concert_singer
+SQL:  select name ,  country from singer where song_name like '%hey%'
+
+Question 53:  How many pets are owned by students that have an age greater than 20 ? ||| pets_1
+SQL:  select count(*) from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid where t1.age  >  20
+
+Question 54:  Find the number of dog pets that are raised by female students ( with sex F ) . ||| pets_1
+SQL:  select count(*) from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t2.petid  =  t3.petid where t1.sex  =  'f' and t3.pettype  =  'dog'
+
+Question 90:  How many countries does each continent have ? List the continent id , continent name and the number of countries . ||| car_1
+SQL:  select t1.contid ,  t1.continent ,  count(*) from continents as t1 join countries as t2 on t1.contid  =  t2.continent group by t1.contid;
+
+Question 94:  How many models does each car maker produce ? List maker full name , id and the number . ||| car_1
+SQL:  select t1.fullname ,  t1.id ,  count(*) from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker group by t1.id;
+
+Question 95:  What is the full name of each car maker , along with its id and how many models it produces ? ||| car_1
+SQL:  select t1.fullname ,  t1.id ,  count(*) from car_makers as t1 join model_list as t2 on t1.id  =  t2.maker group by t1.id;
+
+Question 96:  Which model of the car has the minimum horsepower ? ||| car_1
+SQL:  select t1.model from car_names as t1 join cars_data as t2 on t1.makeid  =  t2.id order by t2.horsepower asc limit 1;
+
+Question 104:  Which distinct car models are the produced after 1980 ? ||| car_1
+SQL:  select distinct t1.model from model_list as t1 join car_names as t2 on t1.model  =  t2.model join cars_data as t3 on t2.makeid  =  t3.id where t3.year  >  1980;
