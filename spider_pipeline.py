@@ -3,6 +3,21 @@ from utils import num_tokens_from_string, compare_accuracy
 import sqlite3
 import time
 
+# Extract database descriptions
+db_and_descriptions = dict()
+db_desc = open("dev_db_descriptions.txt")
+for l in db_desc.readlines():
+    if l.startswith("db_id"):
+        db = l[len("db_id: "):].strip()
+        db_and_descriptions[db] = ""
+    else:
+        if len(l.strip()) > 0:
+            db_and_descriptions[db] += l
+db_desc.close()
+# for k in db_and_descriptions:
+#     print(k)
+#     print(db_and_descriptions[k])
+#     print("===")
 
 # Extracting questions and schemas first
 questions = open("dev_questions.txt")
@@ -38,7 +53,7 @@ for l in questions.readlines():
 for q, t in zip(questions_and_tables, target_queries):
     # add more context to schema if needed
     table = questions_and_tables[q]
-    system_knowledge = "Given the following SQL tables schemas, your job is to write queries given a user’s request.\n" + table_and_schemas[table]
+    system_knowledge = "Given the following SQL tables schemas, your job is to write queries given a user’s request.\n" + table_and_schemas[table] + "\n\nThe following paragraphs further describe the database.\n" + db_and_descriptions[table]
     user_prompt = q
 
     print("passing system knowledge:".upper() + system_knowledge)
@@ -71,9 +86,9 @@ for q, t in zip(questions_and_tables, target_queries):
         end = time.time()
         print("time taken with running expected query:", end-start, "seconds")
         # comment until next 3 lines if don't want to see results
-        print("results from expected query".upper())
-        print(target_result)
-        print()
+        # print("results from expected query".upper())
+        # print(target_result)
+        # print()
         print("running sql query(s) from model:".upper())
         for t in test_queries:
             print(t)
@@ -82,9 +97,9 @@ for q, t in zip(questions_and_tables, target_queries):
             end = time.time()
             print("time taken with running model query:", end-start, "seconds")
             # comment until next 3 lines if don't want to see results
-            print("results from sql query above".upper())
-            print(test_result)
-            print()
+            # print("results from sql query above".upper())
+            # print(test_result)
+            # print()
             print("comparing query accuracy with target".upper())
             print(compare_accuracy(test_result, target_result))
             print()

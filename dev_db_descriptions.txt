@@ -1,0 +1,77 @@
+db_id: pets_1
+The database has the following 3 tables.
+The table named Student records information about a student in each row.
+The column named StuID in the Student table records the student's id.
+The column named LName in the Student table records the student's last name.
+The column named Fname in the Student table records the student's first name.
+The column named Age in the Student table records the student's age.
+The column named Sex in the Student table records the student's sex.
+The column named Major in the Student table records the student's major.
+The column named Advisor in the Student table records the student's advisor.
+The column named city_code in the Student table records the student's city code.
+The table named Has_Pet records a pet ownership in each row.
+The column named StuID in the Has_Pet table records the student id of the pet owner, and the column named PetID records the id of the pet owned.
+The table named Pets records information about a pet in each row.
+The column named PetID in the Pets table records the pet's id.
+The column named PetType in the Pets table records the pet's type.
+The column named pet_age in the Pets table records the pet's age.
+The column named weight in the Pets table records the pet's weight
+
+db_id: concert_singer
+The database has the following 4 tables.
+The table named stadium records information about a stadium in each row.
+The column named Stadium_ID in the stadium table records the stadium's id.
+The column named Location in the stadium table records the stadium's location.
+The column named Name in the stadium table records the stadium's name.
+The column named Capacity in the stadium table records the stadium's capacity.
+The column named Highest in the stadium table records the stadium's highest attendance.
+The column named Lowest in the stadium table records the stadium's lowest attendance.
+The column named Average in the stadium table records the stadium's average attendance.
+The table named singer records information about a singer in each row.
+The column named Singer_ID in the singer table records the singer's id.
+The column named Name in the singer table records the singer's name.
+The column named Country in the singer table records the singer's country.
+The column named Song_Name in the singer table records the name of the singer's song.
+The column named Song_release_year in the singer table records release year of the song.
+The column named Age in the singer table records the singer's age.
+The column named Is_male in the singer table records whether the singer is male.
+The table named concert records information about a concert in each row.
+The column named concert_ID in the concert table records the concert's id.
+The column named concert_Name in the concert table records the concert's name.
+The column named Theme in the concert table records the concert's theme.
+The column named Stadium_ID in the concert table records the concert's stadium id.
+The column named Year in the concert table records the concert's year.
+The table named singer_in_concert records which singer performed in which concert.
+The column named concert_ID in the singer_in_concert table records a concert's id, and the column named Singer_ID records the id of the singer who performed in the concert.
+
+db_id: car_1
+The database has the following 6 tables.
+The table named continents records information about a continent in each row.
+The column named ContId in the continents table records the continent's id.
+The column named Continent in the continents table records continent's name.
+The table named countries records information about a country in each row.
+The column named CountryId in the countries table records the country's id.
+The column named CountryName in the countries table records the country's name.
+The column named Continent in the countries table records the continent that the country is in.
+The table named car_makers records information about a car maker in each row.
+The column named Id in the car_makers table records the car maker's id.
+The column named Maker in the car_makers table records the acronym of the car maker's name.
+The column named FullName in the car_makers table records the car maker's full name.
+The column named Country in the car_makers table records the car maker's country.
+The table named model_list records information about a model in each row.
+The column named ModelId in the model_list table records the model's id.
+The column named Maker in the model_list table records the model's car maker.
+The column named Model in the model_list table records the model's name.
+The table named car_names records information about the make of a car in each row.
+The column named MakeId in the car_names table records the car make's id.
+The column named Model in the car_names table records the car make's model
+The column named Make in the car_names table records the car make's name.
+The table named cars_data records further information about the make of a car in each row.
+The column named Id in the cars_data table records the car make's id.
+The column named MPG in the cars_data table records the number of miles the car make can drive using one gallon of fuel.
+The column named Cylinders in the cars_data table records the number of cylinders in the car make.
+The column named Edispl in the cars_data table records the car make's engine displacement volume in cubic inches.
+The column named Horsepower in the cars_data table records the power of the car make's engine in horsepowers.
+The column named Weight in the cars_data table records the weight of the car in lbs.
+The column named Accelerate in the cars_data table records the time taken to accelerate the car from 0 to 60mph in seconds (possibly with fractions of a second).
+The column named Year in the cars_data table records the year in which the car make was created.
