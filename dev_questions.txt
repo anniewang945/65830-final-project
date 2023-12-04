@@ -26,7 +26,7 @@ Question 53:  How many pets are owned by students that have an age greater than 
 SQL:  select count(*) from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid where t1.age  >  20
 
 Question 54:  Find the number of dog pets that are raised by female students ( with sex F ) . ||| pets_1
-SQL:  select count(*) from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t2.petid  =  t3.petid where t1.sex  =  'f' and t3.pettype  =  'dog'
+SQL:  select count(*) from student as t1 join has_pet as t2 on t1.stuid  =  t2.stuid join pets as t3 on t2.petid  =  t3.petid where t1.sex  =  'F' and t3.pettype  =  'dog'
 
 Question 90:  How many countries does each continent have ? List the continent id , continent name and the number of countries . ||| car_1
 SQL:  select t1.contid ,  t1.continent ,  count(*) from continents as t1 join countries as t2 on t1.contid  =  t2.continent group by t1.contid;
