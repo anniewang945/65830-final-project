@@ -1,71 +1,127 @@
 ===============
-total number of tokens in the current prompt:396
+total number of tokens in the current prompt:437
 
 Generated query:
 
-SELECT r.route_id,
-       r.direction,
-       r.route_name,
-       COUNT(so.stop_order) AS number_of_stations,
-       SUM(so.distance_from_last_station_miles) AS length_in_miles
+SELECT r.line_id, r.route_id, r.direction, r.route_name, 
+       COUNT(so.station_id) AS number_of_stations, 
+       SUM(so.distance_from_last_station_miles) AS total_length_miles
   FROM routes r
        JOIN station_orders so ON r.route_id = so.route_id
        JOIN lines l ON r.line_id = l.line_id
  WHERE l.line_name != 'Green Line'
- GROUP BY r.route_id, r.route_name, r.direction
- ORDER BY COUNT(so.stop_order) DESC, SUM(so.distance_from_last_station_miles) DESC;
+GROUP BY r.line_id, r.route_id, r.direction, r.route_name
+ORDER BY COUNT(so.station_id) DESC, SUM(so.distance_from_last_station_miles) DESC;
 
 
-Accuracy of test results (length 10) vs target results (length 10) is 1.0
+Accuracy of test results (length 10) vs target results (length 10) is -1.0
 
-time taken: 2.469254970550537 seconds
+time taken: 3.0820372104644775 seconds
 ===============
-total number of tokens in the current prompt:396
+total number of tokens in the current prompt:437
 
 Generated query:
 
 SELECT r.route_id, r.direction, r.route_name, 
        COUNT(so.station_id) AS number_of_stations, 
-       SUM(so.distance_from_last_station_miles) AS length_in_miles
+       SUM(so.distance_from_last_station_miles) AS total_length_miles
 FROM routes r
 JOIN station_orders so ON r.route_id = so.route_id
-WHERE r.line_id <> 'Green'
+JOIN lines l ON r.line_id = l.line_id
+WHERE l.line_name != 'Green Line'
 GROUP BY r.route_id, r.direction, r.route_name
-ORDER BY number_of_stations DESC, length_in_miles DESC;
+ORDER BY number_of_stations DESC, total_length_miles DESC;
 
 
-Accuracy of test results (length 18) vs target results (length 10) is 0.2
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
 
-time taken: 2.3556108474731445 seconds
+time taken: 2.2001240253448486 seconds
 ===============
-total number of tokens in the current prompt:396
+total number of tokens in the current prompt:437
 
 Generated query:
 
-WITH line_route_length AS (
-  SELECT
-    r.route_id,
-    r.line_id,
-    r.direction,
+SELECT 
+    r.line_id, 
+    r.route_id, 
+    r.direction, 
     r.route_name,
-    COUNT(s.station_id) AS num_stations,
-    SUM(s.distance_from_last_station_miles) AS total_length
-  FROM routes r
-  JOIN station_orders s ON r.route_id = s.route_id
-  WHERE r.line_id != 'Green'
-  GROUP BY r.route_id, r.line_id, r.direction, r.route_name
-)
+    COUNT(so.station_id) AS number_of_stations,
+    SUM(so.distance_from_last_station_miles) AS total_length_in_miles
+FROM 
+    routes r
+JOIN 
+    station_orders so 
+ON 
+    r.route_id = so.route_id
+JOIN 
+    lines l 
+ON 
+    r.line_id = l.line_id
+WHERE 
+    l.line_name != 'Green Line'
+GROUP BY 
+    r.line_id, r.route_id, r.direction, r.route_name
+ORDER BY 
+    number_of_stations DESC, total_length_in_miles DESC;
 
-SELECT
-  l.route_id,
-  l.direction,
-  l.route_name,
-  l.num_stations,
-  l.total_length
-FROM line_route_length l
-ORDER BY l.num_stations DESC, l.total_length DESC;
+
+Accuracy of test results (length 10) vs target results (length 10) is -1.0, 20 incorrect
+
+time taken: 2.6609981060028076 seconds
+===============
+total number of tokens in the current prompt:437
+
+Generated query:
+
+SELECT r.route_id, r.direction, r.route_name, 
+    COUNT(s.station_id) AS number_of_stations, 
+    SUM(so.distance_from_last_station_miles) AS total_length_in_miles
+FROM routes r
+JOIN station_orders so ON r.route_id = so.route_id
+JOIN stations s ON so.station_id = s.station_id
+JOIN lines l ON r.line_id = l.line_id
+WHERE l.line_name != 'Green Line'
+GROUP BY r.route_id, r.direction, r.route_name
+ORDER BY number_of_stations DESC, total_length_in_miles DESC;
 
 
-Accuracy of test results (length 18) vs target results (length 10) is 0.2
+Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
 
-time taken: 3.175442934036255 seconds
+time taken: 4.68964409828186 seconds
+===============
+total number of tokens in the current prompt:437
+
+Generated query:
+
+SELECT r.route_id, r.direction, r.route_name, COUNT(so.station_id) AS number_of_stations, SUM(so.distance_from_last_station_miles) AS total_length
+FROM routes r
+JOIN station_orders so ON r.route_id = so.route_id
+JOIN lines l ON r.line_id = l.line_id
+WHERE l.line_name != 'Green Line'
+GROUP BY r.route_id, r.direction, r.route_name
+ORDER BY COUNT(so.station_id) DESC, SUM(so.distance_from_last_station_miles) DESC;
+
+
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
+
+time taken: 3.5265138149261475 seconds
+===============
+total number of tokens in the current prompt:437
+
+Generated query:
+
+SELECT r.line_id, r.route_id, r.direction, r.route_name, 
+       COUNT(so.station_id) as number_of_stations,
+       SUM(so.distance_from_last_station_miles) as total_length_in_miles
+FROM routes r
+JOIN station_orders so ON r.route_id = so.route_id
+JOIN lines l ON r.line_id = l.line_id
+WHERE l.line_name != 'Green Line'
+GROUP BY r.line_id, r.route_id, r.direction, r.route_name
+ORDER BY number_of_stations DESC, total_length_in_miles DESC;
+
+
+Accuracy of test results (length 10) vs target results (length 10) is -1.0, 20 incorrect
+
+time taken: 3.2653040885925293 seconds

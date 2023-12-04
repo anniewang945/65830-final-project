@@ -1,52 +1,99 @@
 ===============
-total number of tokens in the current prompt:383
+total number of tokens in the current prompt:402
 
 Generated query:
 
-SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles AS distance
 FROM station_orders so
 WHERE so.distance_from_last_station_miles >= 1
-ORDER BY distance_from_last_station_miles DESC, route_id, station_id;
+ORDER BY distance DESC, so.route_id ASC, so.station_id ASC;
 
 
 Accuracy of test results (length 20) vs target results (length 20) is 1.0
 
-time taken: 1.822411060333252 seconds
+time taken: 1.9957211017608643 seconds
 ===============
-total number of tokens in the current prompt:383
+total number of tokens in the current prompt:402
 
 Generated query:
 
-SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles AS distance
 FROM station_orders so
-WHERE so.distance_from_last_station_miles >= 1
+JOIN (
+    SELECT route_id, station_id, distance_from_last_station_miles,
+           ROW_NUMBER() OVER (PARTITION BY route_id ORDER BY distance_from_last_station_miles DESC, station_id ASC) as rn
+    FROM station_orders
+) as rn 
+ON so.route_id = rn.route_id AND so.station_id = rn.station_id
+WHERE rn.rn = 1 AND so.distance_from_last_station_miles >= 1
 ORDER BY so.distance_from_last_station_miles DESC, so.route_id, so.station_id;
 
 
-Accuracy of test results (length 20) vs target results (length 20) is 1.0
+Accuracy of test results (length 8) vs target results (length 20) is 0.4, 12 incorrect
 
-time taken: 1.7520902156829834 seconds
+time taken: 2.7691969871520996 seconds
 ===============
-total number of tokens in the current prompt:383
+total number of tokens in the current prompt:402
 
 Generated query:
 
-SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles AS distance
 FROM station_orders so
 JOIN (
-    SELECT ro.route_id, so.station_id, so.stop_order, so.distance_from_last_station_miles
-    FROM station_orders so
-    JOIN routes ro ON so.route_id = ro.route_id
-    JOIN station_orders pr ON so.route_id = pr.route_id
-        AND so.stop_order = pr.stop_order + 1
-    WHERE so.distance_from_last_station_miles >= 1
-) filtered ON so.route_id = filtered.route_id
-    AND so.station_id = filtered.station_id
-ORDER BY filtered.distance_from_last_station_miles DESC,
-         filtered.route_id ASC,
-         so.station_id ASC;
+    SELECT route_id, station_id, distance_from_last_station_miles
+    FROM station_orders
+    WHERE distance_from_last_station_miles >= 1
+) AS filtered
+ON so.route_id = filtered.route_id AND so.station_id = filtered.station_id
+ORDER BY distance DESC, route_id ASC, station_id ASC;
 
 
-Accuracy of test results (length 20) vs target results (length 20) is 1.0
+===============
+total number of tokens in the current prompt:402
 
-time taken: 4.075495958328247 seconds
+Generated query:
+
+SELECT s.station_id, so.route_id, so.distance_from_last_station_miles AS distance
+FROM stations s
+JOIN station_orders so ON s.station_id = so.station_id
+WHERE so.distance_from_last_station_miles >= 1
+ORDER BY so.distance_from_last_station_miles DESC, so.route_id, s.station_id;
+
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
+
+time taken: 3.8828179836273193 seconds
+===============
+total number of tokens in the current prompt:402
+
+Generated query:
+
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles AS distance
+FROM station_orders so
+INNER JOIN (
+    SELECT route_id, station_id, distance_from_last_station_miles
+    FROM station_orders
+    WHERE distance_from_last_station_miles >= 1
+) filtered ON so.route_id = filtered.route_id AND so.station_id = filtered.station_id
+ORDER BY distance DESC, route_id, station_id;
+
+
+error running sql query: ambiguous column name: route_id
+===============
+total number of tokens in the current prompt:402
+
+Generated query:
+
+SELECT so.station_id, so.route_id, so.distance_from_last_station_miles AS distance
+FROM station_orders so
+JOIN (
+    SELECT route_id, station_id, distance_from_last_station_miles
+    FROM station_orders
+) prev
+ON so.route_id = prev.route_id
+AND so.stop_order = prev.stop_order + 1
+AND so.distance_from_last_station_miles >= 1
+ORDER BY so.distance_from_last_station_miles DESC, so.route_id, so.station_id;
+
+
+error running sql query: no such column: prev.stop_order

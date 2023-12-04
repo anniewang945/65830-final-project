@@ -4,7 +4,9 @@ import os
 
 GPT_3 = "gpt-3.5-turbo-1106"
 DEFAULT_SYS = "You are a helpful assistant."
-api_key = os.environ["OPENAI_API_KEY"] # set api key with this env var and api will automatically pick it up
+api_key = os.environ[
+    "OPENAI_API_KEY"
+]  # set api key with this env var and api will automatically pick it up
 
 
 class Model:
@@ -37,6 +39,7 @@ class Model:
                 print(e)
                 continue
         return answer
+
 
 if __name__ == "__main__":
     model = Model(GPT_3)

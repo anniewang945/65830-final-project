@@ -1,57 +1,109 @@
 ===============
-total number of tokens in the current prompt:379
+total number of tokens in the current prompt:416
 
 Generated query:
 
-SELECT season, line_id, direction, SUM(total_ons) AS total_ons
-FROM rail_ridership
-JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
-WHERE station_id = 'Kendall/MIT' 
-  AND day_type = 'Weekday' 
-  AND time(time_periods.period_start_time) >= '16:00' 
-  AND time(time_periods.period_end_time) <= '18:30'
-GROUP BY season, line_id, direction
-ORDER BY season, direction;
-
-
-Accuracy of test results (length 0) vs target results (length 6) is 0.0
-
-time taken: 2.0434796810150146 seconds
-===============
-total number of tokens in the current prompt:379
-
-Generated query:
-
-SELECT rr.season, rr.line_id, rr.direction, SUM(rr.total_ons) AS total_ons
+SELECT rr.season, rr.line_id, rr.direction, rr.total_ons
 FROM rail_ridership rr
 JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE rr.station_id = 'Kendall/MIT'
-AND tp.day_type = 'weekday'
-AND tp.period_start_time >= '16:00'
-AND tp.period_end_time <= '18:30'
-GROUP BY rr.season, rr.line_id, rr.direction
+JOIN stations s ON rr.station_id = s.station_id
+WHERE tp.day_type = 'Weekday'
+AND tp.time_period BETWEEN '16:00:00' AND '18:30:00'
+AND s.station_name = 'Kendall/MIT'
 ORDER BY rr.season, rr.direction;
 
 
 Accuracy of test results (length 0) vs target results (length 6) is 0.0
 
-time taken: 2.288424253463745 seconds
+time taken: 1.8239827156066895 seconds
 ===============
-total number of tokens in the current prompt:379
+total number of tokens in the current prompt:416
 
 Generated query:
 
-SELECT season, line_id, direction, SUM(total_ons) AS total_ons
-FROM rail_ridership
-JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
-WHERE station_id = 'Kendall/MIT' 
-  AND day_type = 'Weekday' 
-  AND time(time_periods.period_start_time) >= '16:00' 
-  AND time(time_periods.period_end_time) <= '18:30'
-GROUP BY season, line_id, direction
-ORDER BY season, direction;
+SELECT rr.season, rr.line_id, rr.direction, rr.total_ons
+FROM rail_ridership rr
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+JOIN stations s ON rr.station_id = s.station_id
+WHERE tp.day_type = 'weekday'
+AND tp.period_start_time >= '16:00:00' AND tp.period_end_time <= '18:30:00'
+AND s.station_name = 'Kendall/MIT'
+AND rr.line_id = 'Red'
+ORDER BY rr.season, rr.direction ASC;
 
 
-Accuracy of test results (length 0) vs target results (length 6) is 0.0
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
 
-time taken: 3.0140719413757324 seconds
+time taken: 2.300065040588379 seconds
+===============
+total number of tokens in the current prompt:416
+
+Generated query:
+
+SELECT r.season, rr.line_id, rr.direction, rr.time_period_id, tp.period_start_time, tp.period_end_time, rr.station_id, s.station_name, rr.total_ons
+FROM rail_ridership rr
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+JOIN stations s ON rr.station_id = s.station_id
+JOIN routes r ON rr.line_id = r.line_id AND rr.direction = r.direction
+WHERE tp.day_type = 'weekday'
+AND tp.period_start_time >= '16:00' AND tp.period_end_time <= '18:30'
+AND rr.station_id = 'Kendall/MIT'
+ORDER BY r.season, rr.direction;
+
+
+===============
+total number of tokens in the current prompt:416
+
+Generated query:
+
+SELECT rr.season, rr.line_id, rr.direction, rr.total_ons
+FROM rail_ridership rr
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+JOIN stations s ON rr.station_id = s.station_id
+WHERE tp.day_type = 'Weekday'
+AND tp.period_start_time >= '16:00:00'
+AND tp.period_end_time <= '18:30:00'
+AND s.station_name = 'Kendall/MIT'
+ORDER BY rr.season, rr.direction;
+
+
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
+
+time taken: 4.808810234069824 seconds
+===============
+total number of tokens in the current prompt:416
+
+Generated query:
+
+SELECT rr.season, rr.line_id, rr.direction, rr.total_ons
+FROM rail_ridership rr
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+JOIN stations s ON rr.station_id = s.station_id
+WHERE tp.day_type = 'weekday'
+AND tp.period_start_time >= '16:00:00' AND tp.period_end_time <= '18:30:00'
+AND s.station_name = 'Kendall/MIT'
+ORDER BY rr.season, rr.direction;
+
+
+Accuracy of test results (length 36) vs target results (length 6) is -4.0, 30 incorrect
+
+time taken: 3.3566389083862305 seconds
+===============
+total number of tokens in the current prompt:416
+
+Generated query:
+
+SELECT rr.season, rr.line_id, rr.direction, rr.total_ons
+FROM rail_ridership rr
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+JOIN stations s ON rr.station_id = s.station_id
+WHERE tp.day_type = 'Weekday' 
+AND tp.time_period >= '4:00 PM' 
+AND tp.time_period <= '6:30 PM' 
+AND s.station_name = 'Kendall/MIT' 
+ORDER BY rr.season ASC, rr.direction ASC;
+
+
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
+
+time taken: 2.7809901237487793 seconds
