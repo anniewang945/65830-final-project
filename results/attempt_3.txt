@@ -1,0 +1,1144 @@
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: What are all distinct countries where singers above age 20 are from ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 393
+MODEL'S ANSWER: To find all distinct countries where singers above age 20 are from, you will need to use the `singer` table and perform a SELECT DISTINCT query to find unique country names with the specified age condition.
+
+Here is the SQL query for that purpose:
+
+```sql
+SELECT DISTINCT "Country"
+FROM "singer"
+WHERE "Age" > 20;
+```
+
+This query selects all unique country names from the `singer` table where the age of the singers is above 20. 
+(took 13.822980880737305 seconds)
+
+
+time taken with running expected query: 0.0003104209899902344 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT DISTINCT "Country"
+FROM "singer"
+WHERE "Age" > 20;
+
+time taken with running model query: 3.7670135498046875e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 3) vs target results (length 3) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: What are the different countries with singers above age 20 ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 391
+MODEL'S ANSWER: To find the different countries with singers above the age of 20, you can run the following SQL query:
+
+```sql
+SELECT DISTINCT "Country" 
+FROM "singer" 
+WHERE "Age" > 20;
+```
+
+This query selects distinct countries from the "singer" table where the age of the singers is greater than 20, ensuring that each country is listed only once. 
+(took 9.168652296066284 seconds)
+
+
+time taken with running expected query: 0.00014781951904296875 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT DISTINCT "Country" 
+FROM "singer" 
+WHERE "Age" > 20;
+
+time taken with running model query: 1.5735626220703125e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 3) vs target results (length 3) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: List all song names by singers above the average age .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 390
+MODEL'S ANSWER: To fulfill this request, we need to calculate the average age of all singers, then select all song names by singers who are above this average age. We can achieve this by using a subquery to first determine the average age, then using that result to filter out singers who are above this average age. Here is the SQL query that does this:
+
+```sql
+SELECT s.Name, s.Song_Name
+FROM singer s
+WHERE s.Age > (SELECT AVG(Age) FROM singer);
+```
+
+This query works as follows:
+
+1. `(SELECT AVG(Age) FROM singer)`: This subquery calculates the average age of all singers.
+2. `SELECT s.Name, s.Song_Name FROM singer s`: This part selects the name and song names from the singer table.
+3. `WHERE s.Age >`: This condition filters the results to include only those singers whose age is greater than the average we determined in the subquery.
+
+So you will get a list of song names performed by singers who are older than the average age of all singers. 
+(took 23.222654581069946 seconds)
+
+
+time taken with running expected query: 0.00013780593872070312 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT s.Name, s.Song_Name
+FROM singer s
+WHERE s.Age > (SELECT AVG(Age) FROM singer);
+
+time taken with running model query: 2.1457672119140625e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 3) vs target results (length 3) is -1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: Show the stadium name and capacity with most number of concerts in year 2014 or after .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 398
+MODEL'S ANSWER: To find the stadium name and capacity that has hosted the most number of concerts in the year 2014 or after, we need to perform the following steps:
+
+1. Select the corresponding `Stadium_ID` from the `concert` table for concerts that took place in the year 2014 or after.
+2. Group the results by `Stadium_ID` and count the number of concerts for each stadium.
+3. Order the grouped results in descending order based on the concert count.
+4. Join the `stadium` table to get the stadium name and capacity.
+5. Select the top result to get the stadium with the most number of concerts.
+
+Let's write the SQL query:
+
+```sql
+SELECT s.Name, s.Capacity
+FROM stadium AS s
+JOIN (
+    SELECT c.Stadium_ID, COUNT(*) AS Concert_Count
+    FROM concert AS c
+    WHERE c.Year >= '2014'
+    GROUP BY c.Stadium_ID
+    ORDER BY Concert_Count DESC
+    LIMIT 1
+) AS subquery ON s.Stadium_ID = subquery.Stadium_ID;
+```
+
+Running this query on your database should give you the stadium name and capacity that hosted the most number of concerts from 2014 onwards. Note that we use a subquery to find the `Stadium_ID` with the highest count of concerts, which is then joined with the `stadium` table to retrieve the associated name and capacity. The `LIMIT 1` clause ensures that we only get the top result. 
+(took 95.84825897216797 seconds)
+
+
+time taken with running expected query: 0.00046133995056152344 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT s.Name, s.Capacity
+FROM stadium AS s
+JOIN (
+    SELECT c.Stadium_ID, COUNT(*) AS Concert_Count
+    FROM concert AS c
+    WHERE c.Year >= '2014'
+    GROUP BY c.Stadium_ID
+    ORDER BY Concert_Count DESC
+    LIMIT 1
+) AS subquery ON s.Stadium_ID = subquery.Stadium_ID;
+
+time taken with running model query: 0.0001704692840576172 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: What are the names of the stadiums without any concerts ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 390
+MODEL'S ANSWER: To find the names of stadiums without any concerts, you would start by selecting all stadiums that do not have a corresponding entry in the "concert" table. The query would look like this:
+
+```sql
+SELECT s.Name
+FROM stadium s
+LEFT JOIN concert c ON s.Stadium_ID = c.Stadium_ID
+WHERE c.concert_ID IS NULL;
+```
+
+This query uses a LEFT JOIN to include all records from "stadium" and the matched records from "concert", then filters out the stadiums that have corresponding concert_IDs, leaving only the stadiums without any concerts. The WHERE clause checks for NULL in the concert_ID column, which indicates that there was no match in the "concert" table for that stadium. 
+(took 17.107932329177856 seconds)
+
+
+time taken with running expected query: 0.0003445148468017578 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT s.Name
+FROM stadium s
+LEFT JOIN concert c ON s.Stadium_ID = c.Stadium_ID
+WHERE c.concert_ID IS NULL;
+
+time taken with running model query: 6.580352783203125e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 4) vs target results (length 4) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: Show the name and theme for all concerts and the number of singers in each concert .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 396
+MODEL'S ANSWER: To retrieve the concert name, theme, and the number of singers in each concert, we'll have to join the `concert` table with the `singer_in_concert` table and then use the `COUNT` aggregate function to count the number of singers per concert. We'll group the results by the `concert_ID` to ensure we get one row per concert.
+
+Here is the SQL query that will retrieve the requested information:
+
+```sql
+SELECT c.concert_Name, c.Theme, COUNT(sic.Singer_ID) AS NumberOfSingers
+FROM concert c
+LEFT JOIN singer_in_concert sic ON c.concert_ID = sic.concert_ID
+GROUP BY c.concert_ID;
+```
+
+This query works as follows:
+
+- We are using `LEFT JOIN` because there might be concerts that have no singers, and we still want to list those concerts.
+- We join the tables on the `concert_ID` column which is present in both `concert` and `singer_in_concert` tables.
+- We use the `COUNT` function to get the total number of singers (this will count the `Singer_ID`s) for each concert.
+- We then `GROUP BY` the `concert_ID` to ensure we aggregate counts on a per-concert basis.
+- We select the `concert_Name` and `Theme` from the `concert` table and the count of singers as `NumberOfSingers`. 
+(took 39.43085598945618 seconds)
+
+
+time taken with running expected query: 0.0002543926239013672 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT c.concert_Name, c.Theme, COUNT(sic.Singer_ID) AS NumberOfSingers
+FROM concert c
+LEFT JOIN singer_in_concert sic ON c.concert_ID = sic.concert_ID
+GROUP BY c.concert_ID;
+
+time taken with running model query: 6.127357482910156e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 6) vs target results (length 6) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: List singer names and number of concerts for each singer .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 390
+MODEL'S ANSWER: To get the names of singers and the number of concerts each has performed, we first need to join the `singer` table with `singer_in_concert` table based on the `Singer_ID`, then count the number of concerts each singer has performed. This can be done with the following SQL query:
+
+```sql
+SELECT 
+    s.Name,
+    COUNT(sic.concert_ID) AS NumberOfConcerts
+FROM 
+    singer s
+LEFT JOIN 
+    singer_in_concert sic ON s.Singer_ID = sic.Singer_ID
+GROUP BY
+    s.Singer_ID;
+```
+
+Explanation:
+
+- We join the `singer` table (alias `s`) with the `singer_in_concert` table (alias `sic`) using a LEFT JOIN on the `Singer_ID` fields.
+- We use COUNT to calculate the number of times each singer's ID appears in the `singer_in_concert` table, which corresponds to the number of concerts they have performed in.
+- We GROUP BY the `Singer_ID` field from the `singer` table to ensure that the count is calculated for each singer.
+- We select the `Name` of the singer and the count as `NumberOfConcerts`. 
+(took 21.338650465011597 seconds)
+
+
+time taken with running expected query: 0.00040411949157714844 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT 
+    s.Name,
+    COUNT(sic.concert_ID) AS NumberOfConcerts
+FROM 
+    singer s
+LEFT JOIN 
+    singer_in_concert sic ON s.Singer_ID = sic.Singer_ID
+GROUP BY
+    s.Singer_ID;
+
+time taken with running model query: 6.771087646484375e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 6) vs target results (length 5) is 0.8
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "stadium" (
+"Stadium_ID" int,
+"Location" text,
+"Name" text,
+"Capacity" int,
+"Highest" int,
+"Lowest" int,
+"Average" int,
+PRIMARY KEY ("Stadium_ID")
+)
+Example row for "stadium" : (1, 'Raith Rovers', "Stark's Park", 10104, 4812, 1294, 2106)
+CREATE TABLE "singer" (
+"Singer_ID" int,
+"Name" text,
+"Country" text,
+"Song_Name" text,
+"Song_release_year" text,
+"Age" int,
+"Is_male" bool,
+PRIMARY KEY ("Singer_ID")
+)
+Example row for "singer" : (1, 'Joe Sharp', 'Netherlands', 'You', '1992', 52, 'F')
+CREATE TABLE "concert" (
+"concert_ID" int,
+"concert_Name" text,
+"Theme" text,
+"Stadium_ID" text,
+"Year" text,
+PRIMARY KEY ("concert_ID"),
+FOREIGN KEY ("Stadium_ID") REFERENCES "stadium"("Stadium_ID")
+)
+Example row for "concert" : (1, 'Auditions', 'Free choice', '1', '2014')
+CREATE TABLE "singer_in_concert" (
+"concert_ID" int,
+"Singer_ID" text,
+PRIMARY KEY ("concert_ID","Singer_ID"),
+FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
+FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
+)
+Example row for "singer_in_concert" : (1, '2')
+
+PASSING USER PROMPT: What is the name and country of origin of every singer who has a song with the word 'Hey ' in its title ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 404
+MODEL'S ANSWER: To retrieve the name and country of origin of every singer who has a song with the word 'Hey' in its title, we can use the following SQL query:
+
+```sql
+SELECT Name, Country
+FROM singer
+WHERE Song_Name LIKE '%Hey %';
+```
+
+This SQL query will search through the "singer" table and select the names and countries of the singers whose "Song_Name" contains the word 'Hey' followed by a space to denote the beginning of the title with 'Hey'. The percent sign (%) is a wildcard in SQL, which stands for any sequence of characters. 
+(took 9.85029411315918 seconds)
+
+
+time taken with running expected query: 0.00036978721618652344 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT Name, Country
+FROM singer
+WHERE Song_Name LIKE '%Hey %';
+
+time taken with running model query: 4.6253204345703125e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE Student (
+       StuID    	INTEGER PRIMARY KEY,
+       LName		VARCHAR(12),
+       Fname		VARCHAR(12),
+       Age		INTEGER,
+       Sex		VARCHAR(1),
+       Major		INTEGER,
+       Advisor		INTEGER,
+       city_code	VARCHAR(3)
+)
+Example row for Student : (1001, 'Smith', 'Linda', 18, 'F', 600, 1121, 'BAL')
+CREATE TABLE Has_Pet (
+       StuID		INTEGER,
+       PetID		INTEGER,
+       FOREIGN KEY(PetID) REFERENCES Pets(PetID),
+       FOREIGN KEY(StuID) REFERENCES Student(StuID)
+)
+Example row for Has_Pet : (1001, 2001)
+CREATE TABLE Pets (
+       PetID		INTEGER PRIMARY KEY,
+       PetType		VARCHAR(20),
+       pet_age INTEGER,
+       weight REAL
+)
+Example row for Pets : (2001, 'cat', 3, 12.0)
+
+PASSING USER PROMPT: How many pets are owned by students that have an age greater than 20 ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 264
+MODEL'S ANSWER: To find the number of pets owned by students over the age of 20, we can write the following SQL query:
+
+```sql
+SELECT COUNT(DISTINCT hp.PetID) as NumberOfPets
+FROM Student s
+JOIN Has_Pet hp ON s.StuID = hp.StuID
+WHERE s.Age > 20;
+```
+
+This query performs the following steps:
+
+1. It joins the `Student` table with the `Has_Pet` table based on the student ID (`StuID`).
+2. It applies a `WHERE` clause to filter students who are older than 20 years.
+3. It uses the `COUNT` function to count the distinct pet IDs associated with those students to determine the number of unique pets.
+4. The `AS NumberOfPets` part provides an alias for the count to indicate it represents the number of pets. 
+(took 15.514497995376587 seconds)
+
+
+time taken with running expected query: 0.0002913475036621094 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT COUNT(DISTINCT hp.PetID) as NumberOfPets
+FROM Student s
+JOIN Has_Pet hp ON s.StuID = hp.StuID
+WHERE s.Age > 20;
+
+time taken with running model query: 0.00010728836059570312 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE Student (
+       StuID    	INTEGER PRIMARY KEY,
+       LName		VARCHAR(12),
+       Fname		VARCHAR(12),
+       Age		INTEGER,
+       Sex		VARCHAR(1),
+       Major		INTEGER,
+       Advisor		INTEGER,
+       city_code	VARCHAR(3)
+)
+Example row for Student : (1001, 'Smith', 'Linda', 18, 'F', 600, 1121, 'BAL')
+CREATE TABLE Has_Pet (
+       StuID		INTEGER,
+       PetID		INTEGER,
+       FOREIGN KEY(PetID) REFERENCES Pets(PetID),
+       FOREIGN KEY(StuID) REFERENCES Student(StuID)
+)
+Example row for Has_Pet : (1001, 2001)
+CREATE TABLE Pets (
+       PetID		INTEGER PRIMARY KEY,
+       PetType		VARCHAR(20),
+       pet_age INTEGER,
+       weight REAL
+)
+Example row for Pets : (2001, 'cat', 3, 12.0)
+
+PASSING USER PROMPT: Find the number of dog pets that are raised by female students ( with sex F ) .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 266
+MODEL'S ANSWER: To find the number of dog pets raised by female students, you'd need to join the `Student` table with the `Has_Pet` table based on the `StuID`, and then join the resulting table with the `Pets` table based on `PetID`. Then you would count the number of pet entries where the `PetType` is 'dog' and the `Sex` of the student is 'F'.
+
+The SQL query for this would be:
+
+```sql
+SELECT COUNT(*) AS NumberOfDogPets
+FROM Student s
+JOIN Has_Pet hp ON s.StuID = hp.StuID
+JOIN Pets p ON hp.PetID = p.PetID
+WHERE s.Sex = 'F' AND p.PetType = 'dog';
+```
+
+This will give you the total count of dogs that are owned by female students. 
+(took 16.855650424957275 seconds)
+
+
+time taken with running expected query: 0.0003750324249267578 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT COUNT(*) AS NumberOfDogPets
+FROM Student s
+JOIN Has_Pet hp ON s.StuID = hp.StuID
+JOIN Pets p ON hp.PetID = p.PetID
+WHERE s.Sex = 'F' AND p.PetType = 'dog';
+
+time taken with running model query: 6.270408630371094e-05 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 1) vs target results (length 1) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "continents" ( 
+	"ContId" INTEGER PRIMARY KEY, 
+	"Continent" TEXT 
+)
+Example row for "continents" : (1, 'america')
+CREATE TABLE "countries" (
+	"CountryId" INTEGER PRIMARY KEY, 
+	"CountryName" TEXT, 
+	"Continent" INTEGER,
+	FOREIGN KEY (Continent) REFERENCES continents(ContId)
+)
+Example row for "countries" : (1, 'usa', 1)
+CREATE TABLE "car_makers" ( 
+	"Id" INTEGER PRIMARY KEY, 
+	"Maker" TEXT, 
+	"FullName" TEXT, 
+	"Country" TEXT,
+	FOREIGN KEY (Country) REFERENCES countries(CountryId)
+)
+Example row for "car_makers" : (1, 'amc', 'American Motor Company', '1')
+CREATE TABLE "model_list" ( 
+	"ModelId" INTEGER PRIMARY KEY, 
+	"Maker" INTEGER, 
+	"Model" TEXT UNIQUE,
+	FOREIGN KEY (Maker) REFERENCES car_makers (Id)
+
+)
+Example row for "model_list" : (1, 1, 'amc')
+CREATE TABLE "car_names" ( 
+	"MakeId" INTEGER PRIMARY KEY, 
+	"Model" TEXT, 
+	"Make" TEXT,
+	FOREIGN KEY (Model) REFERENCES model_list (Model)
+)
+Example row for "car_names" : (1, 'chevrolet', 'chevrolet chevelle malibu')
+CREATE TABLE "cars_data" (
+	"Id" INTEGER PRIMARY KEY, 
+	"MPG" TEXT, 
+	"Cylinders" INTEGER, 
+	"Edispl" REAL, 
+	"Horsepower" TEXT, 
+	"Weight" INTEGER, 
+	"Accelerate" REAL, 
+	"Year" INTEGER,
+	FOREIGN KEY (Id) REFERENCES car_names (MakeId)
+)
+Example row for "cars_data" : (1, '18', 8, 307.0, '130', 3504, 12.0, 1970)
+
+PASSING USER PROMPT: How many countries does each continent have ? List the continent id , continent name and the number of countries .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 488
+MODEL'S ANSWER: To get the number of countries for each continent, we need to make use of a JOIN statement between the "continents" and "countries" tables, and then count the number of countries grouped by continent id and continent name. Here is the SQL query that does this:
+
+```sql
+SELECT 
+    c.ContId, 
+    c.Continent, 
+    COUNT(co.CountryId) as NumberOfCountries
+FROM 
+    continents c
+LEFT JOIN 
+    countries co ON c.ContId = co.Continent
+GROUP BY 
+    c.ContId, 
+    c.Continent;
+```
+
+This query joins the continents and countries on their respective continent ID fields, counts the number of country IDs for each continent, and groups the result by continent ID and continent name. The use of LEFT JOIN ensures that even continents with no countries will be included in the results with a count of zero. 
+(took 16.928024768829346 seconds)
+
+
+time taken with running expected query: 0.00032258033752441406 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT 
+    c.ContId, 
+    c.Continent, 
+    COUNT(co.CountryId) as NumberOfCountries
+FROM 
+    continents c
+LEFT JOIN 
+    countries co ON c.ContId = co.Continent
+GROUP BY 
+    c.ContId, 
+    c.Continent;
+
+time taken with running model query: 0.0001621246337890625 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "continents" ( 
+	"ContId" INTEGER PRIMARY KEY, 
+	"Continent" TEXT 
+)
+Example row for "continents" : (1, 'america')
+CREATE TABLE "countries" (
+	"CountryId" INTEGER PRIMARY KEY, 
+	"CountryName" TEXT, 
+	"Continent" INTEGER,
+	FOREIGN KEY (Continent) REFERENCES continents(ContId)
+)
+Example row for "countries" : (1, 'usa', 1)
+CREATE TABLE "car_makers" ( 
+	"Id" INTEGER PRIMARY KEY, 
+	"Maker" TEXT, 
+	"FullName" TEXT, 
+	"Country" TEXT,
+	FOREIGN KEY (Country) REFERENCES countries(CountryId)
+)
+Example row for "car_makers" : (1, 'amc', 'American Motor Company', '1')
+CREATE TABLE "model_list" ( 
+	"ModelId" INTEGER PRIMARY KEY, 
+	"Maker" INTEGER, 
+	"Model" TEXT UNIQUE,
+	FOREIGN KEY (Maker) REFERENCES car_makers (Id)
+
+)
+Example row for "model_list" : (1, 1, 'amc')
+CREATE TABLE "car_names" ( 
+	"MakeId" INTEGER PRIMARY KEY, 
+	"Model" TEXT, 
+	"Make" TEXT,
+	FOREIGN KEY (Model) REFERENCES model_list (Model)
+)
+Example row for "car_names" : (1, 'chevrolet', 'chevrolet chevelle malibu')
+CREATE TABLE "cars_data" (
+	"Id" INTEGER PRIMARY KEY, 
+	"MPG" TEXT, 
+	"Cylinders" INTEGER, 
+	"Edispl" REAL, 
+	"Horsepower" TEXT, 
+	"Weight" INTEGER, 
+	"Accelerate" REAL, 
+	"Year" INTEGER,
+	FOREIGN KEY (Id) REFERENCES car_names (MakeId)
+)
+Example row for "cars_data" : (1, '18', 8, 307.0, '130', 3504, 12.0, 1970)
+
+PASSING USER PROMPT: How many models does each car maker produce ? List maker full name , id and the number .
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 486
+MODEL'S ANSWER: To find out the number of models each car maker produces, you will need to join the `car_makers` table with the `model_list` table, and then perform a group by with a count on the `Maker` column. Here is the SQL query to achieve this:
+
+```sql
+SELECT cm.Id, cm.FullName, COUNT(ml.ModelId) AS NumberOfModels
+FROM car_makers AS cm
+JOIN model_list AS ml ON cm.Id = ml.Maker
+GROUP BY cm.Id, cm.FullName;
+```
+
+This query will list each car maker's full name, its ID, and the number of models it produces. 
+(took 15.328938007354736 seconds)
+
+
+time taken with running expected query: 0.00034737586975097656 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT cm.Id, cm.FullName, COUNT(ml.ModelId) AS NumberOfModels
+FROM car_makers AS cm
+JOIN model_list AS ml ON cm.Id = ml.Maker
+GROUP BY cm.Id, cm.FullName;
+
+time taken with running model query: 0.00012040138244628906 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 22) vs target results (length 22) is -1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "continents" ( 
+	"ContId" INTEGER PRIMARY KEY, 
+	"Continent" TEXT 
+)
+Example row for "continents" : (1, 'america')
+CREATE TABLE "countries" (
+	"CountryId" INTEGER PRIMARY KEY, 
+	"CountryName" TEXT, 
+	"Continent" INTEGER,
+	FOREIGN KEY (Continent) REFERENCES continents(ContId)
+)
+Example row for "countries" : (1, 'usa', 1)
+CREATE TABLE "car_makers" ( 
+	"Id" INTEGER PRIMARY KEY, 
+	"Maker" TEXT, 
+	"FullName" TEXT, 
+	"Country" TEXT,
+	FOREIGN KEY (Country) REFERENCES countries(CountryId)
+)
+Example row for "car_makers" : (1, 'amc', 'American Motor Company', '1')
+CREATE TABLE "model_list" ( 
+	"ModelId" INTEGER PRIMARY KEY, 
+	"Maker" INTEGER, 
+	"Model" TEXT UNIQUE,
+	FOREIGN KEY (Maker) REFERENCES car_makers (Id)
+
+)
+Example row for "model_list" : (1, 1, 'amc')
+CREATE TABLE "car_names" ( 
+	"MakeId" INTEGER PRIMARY KEY, 
+	"Model" TEXT, 
+	"Make" TEXT,
+	FOREIGN KEY (Model) REFERENCES model_list (Model)
+)
+Example row for "car_names" : (1, 'chevrolet', 'chevrolet chevelle malibu')
+CREATE TABLE "cars_data" (
+	"Id" INTEGER PRIMARY KEY, 
+	"MPG" TEXT, 
+	"Cylinders" INTEGER, 
+	"Edispl" REAL, 
+	"Horsepower" TEXT, 
+	"Weight" INTEGER, 
+	"Accelerate" REAL, 
+	"Year" INTEGER,
+	FOREIGN KEY (Id) REFERENCES car_names (MakeId)
+)
+Example row for "cars_data" : (1, '18', 8, 307.0, '130', 3504, 12.0, 1970)
+
+PASSING USER PROMPT: What is the full name of each car maker , along with its id and how many models it produces ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 488
+MODEL'S ANSWER: To obtain the full name of each car maker along with its id and the number of models it produces, you will need to join the `car_makers` table with the `model_list` table, and then use a `GROUP BY` statement to count the number of models per maker. Here's how the SQL query would look like:
+
+```sql
+SELECT cm.Id, cm.FullName, COUNT(ml.Model) AS NumberOfModels
+FROM car_makers cm
+LEFT JOIN model_list ml ON cm.Id = ml.Maker
+GROUP BY cm.Id, cm.FullName;
+```
+
+This query groups the results by the car maker's `Id` and `FullName`. The `LEFT JOIN` ensures that car makers with no models listed will still be included in the results, with a model count of `0`. The `COUNT(ml.Model)` function counts the number of models associated with each car maker. The aliases `cm` for the `car_makers` table and `ml` for the `model_list` table make the query easier to read and write. 
+(took 23.539548873901367 seconds)
+
+
+time taken with running expected query: 0.0003597736358642578 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT cm.Id, cm.FullName, COUNT(ml.Model) AS NumberOfModels
+FROM car_makers cm
+LEFT JOIN model_list ml ON cm.Id = ml.Maker
+GROUP BY cm.Id, cm.FullName;
+
+time taken with running model query: 0.0002181529998779297 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 22) vs target results (length 22) is -1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "continents" ( 
+	"ContId" INTEGER PRIMARY KEY, 
+	"Continent" TEXT 
+)
+Example row for "continents" : (1, 'america')
+CREATE TABLE "countries" (
+	"CountryId" INTEGER PRIMARY KEY, 
+	"CountryName" TEXT, 
+	"Continent" INTEGER,
+	FOREIGN KEY (Continent) REFERENCES continents(ContId)
+)
+Example row for "countries" : (1, 'usa', 1)
+CREATE TABLE "car_makers" ( 
+	"Id" INTEGER PRIMARY KEY, 
+	"Maker" TEXT, 
+	"FullName" TEXT, 
+	"Country" TEXT,
+	FOREIGN KEY (Country) REFERENCES countries(CountryId)
+)
+Example row for "car_makers" : (1, 'amc', 'American Motor Company', '1')
+CREATE TABLE "model_list" ( 
+	"ModelId" INTEGER PRIMARY KEY, 
+	"Maker" INTEGER, 
+	"Model" TEXT UNIQUE,
+	FOREIGN KEY (Maker) REFERENCES car_makers (Id)
+
+)
+Example row for "model_list" : (1, 1, 'amc')
+CREATE TABLE "car_names" ( 
+	"MakeId" INTEGER PRIMARY KEY, 
+	"Model" TEXT, 
+	"Make" TEXT,
+	FOREIGN KEY (Model) REFERENCES model_list (Model)
+)
+Example row for "car_names" : (1, 'chevrolet', 'chevrolet chevelle malibu')
+CREATE TABLE "cars_data" (
+	"Id" INTEGER PRIMARY KEY, 
+	"MPG" TEXT, 
+	"Cylinders" INTEGER, 
+	"Edispl" REAL, 
+	"Horsepower" TEXT, 
+	"Weight" INTEGER, 
+	"Accelerate" REAL, 
+	"Year" INTEGER,
+	FOREIGN KEY (Id) REFERENCES car_names (MakeId)
+)
+Example row for "cars_data" : (1, '18', 8, 307.0, '130', 3504, 12.0, 1970)
+
+PASSING USER PROMPT: Which model of the car has the minimum horsepower ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 477
+MODEL'S ANSWER: To find the model of the car with the minimum horsepower, we need to join the appropriate tables and then query for the minimum non-null horsepower value. The related tables for this query are `car_names` and `cars_data`.
+
+Here's the SQL query:
+
+```sql
+SELECT cn.Model
+FROM car_names cn
+JOIN cars_data cd ON cn.MakeId = cd.Id
+WHERE cd.Horsepower != 'NA' -- exclude non-numeric 'Horsepower' values
+ORDER BY CAST(cd.Horsepower AS INTEGER) ASC -- cast Horsepower to an integer for proper comparison
+LIMIT 1;
+```
+
+This query will give us the model of the car with the minimum horsepower, excluding rows where 'Horsepower' is 'NA' (assuming 'NA' is used to signify missing data). We cast the 'Horsepower' to an integer so that we can perform a numeric comparison. We then order the results by horsepower in ascending order and limit the results to just the first row to find the minimum value. 
+
+Please note that this relies on 'Horsepower' being numerical or 'NA'; if there are other non-numerical placeholders, you'll need to adjust the WHERE clause accordingly. 
+(took 24.713157653808594 seconds)
+
+
+time taken with running expected query: 0.0006687641143798828 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT cn.Model
+FROM car_names cn
+JOIN cars_data cd ON cn.MakeId = cd.Id
+WHERE cd.Horsepower != 'NA' -- exclude non-numeric 'Horsepower' values
+ORDER BY CAST(cd.Horsepower AS INTEGER) ASC -- cast Horsepower to an integer for proper comparison
+LIMIT 1;
+
+time taken with running model query: 0.00018477439880371094 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 1) vs target results (length 1) is -1.0
+
+===================================
+
+PASSING SYSTEM KNOWLEDGE:Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.
+CREATE TABLE "continents" ( 
+	"ContId" INTEGER PRIMARY KEY, 
+	"Continent" TEXT 
+)
+Example row for "continents" : (1, 'america')
+CREATE TABLE "countries" (
+	"CountryId" INTEGER PRIMARY KEY, 
+	"CountryName" TEXT, 
+	"Continent" INTEGER,
+	FOREIGN KEY (Continent) REFERENCES continents(ContId)
+)
+Example row for "countries" : (1, 'usa', 1)
+CREATE TABLE "car_makers" ( 
+	"Id" INTEGER PRIMARY KEY, 
+	"Maker" TEXT, 
+	"FullName" TEXT, 
+	"Country" TEXT,
+	FOREIGN KEY (Country) REFERENCES countries(CountryId)
+)
+Example row for "car_makers" : (1, 'amc', 'American Motor Company', '1')
+CREATE TABLE "model_list" ( 
+	"ModelId" INTEGER PRIMARY KEY, 
+	"Maker" INTEGER, 
+	"Model" TEXT UNIQUE,
+	FOREIGN KEY (Maker) REFERENCES car_makers (Id)
+
+)
+Example row for "model_list" : (1, 1, 'amc')
+CREATE TABLE "car_names" ( 
+	"MakeId" INTEGER PRIMARY KEY, 
+	"Model" TEXT, 
+	"Make" TEXT,
+	FOREIGN KEY (Model) REFERENCES model_list (Model)
+)
+Example row for "car_names" : (1, 'chevrolet', 'chevrolet chevelle malibu')
+CREATE TABLE "cars_data" (
+	"Id" INTEGER PRIMARY KEY, 
+	"MPG" TEXT, 
+	"Cylinders" INTEGER, 
+	"Edispl" REAL, 
+	"Horsepower" TEXT, 
+	"Weight" INTEGER, 
+	"Accelerate" REAL, 
+	"Year" INTEGER,
+	FOREIGN KEY (Id) REFERENCES car_names (MakeId)
+)
+Example row for "cars_data" : (1, '18', 8, 307.0, '130', 3504, 12.0, 1970)
+
+PASSING USER PROMPT: Which distinct car models are the produced after 1980 ?
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 479
+MODEL'S ANSWER: To retrieve the distinct car models that were produced after 1980, we need to join the `cars_data` table with the `car_names` table. We will filter the results using the `Year` column in the `cars_data` table to include only those records where the `Year` is greater than 1980. Here is the SQL query to achieve this:
+
+```sql
+SELECT DISTINCT c.Model
+FROM car_names AS c
+JOIN cars_data AS d ON c.MakeId = d.Id
+WHERE d.Year > 1980;
+```
+
+This query first joins the `car_names` and `cars_data` tables on their common `MakeId` / `Id` columns. It then filters to only get the rows where the `Year` is greater than 1980 and selects distinct `Model` names from the `car_names` table. The DISTINCT keyword ensures that each model is listed only once in the result set. 
+(took 24.874316692352295 seconds)
+
+
+time taken with running expected query: 0.0004508495330810547 seconds
+RUNNING SQL QUERY(S) FROM MODEL:
+
+SELECT DISTINCT c.Model
+FROM car_names AS c
+JOIN cars_data AS d ON c.MakeId = d.Id
+WHERE d.Year > 1980;
+
+time taken with running model query: 0.000118255615234375 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 21) vs target results (length 21) is 1.0
+
+===================================
+

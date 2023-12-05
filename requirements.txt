@@ -1,4 +1,5 @@
 openai
+python-dotenv
 requests
 sentence_transformers
 tiktoken

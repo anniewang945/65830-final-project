@@ -1,7 +1,12 @@
-from model import Model, GPT_4
-from utils import num_tokens_from_string, compare_accuracy
 import sqlite3
 import time
+
+from dotenv import load_dotenv
+load_dotenv()
+
+from model import GPT_4, Model
+from utils import compare_accuracy, num_tokens_from_string
+
 
 # Extract database descriptions
 db_and_descriptions = dict()
@@ -39,6 +44,9 @@ for l in questions.readlines():
         for r in schema_results:
             for s in r:
                 schema += s
+                table_name = s[len("CREATE TABLE "):s.find("(")]
+                schema_results = c.execute("SELECT * FROM {} LIMIT 1".format(table_name)).fetchone()
+                schema += "\nExample row for {}: {}\n".format(table_name, schema_results)
         # print("Question: {}\nSchema: {}".format(question, schema))
         questions_and_tables[question] = table
         if table not in table_and_schemas:
@@ -53,7 +61,7 @@ for l in questions.readlines():
 for q, t in zip(questions_and_tables, target_queries):
     # add more context to schema if needed
     table = questions_and_tables[q]
-    system_knowledge = "Given the following SQL tables schemas, your job is to write queries given a user’s request.\n" + table_and_schemas[table] + "\n\nThe following paragraphs further describe the database.\n" + db_and_descriptions[table]
+    system_knowledge = "Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.\n" + table_and_schemas[table]
     user_prompt = q
 
     print("passing system knowledge:".upper() + system_knowledge)
@@ -107,4 +115,3 @@ for q, t in zip(questions_and_tables, target_queries):
         print("error running sql query: ".upper(), e)
 
     print("===================================\n")
-
