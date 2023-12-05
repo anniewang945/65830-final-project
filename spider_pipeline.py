@@ -62,6 +62,7 @@ for q, t in zip(questions_and_tables, target_queries):
     # add more context to schema if needed
     table = questions_and_tables[q]
     system_knowledge = "Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.\n" + table_and_schemas[table]
+    system_knowledge += "\n\nThe following paragraphs further describe the database.\n" + db_and_descriptions[table]
     user_prompt = q
 
     print("passing system knowledge:".upper() + system_knowledge)
