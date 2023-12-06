@@ -156,3 +156,16 @@ WHERE
 Note that the statement considers all stations and lines independently and not as a combined unit. If you want the maximum total offs from any station, regardless of line or direction, this should work.
 
 error running sql query: near "Note": syntax error
+===============
+total number of tokens in the current prompt:491
+
+Generated query:
+SELECT tp.day_type, tp.period_start_time, rr.season, rr.line_id, st.station_name, rr.total_offs 
+FROM rail_ridership rr 
+JOIN stations st ON rr.station_id = st.station_id 
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id 
+WHERE rr.total_offs = (SELECT MAX(total_offs) FROM rail_ridership);
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 4.357209205627441 seconds
