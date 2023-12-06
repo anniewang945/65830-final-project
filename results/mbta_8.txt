@@ -1,140 +1,191 @@
 ===============
-total number of tokens in the current prompt:429
+total number of tokens in the current prompt:514
 
 Generated query:
 
-SELECT s.station_name AS station_name, 
-       r.route_id AS route_id,
-       r.line_id AS line_id,
-       subq.route_cnt AS total_number_of_routes
-FROM stations s
-JOIN routes r ON s.station_id = r.first_station_id OR s.station_id = r.last_station_id
-JOIN (SELECT station_id, COUNT(route_id) AS route_cnt
-      FROM routes
-      GROUP BY station_id) subq
-ON s.station_id = subq.station_id
-ORDER BY r.line_id, r.route_id;
-
-
-===============
-total number of tokens in the current prompt:429
-
-Generated query:
-
-SELECT s.station_name AS station_name, r.route_id AS route_id, r.line_id AS line_id, route_cnt
-FROM stations s
-JOIN routes r ON s.station_id = r.first_station_id OR s.station_id = r.last_station_id
-JOIN (
-    SELECT station_id, COUNT(route_id) AS route_cnt
-    FROM (
-        SELECT first_station_id AS station_id, route_id FROM routes
-        UNION ALL
-        SELECT last_station_id AS station_id, route_id FROM routes
-    )
-    GROUP BY station_id
-) AS sub ON s.station_id = sub.station_id
-WHERE route_cnt = (
-    SELECT MAX(route_cnt) FROM (
-        SELECT station_id, COUNT(route_id) AS route_cnt
-        FROM (
-            SELECT first_station_id AS station_id, route_id FROM routes
-            UNION ALL
-            SELECT last_station_id AS station_id, route_id FROM routes
-        )
-        GROUP BY station_id
-    )
-)
-ORDER BY line_id ASC, route_id ASC;
-
-
-Accuracy of test results (length 12) vs target results (length 12) is -1.0, 24 incorrect
-
-time taken: 3.6044468879699707 seconds
-===============
-total number of tokens in the current prompt:429
-
-Generated query:
-
-SELECT s.station_name, r.route_id, r.line_id, max_routes.route_cnt
-FROM stations s
-JOIN routes r ON s.station_id = r.first_station_id OR s.station_id = r.last_station_id
-JOIN (SELECT station_id, COUNT(route_id) AS route_cnt 
-      FROM routes 
-      GROUP BY station_id
-      HAVING COUNT(route_id) = (SELECT MAX(route_count) 
-                                FROM (SELECT station_id, COUNT(route_id) AS route_count 
-                                      FROM routes 
-                                      GROUP BY station_id)
-                                )
-     ) max_routes ON s.station_id = max_routes.station_id
-ORDER BY r.line_id, r.route_id;
-
-
-===============
-total number of tokens in the current prompt:429
-
-Generated query:
-
-SELECT 
-  s.station_name AS station_name,
-  r.route_id AS route_id,
-  r.line_id AS line_id,
-  t.route_cnt AS total_routes_passing
-FROM stations s
-JOIN routes r ON s.station_id = r.first_station_id OR s.station_id = r.last_station_id
-JOIN (
-  SELECT 
-    station_id, 
-    COUNT(route_id) AS route_cnt
+WITH orange_line_stations AS (
+  SELECT station_id
   FROM routes
-  GROUP BY station_id
-  HAVING route_cnt = (
-    SELECT MAX(r_count)
-    FROM (
-      SELECT COUNT(route_id) AS r_count
+  WHERE line_id = 'Orange'
+),
+orange_line_fall_ridership AS (
+  SELECT rr.station_id, rr.total_ons, rr.season, rr.time_period_id, rr.direction
+  FROM rail_ridership rr
+  JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+  WHERE rr.line_id = 'Orange'
+  AND rr.season = 'Fall 2018'
+  AND tp.time_period_id = '01'
+  AND rr.direction = 0
+),
+orange_line_avg_ons AS (
+  SELECT rr.time_period_id, rr.direction, AVG(rr.total_ons) AS avg_ons
+  FROM rail_ridership rr
+  WHERE rr.line_id = 'Orange'
+  GROUP BY rr.time_period_id, rr.direction
+)
+SELECT s.station_name, r.total_ons
+FROM orange_line_stations s
+JOIN orange_line_fall_ridership r ON s.station_id = r.station_id
+JOIN orange_line_avg_ons a ON r.time_period_id = a.time_period_id AND r.direction = a.direction
+WHERE r.total_ons > a.avg_ons
+ORDER BY r.total_ons DESC, s.station_name ASC;
+
+
+error running sql query: no such column: station_id
+===============
+total number of tokens in the current prompt:514
+
+Generated query:
+SELECT s.station_name, rr.total_ons
+FROM rail_ridership rr
+JOIN stations s ON rr.station_id = s.station_id
+WHERE rr.line_id = 'Orange' 
+  AND rr.season = 'Fall 2018' 
+  AND rr.time_period_id = '01' 
+  AND rr.direction = 0 
+  AND rr.total_ons > (SELECT AVG(rr2.total_ons) 
+                      FROM rail_ridership rr2 
+                      WHERE rr2.season = rr.season 
+                        AND rr2.time_period_id = rr.time_period_id 
+                        AND rr2.direction = rr.direction 
+                        AND rr2.line_id = rr.line_id)
+ORDER BY rr.total_ons DESC, s.station_name ASC;
+
+Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
+
+time taken: 2.3224918842315674 seconds
+===============
+total number of tokens in the current prompt:514
+
+Generated query:
+
+WITH avg_ons AS (
+  SELECT season, line_id, direction, time_period_id, AVG(total_ons) AS avg_ons
+  FROM rail_ridership
+  WHERE season = 'Fall 2018' AND line_id = 'Orange Line' AND direction = 0 AND time_period_id = '01'
+  GROUP BY season, line_id, direction, time_period_id
+)
+SELECT s.station_name, r.total_ons
+FROM rail_ridership r
+JOIN stations s ON r.station_id = s.station_id
+JOIN avg_ons a ON r.season = a.season AND r.line_id = a.line_id AND r.direction = a.direction AND r.time_period_id = a.time_period_id
+WHERE r.season = 'Fall 2018' AND r.line_id = 'Orange Line' AND r.direction = 0 AND r.time_period_id = '01' AND r.total_ons > a.avg_ons
+ORDER BY r.total_ons DESC, s.station_name ASC;
+
+
+Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
+
+time taken: 3.980386734008789 seconds
+===============
+total number of tokens in the current prompt:514
+
+Generated query:
+
+WITH average_ons AS (
+  SELECT 
+    season, 
+    line_id, 
+    time_period_id, 
+    direction, 
+    AVG(total_ons) AS avg_ons 
+  FROM rail_ridership 
+  WHERE season = 'Fall 2018' 
+  AND line_id = 'Orange' 
+  AND direction = 0 
+  GROUP BY season, line_id, time_period_id, direction
+)
+SELECT 
+  s.station_name, 
+  r.total_ons
+FROM rail_ridership r
+JOIN stations s ON r.station_id = s.station_id
+JOIN average_ons a ON r.season = a.season 
+  AND r.line_id = a.line_id 
+  AND r.time_period_id = a.time_period_id 
+  AND r.direction = a.direction 
+WHERE r.season = 'Fall 2018' 
+AND r.line_id = 'Orange' 
+AND r.time_period_id = '01' 
+AND r.direction = 0 
+AND r.total_ons > a.avg_ons 
+ORDER BY r.total_ons DESC, s.station_name ASC;
+
+
+Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
+
+time taken: 3.286773920059204 seconds
+===============
+total number of tokens in the current prompt:514
+
+Generated query:
+
+WITH orange_line_stations AS (
+  SELECT station_id
+  FROM stations
+  WHERE station_id IN (
+    SELECT station_id
+    FROM station_orders
+    WHERE route_id = (
+      SELECT route_id
       FROM routes
-      GROUP BY station_id
+      WHERE line_id = 'ORANGE'
     )
   )
-) t ON s.station_id = t.station_id
-ORDER BY line_id, route_id;
-
-
-===============
-total number of tokens in the current prompt:429
-
-Generated query:
-
-SELECT s.station_name, r.route_id, r.line_id, subq.route_cnt
-FROM stations s
-JOIN routes r ON r.first_station_id = s.station_id OR r.last_station_id = s.station_id
-JOIN (SELECT station_id, COUNT(route_id) AS route_cnt
-      FROM routes
-      GROUP BY station_id) subq ON subq.station_id = s.station_id
-ORDER BY r.line_id ASC, r.route_id ASC;
-
-
-error running sql query: no such column: station_id
-===============
-total number of tokens in the current prompt:429
-
-Generated query:
-
-SELECT s.station_name, r.route_id, r.line_id, r.route_cnt
-FROM (
-    SELECT station_id, COUNT(route_id) AS route_cnt
-    FROM station_orders
-    GROUP BY station_id
-    ORDER BY route_cnt DESC
-    LIMIT 1
-) AS max_routes
-JOIN stations s ON s.station_id = max_routes.station_id
+)
+SELECT s.station_name, r.total_ons
+FROM rail_ridership r
+JOIN stations s ON r.station_id = s.station_id
+JOIN time_periods t ON r.time_period_id = t.time_period_id
 JOIN (
-    SELECT station_id, route_id, line_id
-    FROM routes
-) AS r 
-ON r.station_id = max_routes.station_id
-ORDER BY r.line_id, r.route_id;
+  SELECT season, time_period_id
+  FROM rail_ridership
+  WHERE season = 'Fall 2018'
+  GROUP BY season, time_period_id
+) AS avg_ridership ON r.season = avg_ridership.season AND r.time_period_id = avg_ridership.time_period_id
+WHERE r.line_id = 'ORANGE'
+  AND r.season = 'Fall 2018'
+  AND r.direction = 0
+  AND r.station_id IN (SELECT station_id FROM orange_line_stations)
+  AND r.total_ons > (
+    SELECT AVG(r.total_ons)
+    FROM rail_ridership r
+    WHERE r.season = 'Fall 2018' AND r.time_period_id = r.time_period_id AND r.direction = 0 AND r.line_id = 'ORANGE'
+  )
+ORDER BY r.total_ons DESC, s.station_name ASC;
 
 
-error running sql query: no such column: station_id
+Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
+
+time taken: 4.917932033538818 seconds
+===============
+total number of tokens in the current prompt:514
+
+Generated query:
+
+WITH OrangeLineStations AS (
+  SELECT s.station_id
+  FROM stations s
+  JOIN station_orders so ON s.station_id = so.station_id
+  JOIN routes r ON so.route_id = r.route_id
+  WHERE r.line_id = 'Orange'
+)
+SELECT s.station_name, rr.total_ons
+FROM rail_ridership rr
+JOIN OrangeLineStations ols ON rr.station_id = ols.station_id
+JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
+WHERE rr.season = 'Fall 2018'
+AND rr.line_id = 'Orange'
+AND rr.direction = 0
+AND rr.total_ons > (
+  SELECT AVG(total_ons)
+  FROM rail_ridership
+  WHERE season = 'Fall 2018'
+  AND line_id = 'Orange'
+  AND direction = 0
+  AND time_period_id = '01'
+)
+AND tp.time_period_id = '01'
+ORDER BY rr.total_ons DESC, s.station_name ASC;
+
+
+error running sql query: no such column: s.station_name

@@ -23,7 +23,7 @@ for i in range(len(user_prompts)):
     test_query = answer.removeprefix("```sql").removesuffix("```")
 
     try:
-        with open(f"annie/results/mbta_{i}.txt", "a") as f:
+        with open(f"results/mbta_{i+1}.txt", "a+") as f:
             f.write("===============\n")
             f.write(
                 "total number of tokens in the current prompt:"
@@ -36,6 +36,6 @@ for i in range(len(user_prompts)):
             f.write(compare_accuracy(test_result, target_result) + "\n\n")
             f.write(f"time taken: {end - start} seconds\n")
     except Exception as e:
-        with open("annie/results/mbta_" + str(i) + ".txt", "a") as f:
+        with open(f"results/mbta_{str(i+1)}.txt", "a+") as f:
             f.write(f"error running sql query: {e}\n")
         print("error running sql query: ", e)

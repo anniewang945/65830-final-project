@@ -1,0 +1,195 @@
+===============
+total number of tokens in the current prompt:598
+
+Generated query:
+
+WITH station_flows AS (
+  SELECT 
+    s.station_id,
+    s.station_name,
+    l.line_name,
+    r.direction,
+    SUM(CAST(rr.average_flow AS REAL)) AS total_flow,
+    SUM(rr.average_ons + rr.average_offs) AS total_bypassed
+  FROM stations s
+  JOIN station_orders so ON s.station_id = so.station_id
+  JOIN routes r ON so.route_id = r.route_id
+  JOIN lines l ON r.line_id = l.line_id
+  JOIN rail_ridership rr ON r.direction = rr.direction AND r.line_id = rr.line_id AND s.station_id = rr.station_id AND season = 'Fall 2019'
+  GROUP BY s.station_id, l.line_name, r.direction
+),
+station_ratios AS (
+  SELECT 
+    station_id,
+    station_name,
+    line_name,
+    direction,
+    (total_flow - total_bypassed) / total_flow AS bypassed_ratio
+  FROM station_flows
+)
+SELECT 
+  station_name,
+  line_name,
+  bypassed_ratio
+FROM station_ratios
+WHERE bypassed_ratio = (SELECT MAX(bypassed_ratio) FROM station_ratios sr WHERE sr.line_name = station_ratios.line_name)
+ORDER BY line_name;
+
+
+Accuracy of test results (length 4) vs target results (length 4) is -1.0, 8 incorrect
+
+time taken: 4.836545944213867 seconds
+===============
+total number of tokens in the current prompt:598
+
+Generated query:
+
+WITH station_flow AS (
+  SELECT 
+    rr.line_id,
+    rr.station_id,
+    SUM(CAST(rr.average_flow AS REAL)) AS total_flow,
+    SUM(rr.average_ons) + SUM(rr.average_offs) AS total_bypassed
+  FROM rail_ridership rr
+  WHERE rr.season = 'Fall 2019'
+  GROUP BY rr.line_id, rr.station_id
+)
+SELECT 
+  s.station_name,
+  l.line_name,
+  (total_flow - total_bypassed) / total_flow AS bypassed_ratio
+FROM station_flow sf
+JOIN stations s ON sf.station_id = s.station_id
+JOIN lines l ON sf.line_id = l.line_id
+ORDER BY l.line_name;
+
+
+Accuracy of test results (length 119) vs target results (length 4) is -27.75, 115 incorrect
+
+time taken: 2.4009740352630615 seconds
+===============
+total number of tokens in the current prompt:598
+
+Generated query:
+
+SELECT l.line_name, s.station_name, 
+  CAST(SUM(rr.average_flow) AS REAL) as total_flow, 
+  CAST(SUM(rr.average_ons + rr.average_offs) AS REAL) as total_bypassed, 
+  (CAST(SUM(rr.average_flow) AS REAL) - CAST(SUM(rr.average_ons + rr.average_offs) AS REAL)) / CAST(SUM(rr.average_flow) AS REAL) as bypassed_ratio
+FROM lines l
+JOIN rail_ridership rr ON l.line_id = rr.line_id
+JOIN stations s ON rr.station_id = s.station_id
+WHERE rr.season = 'Fall 2019'
+GROUP BY l.line_name, s.station_name
+ORDER BY l.line_name ASC;
+
+
+Accuracy of test results (length 119) vs target results (length 4) is -29.75, 123 incorrect
+
+time taken: 2.940049886703491 seconds
+===============
+total number of tokens in the current prompt:598
+
+Generated query:
+
+WITH bypassed_ratio AS (
+  SELECT 
+    r.line_id, 
+    s.station_name, 
+    ((SUM(CAST(r.average_flow AS REAL)) - (SUM(r.average_ons) + SUM(r.average_offs))) / SUM(CAST(r.average_flow AS REAL))) AS bypass_ratio
+  FROM rail_ridership r
+  JOIN stations s ON r.station_id = s.station_id
+  WHERE r.season = 'Fall 2019'
+  GROUP BY r.line_id, s.station_name
+)
+SELECT 
+  b.line_id, 
+  b.station_name, 
+  b.bypass_ratio AS maximally_bypassed_ratio
+FROM bypassed_ratio b
+INNER JOIN (
+  SELECT 
+    line_id, 
+    MAX(bypass_ratio) AS max_ratio
+  FROM bypassed_ratio
+  GROUP BY line_id
+) max_bypass_ratio ON b.line_id = max_bypass_ratio.line_id AND b.bypass_ratio = max_bypass_ratio.max_ratio
+INNER JOIN lines l ON b.line_id = l.line_id
+ORDER BY l.line_name;
+
+
+Accuracy of test results (length 4) vs target results (length 4) is -1.0, 8 incorrect
+
+time taken: 3.6859757900238037 seconds
+===============
+total number of tokens in the current prompt:598
+
+Generated query:
+
+WITH bypassed_ratios AS (
+  SELECT 
+    rr.line_id,
+    s.station_id,
+    s.station_name,
+    CAST(SUM(rr.average_flow) AS REAL) AS total_flow,
+    SUM(rr.average_ons) + SUM(rr.average_offs) AS total_bypassed,
+    (CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.average_ons) + SUM(rr.average_offs))) / CAST(SUM(rr.average_flow) AS REAL) AS bypassed_ratio
+  FROM rail_ridership rr
+  JOIN stations s ON rr.station_id = s.station_id
+  WHERE rr.season = 'Fall 2019'
+  GROUP BY rr.line_id, s.station_id, s.station_name
+)
+SELECT 
+  br.line_id,
+  l.line_name,
+  br.station_name,
+  br.bypassed_ratio
+FROM bypassed_ratios br
+JOIN lines l ON br.line_id = l.line_id
+WHERE br.bypassed_ratio = (
+  SELECT MAX(bypassed_ratio) 
+  FROM bypassed_ratios 
+  WHERE line_id = br.line_id
+)
+ORDER BY l.line_name;
+
+
+Accuracy of test results (length 4) vs target results (length 4) is -1.0, 8 incorrect
+
+time taken: 3.4764151573181152 seconds
+===============
+total number of tokens in the current prompt:598
+
+Generated query:
+
+WITH station_bypass_ratio AS (
+  SELECT 
+    rr.line_id,
+    s.station_name,
+    ((CAST(SUM(rr.average_flow) AS REAL) - (CAST(SUM(rr.average_ons) AS REAL) + CAST(SUM(rr.average_offs) AS REAL))) / CAST(SUM(rr.average_flow) AS REAL)) AS bypass_ratio
+  FROM 
+    rail_ridership rr
+  JOIN 
+    stations s ON rr.station_id = s.station_id
+  WHERE 
+    rr.season = 'Fall 2019'
+  GROUP BY 
+    rr.line_id, 
+    s.station_name
+)
+SELECT 
+  sbr.line_id,
+  sbr.station_name,
+  sbr.bypass_ratio,
+  l.line_name
+FROM 
+  station_bypass_ratio sbr
+JOIN 
+  lines l ON sbr.line_id = l.line_id
+ORDER BY 
+  l.line_name;
+
+
+Accuracy of test results (length 119) vs target results (length 4) is -29.75, 123 incorrect
+
+time taken: 3.2030599117279053 seconds
