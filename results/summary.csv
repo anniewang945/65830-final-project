@@ -1,16 +1,16 @@
-query, attempt_1, attempt_2, attempt_3, average, notes
-1, 1, 1, 1, 1, NA
-2, 1, 1, 1, 1, NA
-3, 1, 1, 0, 1, NA
-4, 1, 0, 1, 1, NA
-5, 1, 1, 1, 1, NA
-6, 1, 1, 1, 1, NA
-7, .8, 1, .8, 1, NA
-8, 1, 1, 1, 1, NA
-9, 1, 1, 1, 1, NA
-10, 1, 1, 1, 1, NA
-11, 1, 0, 1, 1, NA
-12, 0, 0, 0, 1, NA
-13, 0, 0, 0, 1, NA
-14, 0, 0, 0, 1, NA
-15, 1, 1, 0, 1, NA
+query,  attempt_1,  attempt_2, attempt_3, average, notes
+1,              1,          1,          1,      1, NA
+2,              1,          1,          1,      1, NA
+3,              1,          1,          1,      1, NA
+4,              1,          1,          0,      1, "Attempt 3 overcomplicated the queries and included an unnecessary alias and extra columns both the select and group by clauses."
+5,              1,          1,          1,      1, NA
+6,              1,          1,          1,      1, NA
+7,              1,          1,          1,    0.8, "Attempt 3 was extremely close, but chose to do a left join instead of an inner join."
+8,              1,          1,          1,      1, NA
+9,              1,          1,          1,      1, NA
+11,             1,          1,          1,      1, NA
+11,             1,          1,          1,      1, NA
+12,             1,          0,          1,      1, NA
+13,             0,          0,          1,      0, "Results are correct but columns are out of expected order."
+14,             0,          0,          1,      0, "Results are correct but columns are out of expected order."
+15,             1,          1,          1,      1, NA
