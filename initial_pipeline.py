@@ -12,7 +12,7 @@ mbta_db = 'mbta.sqlite' # replace with your path to mbta
 conn = sqlite3.connect(mbta_db)
 c = conn.cursor()
 
-results_dir = 'results_db_description/'
+results_dir = 'results_db_desc_w_example_row/'
 if not os.path.exists(results_dir):
   os.mkdir(results_dir)
 
@@ -21,7 +21,8 @@ for i in range(0, 10):
   user_prompt = user_prompts[i]
   target_query = target_queries[i]
 
-  out_str = f"Testing prompt {i}:\n" + user_prompt + "\n\n"
+  out_str = f"System knowledge: {system_knowledge}\n\n"
+  out_str += f"Testing prompt {i}:\n" + user_prompt + "\n\n"
   out_str += "total number of tokens: ".upper() + str(num_tokens_from_string(system_knowledge + user_prompt)) + '\n\n'
   print_and_append(results_path, out_str)
 

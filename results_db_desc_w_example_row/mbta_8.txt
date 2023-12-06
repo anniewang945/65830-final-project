@@ -1,0 +1,534 @@
+System knowledge: Given the following information, your job is to write SQL queries given a user’s request.
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+The SQL table schemas of the database are shown below with an example row from each table.
+CREATE TABLE routes (
+  route_id INTEGER,
+  line_id TEXT,
+  first_station_id TEXT,
+  last_station_id TEXT,
+  direction INTEGER,
+  direction_desc TEXT,
+  route_name TEXT,
+  PRIMARY KEY (route_id)
+);
+CREATE TABLE gated_station_entries (
+  service_date TEXT,
+  time TEXT,
+  station_id TEXT,
+  line_id TEXT,
+  gated_entries REAL,
+  PRIMARY KEY (service_date, time, station_id, line_id)
+);
+CREATE TABLE lines (
+  line_id TEXT,
+  line_name TEXT,
+  PRIMARY KEY (line_id)
+);
+CREATE TABLE stations (
+  station_id TEXT,
+  station_name TEXT,
+  PRIMARY KEY (station_id)
+);
+CREATE TABLE station_orders (
+  route_id INTEGER,
+  station_id TEXT,
+  stop_order INTEGER,
+  distance_from_last_station_miles REAL,
+  PRIMARY KEY (route_id, station_id)
+);
+CREATE TABLE rail_ridership (
+  season TEXT,
+  line_id TEXT,
+  direction INTEGER,
+  time_period_id TEXT,
+  station_id TEXT,
+  total_ons INTEGER,
+  total_offs INTEGER,
+  number_service_days INTEGER,
+  average_ons INTEGER,
+  average_offs INTEGER,
+  average_flow INTEGER,
+  PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
+);
+CREATE TABLE time_periods (
+  time_period_id TEXT,
+  day_type TEXT,
+  time_period TEXT,
+  period_start_time TEXT,
+  period_end_time TEXT,
+  PRIMARY KEY (time_period_id)
+);
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
+
+
+Testing prompt 8:
+Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1270
+
+Model's answer:
+To find the station with the most number of routes passing through it, we must first calculate the number of unique routes passing through each station, and then find the maximum. The SQL query below should perform these operations:
+
+```sql
+WITH StationRouteCounts AS (
+    SELECT 
+        stations.station_name, 
+        station_orders.route_id, 
+        routes.line_id,
+        COUNT(DISTINCT station_orders.route_id) OVER (PARTITION BY stations.station_id) as route_count
+    FROM 
+        station_orders 
+    JOIN 
+        routes ON station_orders.route_id = routes.route_id
+    JOIN 
+        stations ON station_orders.station_id = stations.station_id
+),
+
+MaxRoutes AS (
+    SELECT 
+        station_name,
+        route_id,
+        line_id,
+        route_count
+    FROM 
+        StationRouteCounts
+    WHERE 
+        route_count = (SELECT MAX(route_count) FROM StationRouteCounts)
+)
+
+SELECT 
+    station_name,
+    route_id,
+    line_id,
+    route_count as total_number_of_routes
+FROM 
+    MaxRoutes
+ORDER BY 
+    line_id ASC,
+    route_id ASC;
+```
+
+This query starts with a common table expression `StationRouteCounts` to count the number of distinct routes that pass through each station, along with the station name and the line ID.
+
+The second common table expression `MaxRoutes` uses that count to identify the station(s) with the maximum number of routes.
+
+The outer `SELECT` then provides the results sorted by `line_id` and `route_id` as requested. Please note that if multiple stations tie for the most number of routes, this query will return all such stations.
+
+TIME TAKEN TO GENERATE ANSWER: 30.174825191497803 seconds
+===================================
+Target query:
+WITH aggr_routes_by_stations AS (
+    SELECT station_id, COUNT(route_id) AS num_routes
+    FROM station_orders
+    GROUP BY station_id
+),
+max_routes_stations AS (
+    SELECT station_id, num_routes
+    FROM aggr_routes_by_stations
+    WHERE num_routes = (SELECT MAX(num_routes) FROM aggr_routes_by_stations)
+)
+SELECT station_name, routes.route_id, line_id, num_routes
+FROM max_routes_stations
+JOIN stations
+ON max_routes_stations.station_id = stations.station_id
+JOIN station_orders
+ON max_routes_stations.station_id = station_orders.station_id
+JOIN routes
+ON station_orders.route_id = routes.route_id
+ORDER BY line_id, routes.route_id;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0023369789123535156 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH StationRouteCounts AS (
+    SELECT 
+        stations.station_name, 
+        station_orders.route_id, 
+        routes.line_id,
+        COUNT(DISTINCT station_orders.route_id) OVER (PARTITION BY stations.station_id) as route_count
+    FROM 
+        station_orders 
+    JOIN 
+        routes ON station_orders.route_id = routes.route_id
+    JOIN 
+        stations ON station_orders.station_id = stations.station_id
+),
+
+MaxRoutes AS (
+    SELECT 
+        station_name,
+        route_id,
+        line_id,
+        route_count
+    FROM 
+        StationRouteCounts
+    WHERE 
+        route_count = (SELECT MAX(route_count) FROM StationRouteCounts)
+)
+
+SELECT 
+    station_name,
+    route_id,
+    line_id,
+    route_count as total_number_of_routes
+FROM 
+    MaxRoutes
+ORDER BY 
+    line_id ASC,
+    route_id ASC;
+
+
+error running sql query: DISTINCT is not supported for window functions
+
+==========END OF TEST==========
+
+System knowledge: Given the following information, your job is to write SQL queries given a user’s request.
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+The SQL table schemas of the database are shown below with an example row from each table.
+CREATE TABLE routes (
+  route_id INTEGER,
+  line_id TEXT,
+  first_station_id TEXT,
+  last_station_id TEXT,
+  direction INTEGER,
+  direction_desc TEXT,
+  route_name TEXT,
+  PRIMARY KEY (route_id)
+);
+CREATE TABLE gated_station_entries (
+  service_date TEXT,
+  time TEXT,
+  station_id TEXT,
+  line_id TEXT,
+  gated_entries REAL,
+  PRIMARY KEY (service_date, time, station_id, line_id)
+);
+CREATE TABLE lines (
+  line_id TEXT,
+  line_name TEXT,
+  PRIMARY KEY (line_id)
+);
+CREATE TABLE stations (
+  station_id TEXT,
+  station_name TEXT,
+  PRIMARY KEY (station_id)
+);
+CREATE TABLE station_orders (
+  route_id INTEGER,
+  station_id TEXT,
+  stop_order INTEGER,
+  distance_from_last_station_miles REAL,
+  PRIMARY KEY (route_id, station_id)
+);
+CREATE TABLE rail_ridership (
+  season TEXT,
+  line_id TEXT,
+  direction INTEGER,
+  time_period_id TEXT,
+  station_id TEXT,
+  total_ons INTEGER,
+  total_offs INTEGER,
+  number_service_days INTEGER,
+  average_ons INTEGER,
+  average_offs INTEGER,
+  average_flow INTEGER,
+  PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
+);
+CREATE TABLE time_periods (
+  time_period_id TEXT,
+  day_type TEXT,
+  time_period TEXT,
+  period_start_time TEXT,
+  period_end_time TEXT,
+  PRIMARY KEY (time_period_id)
+);
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
+
+
+Testing prompt 8:
+Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1270
+
+Model's answer:
+To find the station with the most number of routes passing through it, we need to count the number of distinct routes for each station, and then find the station with the maximum count. We'll use the `station_orders` table to identify the routes passing through each station and join it with the `stations` and `routes` tables to get the required details.
+
+The SQL query will be:
+
+```sql
+SELECT
+    stn.station_name,
+    r.route_id,
+    r.line_id,
+    COUNT(DISTINCT r.route_id) OVER (PARTITION BY stn.station_id) AS total_routes
+FROM
+    station_orders so
+JOIN
+    stations stn ON so.station_id = stn.station_id
+JOIN
+    routes r ON so.route_id = r.route_id
+GROUP BY
+    stn.station_id, stn.station_name, r.route_id, r.line_id
+ORDER BY
+    total_routes DESC, r.line_id ASC, r.route_id ASC
+LIMIT 1;
+```
+
+Since the prompt asks for the station with the most number of routes passing through it, we're using a window function `COUNT(DISTINCT r.route_id) OVER (PARTITION BY stn.station_id)` to calculate the number of routes for each station across all of its rows. We sort the results first by the calculated `total_routes` in descending order, then by `r.line_id` in ascending order, and finally by `route_id` in ascending order, and we limit the results to just the first row with the maximum number of routes.
+
+Please note that because the example query requests the station with the most number of routes, we expect only one such station to be produced, and `LIMIT 1` is used to ensure only the top station is returned. If there are ties for the most number of routes among stations, only one will be shown due to `LIMIT 1`. To account for possible ties and display all tied stations, the `LIMIT` clause would have to be removed and the windowed count would need to be computed in a subquery or with a common table expression.
+
+TIME TAKEN TO GENERATE ANSWER: 33.886005878448486 seconds
+===================================
+Target query:
+WITH aggr_routes_by_stations AS (
+    SELECT station_id, COUNT(route_id) AS num_routes
+    FROM station_orders
+    GROUP BY station_id
+),
+max_routes_stations AS (
+    SELECT station_id, num_routes
+    FROM aggr_routes_by_stations
+    WHERE num_routes = (SELECT MAX(num_routes) FROM aggr_routes_by_stations)
+)
+SELECT station_name, routes.route_id, line_id, num_routes
+FROM max_routes_stations
+JOIN stations
+ON max_routes_stations.station_id = stations.station_id
+JOIN station_orders
+ON max_routes_stations.station_id = station_orders.station_id
+JOIN routes
+ON station_orders.route_id = routes.route_id
+ORDER BY line_id, routes.route_id;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0013859272003173828 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT
+    stn.station_name,
+    r.route_id,
+    r.line_id,
+    COUNT(DISTINCT r.route_id) OVER (PARTITION BY stn.station_id) AS total_routes
+FROM
+    station_orders so
+JOIN
+    stations stn ON so.station_id = stn.station_id
+JOIN
+    routes r ON so.route_id = r.route_id
+GROUP BY
+    stn.station_id, stn.station_name, r.route_id, r.line_id
+ORDER BY
+    total_routes DESC, r.line_id ASC, r.route_id ASC
+LIMIT 1;
+
+
+error running sql query: DISTINCT is not supported for window functions
+
+==========END OF TEST==========
+
+System knowledge: Given the following information, your job is to write SQL queries given a user’s request.
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+The SQL table schemas of the database are shown below with an example row from each table.
+CREATE TABLE routes (
+  route_id INTEGER,
+  line_id TEXT,
+  first_station_id TEXT,
+  last_station_id TEXT,
+  direction INTEGER,
+  direction_desc TEXT,
+  route_name TEXT,
+  PRIMARY KEY (route_id)
+);
+CREATE TABLE gated_station_entries (
+  service_date TEXT,
+  time TEXT,
+  station_id TEXT,
+  line_id TEXT,
+  gated_entries REAL,
+  PRIMARY KEY (service_date, time, station_id, line_id)
+);
+CREATE TABLE lines (
+  line_id TEXT,
+  line_name TEXT,
+  PRIMARY KEY (line_id)
+);
+CREATE TABLE stations (
+  station_id TEXT,
+  station_name TEXT,
+  PRIMARY KEY (station_id)
+);
+CREATE TABLE station_orders (
+  route_id INTEGER,
+  station_id TEXT,
+  stop_order INTEGER,
+  distance_from_last_station_miles REAL,
+  PRIMARY KEY (route_id, station_id)
+);
+CREATE TABLE rail_ridership (
+  season TEXT,
+  line_id TEXT,
+  direction INTEGER,
+  time_period_id TEXT,
+  station_id TEXT,
+  total_ons INTEGER,
+  total_offs INTEGER,
+  number_service_days INTEGER,
+  average_ons INTEGER,
+  average_offs INTEGER,
+  average_flow INTEGER,
+  PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
+);
+CREATE TABLE time_periods (
+  time_period_id TEXT,
+  day_type TEXT,
+  time_period TEXT,
+  period_start_time TEXT,
+  period_end_time TEXT,
+  PRIMARY KEY (time_period_id)
+);
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
+
+
+Testing prompt 8:
+Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1270
+
+Model's answer:
+To find the station with the most number of routes passing through it, we need to count the distinct routes for each station, and then identify the station with the maximum count. We will join the `station_orders` and `routes` tables to get the route information for each station, and then group by the station ID to count the distinct routes. After that, we will join with the `stations` table to get the station name.
+
+To get the most number of routes passing through a station, we need to perform the following steps:
+
+1. Get a count of distinct `route_id`s for each `station_id` from the `station_orders` table.
+2. Join this aggregated result with the `stations` table to obtain the `station_name`.
+3. Order the result by the highest count of routes first to see the station(s) with the most routes.
+
+Here is the SQL query that performs the above steps:
+
+```sql
+SELECT 
+    s.station_name, 
+    so.route_id, 
+    ro.line_id, 
+    COUNT(DISTINCT so.route_id) AS total_num_routes
+FROM 
+    station_orders so
+JOIN 
+    routes ro ON so.route_id = ro.route_id
+JOIN 
+    stations s ON so.station_id = s.station_id
+GROUP BY 
+    s.station_id
+ORDER BY 
+    total_num_routes DESC,
+    ro.line_id ASC,
+    so.route_id ASC
+LIMIT 1;
+```
+
+Please note that the query only retrieves the top station sorted by `total_num_routes` and then by `line_id` and `route_id`. However the `LIMIT 1` may only return one record, and if more than one station shares the highest count of routes, only one will be shown - the query may need further refinement to accommodate cases with a tie. But since the request asks specifically for the station with the most number of routes, `LIMIT 1` will give us a single answer assuming that there is one distinct winner. 
+
+The actual implementation would depend on SQL dialect and the given database system's features and behaviors. If the database system supports window functions, we might use a different approach to handle ties.
+
+TIME TAKEN TO GENERATE ANSWER: 26.720052003860474 seconds
+===================================
+Target query:
+WITH aggr_routes_by_stations AS (
+    SELECT station_id, COUNT(route_id) AS num_routes
+    FROM station_orders
+    GROUP BY station_id
+),
+max_routes_stations AS (
+    SELECT station_id, num_routes
+    FROM aggr_routes_by_stations
+    WHERE num_routes = (SELECT MAX(num_routes) FROM aggr_routes_by_stations)
+)
+SELECT station_name, routes.route_id, line_id, num_routes
+FROM max_routes_stations
+JOIN stations
+ON max_routes_stations.station_id = stations.station_id
+JOIN station_orders
+ON max_routes_stations.station_id = station_orders.station_id
+JOIN routes
+ON station_orders.route_id = routes.route_id
+ORDER BY line_id, routes.route_id;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0022211074829101562 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+SELECT 
+    s.station_name, 
+    so.route_id, 
+    ro.line_id, 
+    COUNT(DISTINCT so.route_id) AS total_num_routes
+FROM 
+    station_orders so
+JOIN 
+    routes ro ON so.route_id = ro.route_id
+JOIN 
+    stations s ON so.station_id = s.station_id
+GROUP BY 
+    s.station_id
+ORDER BY 
+    total_num_routes DESC,
+    ro.line_id ASC,
+    so.route_id ASC
+LIMIT 1;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0011548995971679688 seconds
+Accuracy of test results (length 1) vs target results (length 12) is 0.08333333333333333
+
+==========END OF TEST==========
+

@@ -1,0 +1,543 @@
+System knowledge: Given the following information, your job is to write SQL queries given a user’s request.
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+The SQL table schemas of the database are shown below with an example row from each table.
+CREATE TABLE routes (
+  route_id INTEGER,
+  line_id TEXT,
+  first_station_id TEXT,
+  last_station_id TEXT,
+  direction INTEGER,
+  direction_desc TEXT,
+  route_name TEXT,
+  PRIMARY KEY (route_id)
+);
+CREATE TABLE gated_station_entries (
+  service_date TEXT,
+  time TEXT,
+  station_id TEXT,
+  line_id TEXT,
+  gated_entries REAL,
+  PRIMARY KEY (service_date, time, station_id, line_id)
+);
+CREATE TABLE lines (
+  line_id TEXT,
+  line_name TEXT,
+  PRIMARY KEY (line_id)
+);
+CREATE TABLE stations (
+  station_id TEXT,
+  station_name TEXT,
+  PRIMARY KEY (station_id)
+);
+CREATE TABLE station_orders (
+  route_id INTEGER,
+  station_id TEXT,
+  stop_order INTEGER,
+  distance_from_last_station_miles REAL,
+  PRIMARY KEY (route_id, station_id)
+);
+CREATE TABLE rail_ridership (
+  season TEXT,
+  line_id TEXT,
+  direction INTEGER,
+  time_period_id TEXT,
+  station_id TEXT,
+  total_ons INTEGER,
+  total_offs INTEGER,
+  number_service_days INTEGER,
+  average_ons INTEGER,
+  average_offs INTEGER,
+  average_flow INTEGER,
+  PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
+);
+CREATE TABLE time_periods (
+  time_period_id TEXT,
+  day_type TEXT,
+  time_period TEXT,
+  period_start_time TEXT,
+  period_end_time TEXT,
+  PRIMARY KEY (time_period_id)
+);
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
+
+
+Testing prompt 7:
+Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1280
+
+Model's answer:
+To address this user request, we'll perform the following steps:
+
+1. Identify the average "total_ons" for all Orange Line stations in Fall 2018, during time_period_01, and in the direction of 0.
+2. Select the station names and "total_ons" values for stations on the Orange Line that exceed this average.
+3. Sort the results by "total_ons" in descending order and then by station_name in ascending order.
+
+Here's the SQL query that encompasses all these steps:
+
+```sql
+WITH AverageOrangeLineOns AS (
+    SELECT AVG(total_ons) AS avg_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+),
+OrangeLineStationsAboveAverage AS (
+    SELECT rr.station_id, rr.total_ons
+    FROM rail_ridership rr, AverageOrangeLineOns ao
+    WHERE rr.season = 'Fall 2018'
+    AND rr.line_id = 'orange'
+    AND rr.time_period_id = 'time_period_01'
+    AND rr.direction = 0
+    AND rr.total_ons > ao.avg_ons
+)
+SELECT s.station_name, olsa.total_ons
+FROM OrangeLineStationsAboveAverage olsa
+JOIN stations s ON olsa.station_id = s.station_id
+ORDER BY olsa.total_ons DESC, s.station_name ASC;
+```
+
+This query uses two common table expressions (CTEs). The first one (AverageOrangeLineOns) calculates the average "total_ons" for the criteria specified. The second one (OrangeLineStationsAboveAverage) retrieves the stations with "total_ons" above that average. These are then joined with the stations table to get the station names and sorted as requested.
+
+TIME TAKEN TO GENERATE ANSWER: 28.853911638259888 seconds
+===================================
+Target query:
+WITH this_ridership AS (
+    SELECT station_id, total_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+)
+SELECT station_name, total_ons
+FROM this_ridership JOIN stations
+ON this_ridership.station_id = stations.station_id
+WHERE total_ons > (SELECT AVG(total_ons) FROM this_ridership)
+ORDER BY total_ons DESC, station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0011446475982666016 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH AverageOrangeLineOns AS (
+    SELECT AVG(total_ons) AS avg_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+),
+OrangeLineStationsAboveAverage AS (
+    SELECT rr.station_id, rr.total_ons
+    FROM rail_ridership rr, AverageOrangeLineOns ao
+    WHERE rr.season = 'Fall 2018'
+    AND rr.line_id = 'orange'
+    AND rr.time_period_id = 'time_period_01'
+    AND rr.direction = 0
+    AND rr.total_ons > ao.avg_ons
+)
+SELECT s.station_name, olsa.total_ons
+FROM OrangeLineStationsAboveAverage olsa
+JOIN stations s ON olsa.station_id = s.station_id
+ORDER BY olsa.total_ons DESC, s.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0003829002380371094 seconds
+Accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+==========END OF TEST==========
+
+System knowledge: Given the following information, your job is to write SQL queries given a user’s request.
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+The SQL table schemas of the database are shown below with an example row from each table.
+CREATE TABLE routes (
+  route_id INTEGER,
+  line_id TEXT,
+  first_station_id TEXT,
+  last_station_id TEXT,
+  direction INTEGER,
+  direction_desc TEXT,
+  route_name TEXT,
+  PRIMARY KEY (route_id)
+);
+CREATE TABLE gated_station_entries (
+  service_date TEXT,
+  time TEXT,
+  station_id TEXT,
+  line_id TEXT,
+  gated_entries REAL,
+  PRIMARY KEY (service_date, time, station_id, line_id)
+);
+CREATE TABLE lines (
+  line_id TEXT,
+  line_name TEXT,
+  PRIMARY KEY (line_id)
+);
+CREATE TABLE stations (
+  station_id TEXT,
+  station_name TEXT,
+  PRIMARY KEY (station_id)
+);
+CREATE TABLE station_orders (
+  route_id INTEGER,
+  station_id TEXT,
+  stop_order INTEGER,
+  distance_from_last_station_miles REAL,
+  PRIMARY KEY (route_id, station_id)
+);
+CREATE TABLE rail_ridership (
+  season TEXT,
+  line_id TEXT,
+  direction INTEGER,
+  time_period_id TEXT,
+  station_id TEXT,
+  total_ons INTEGER,
+  total_offs INTEGER,
+  number_service_days INTEGER,
+  average_ons INTEGER,
+  average_offs INTEGER,
+  average_flow INTEGER,
+  PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
+);
+CREATE TABLE time_periods (
+  time_period_id TEXT,
+  day_type TEXT,
+  time_period TEXT,
+  period_start_time TEXT,
+  period_end_time TEXT,
+  PRIMARY KEY (time_period_id)
+);
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
+
+
+Testing prompt 7:
+Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1280
+
+Model's answer:
+To address this request, we need to:
+
+1. Identify `time_period_01` in `Fall 2018` for the `Orange Line` where the direction is `0`.
+2. Compute the average `total_ons` for all `Orange Line` stations during this time period and season.
+3. Then, retrieve every station name from the `stations` table where their `total_ons` is above this average.
+4. Finally, sort the results by `total_ons` in descending order and `station_name` in ascending order.
+
+Here is the SQL query for the above steps:
+
+```sql
+WITH OrangeLineAverage AS (
+    SELECT
+        AVG(rr.total_ons) AS average_total_ons
+    FROM
+        rail_ridership rr
+        JOIN lines l ON rr.line_id = l.line_id
+    WHERE
+        l.line_name = 'Orange Line'
+        AND rr.season = 'Fall 2018'
+        AND rr.time_period_id = 'time_period_01'
+        AND rr.direction = 0
+)
+SELECT
+    st.station_name,
+    rr.total_ons
+FROM
+    rail_ridership rr
+    JOIN stations st ON rr.station_id = st.station_id
+    JOIN lines l ON rr.line_id = l.line_id,
+    OrangeLineAverage
+WHERE
+    l.line_name = 'Orange Line'
+    AND rr.season = 'Fall 2018'
+    AND rr.time_period_id = 'time_period_01'
+    AND rr.direction = 0
+    AND rr.total_ons > OrangeLineAverage.average_total_ons
+ORDER BY
+    rr.total_ons DESC,
+    st.station_name ASC;
+```
+
+In this query, the Common Table Expression (CTE) `OrangeLineAverage` computes the average total ons for the specific criteria. Then, we join the necessary tables `stations`, `rail_ridership`, and `lines` to select the station names and total on passenger count, filtering out those that are above the computed average. We apply the required ORDER BY clause to sort the results as required.
+
+Please replace the table and column names if they are different in the actual dataset. Additionally, you might need to adjust the order by clause if the database's default sorting behavior for NULL values is not as desired.
+
+TIME TAKEN TO GENERATE ANSWER: 45.991544008255005 seconds
+===================================
+Target query:
+WITH this_ridership AS (
+    SELECT station_id, total_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+)
+SELECT station_name, total_ons
+FROM this_ridership JOIN stations
+ON this_ridership.station_id = stations.station_id
+WHERE total_ons > (SELECT AVG(total_ons) FROM this_ridership)
+ORDER BY total_ons DESC, station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0008640289306640625 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH OrangeLineAverage AS (
+    SELECT
+        AVG(rr.total_ons) AS average_total_ons
+    FROM
+        rail_ridership rr
+        JOIN lines l ON rr.line_id = l.line_id
+    WHERE
+        l.line_name = 'Orange Line'
+        AND rr.season = 'Fall 2018'
+        AND rr.time_period_id = 'time_period_01'
+        AND rr.direction = 0
+)
+SELECT
+    st.station_name,
+    rr.total_ons
+FROM
+    rail_ridership rr
+    JOIN stations st ON rr.station_id = st.station_id
+    JOIN lines l ON rr.line_id = l.line_id,
+    OrangeLineAverage
+WHERE
+    l.line_name = 'Orange Line'
+    AND rr.season = 'Fall 2018'
+    AND rr.time_period_id = 'time_period_01'
+    AND rr.direction = 0
+    AND rr.total_ons > OrangeLineAverage.average_total_ons
+ORDER BY
+    rr.total_ons DESC,
+    st.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0012691020965576172 seconds
+Accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+==========END OF TEST==========
+
+System knowledge: Given the following information, your job is to write SQL queries given a user’s request.
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
+The SQL table schemas of the database are shown below with an example row from each table.
+CREATE TABLE routes (
+  route_id INTEGER,
+  line_id TEXT,
+  first_station_id TEXT,
+  last_station_id TEXT,
+  direction INTEGER,
+  direction_desc TEXT,
+  route_name TEXT,
+  PRIMARY KEY (route_id)
+);
+CREATE TABLE gated_station_entries (
+  service_date TEXT,
+  time TEXT,
+  station_id TEXT,
+  line_id TEXT,
+  gated_entries REAL,
+  PRIMARY KEY (service_date, time, station_id, line_id)
+);
+CREATE TABLE lines (
+  line_id TEXT,
+  line_name TEXT,
+  PRIMARY KEY (line_id)
+);
+CREATE TABLE stations (
+  station_id TEXT,
+  station_name TEXT,
+  PRIMARY KEY (station_id)
+);
+CREATE TABLE station_orders (
+  route_id INTEGER,
+  station_id TEXT,
+  stop_order INTEGER,
+  distance_from_last_station_miles REAL,
+  PRIMARY KEY (route_id, station_id)
+);
+CREATE TABLE rail_ridership (
+  season TEXT,
+  line_id TEXT,
+  direction INTEGER,
+  time_period_id TEXT,
+  station_id TEXT,
+  total_ons INTEGER,
+  total_offs INTEGER,
+  number_service_days INTEGER,
+  average_ons INTEGER,
+  average_offs INTEGER,
+  average_flow INTEGER,
+  PRIMARY KEY (season, line_id, direction, time_period_id, station_id)
+);
+CREATE TABLE time_periods (
+  time_period_id TEXT,
+  day_type TEXT,
+  time_period TEXT,
+  period_start_time TEXT,
+  period_end_time TEXT,
+  PRIMARY KEY (time_period_id)
+);
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
+
+
+Testing prompt 7:
+Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
+
+TOTAL NUMBER OF TOKENS: 1280
+
+Model's answer:
+To accomplish this task, we need to perform a couple of steps:
+
+1. Identify 'time_period_01' for the specified 'day_type', 'season' with a 'direction' of 0 for the Orange Line during Fall 2018.
+2. Calculate the average 'total_ons' for all Orange Line stations during time_period_01 for Fall 2018 in the specified direction.
+3. Select the station names and corresponding 'total_ons' that are greater than the average calculated in step 2.
+
+We can use the following SQL query:
+
+```sql
+WITH OrangeLineAverage AS (
+    SELECT
+        AVG(rr.total_ons) AS avg_total_ons
+    FROM
+        rail_ridership rr
+    WHERE
+        rr.line_id = 'orange' AND
+        rr.time_period_id = 'time_period_01' AND
+        rr.season = 'Fall 2018' AND
+        rr.direction = 0
+)
+SELECT
+    s.station_name,
+    rr.total_ons
+FROM
+    rail_ridership rr
+JOIN
+    stations s ON rr.station_id = s.station_id
+JOIN
+    OrangeLineAverage ON rr.total_ons > OrangeLineAverage.avg_total_ons
+WHERE
+    rr.line_id = 'orange' AND
+    rr.time_period_id = 'time_period_01' AND
+    rr.season = 'Fall 2018' AND
+    rr.direction = 0
+ORDER BY
+    rr.total_ons DESC,
+    s.station_name ASC;
+```
+
+Explanation:
+
+- We use a Common Table Expression (CTE) named `OrangeLineAverage` to calculate the average `total_ons` for the Orange Line during the specified conditions.
+- We then perform a `JOIN` between the `rail_ridership` table and the `stations` table to get the station names, and also a `JOIN` on our CTE to filter for stations where `total_ons` is greater than the average.
+- Finally, we add `ORDER BY` to sort the results first by `total_ons` in descending order and then by `station_name` in ascending order, as the user requested.
+
+Please make sure to execute this SQL query against the appropriate database that contains the dataset. The column names and data structure provided in the user's request are assumed to be correct.
+
+TIME TAKEN TO GENERATE ANSWER: 35.41090679168701 seconds
+===================================
+Target query:
+WITH this_ridership AS (
+    SELECT station_id, total_ons
+    FROM rail_ridership
+    WHERE season = 'Fall 2018'
+    AND line_id = 'orange'
+    AND time_period_id = 'time_period_01'
+    AND direction = 0
+)
+SELECT station_name, total_ons
+FROM this_ridership JOIN stations
+ON this_ridership.station_id = stations.station_id
+WHERE total_ons > (SELECT AVG(total_ons) FROM this_ridership)
+ORDER BY total_ons DESC, station_name;
+
+TIME TAKEN TO RUN TARGET QUERY: 0.0010628700256347656 seconds
+===================================
+RUNNING SQL QUERY(S) FROM MODEL:
+------------
+Generated query 0:
+
+WITH OrangeLineAverage AS (
+    SELECT
+        AVG(rr.total_ons) AS avg_total_ons
+    FROM
+        rail_ridership rr
+    WHERE
+        rr.line_id = 'orange' AND
+        rr.time_period_id = 'time_period_01' AND
+        rr.season = 'Fall 2018' AND
+        rr.direction = 0
+)
+SELECT
+    s.station_name,
+    rr.total_ons
+FROM
+    rail_ridership rr
+JOIN
+    stations s ON rr.station_id = s.station_id
+JOIN
+    OrangeLineAverage ON rr.total_ons > OrangeLineAverage.avg_total_ons
+WHERE
+    rr.line_id = 'orange' AND
+    rr.time_period_id = 'time_period_01' AND
+    rr.season = 'Fall 2018' AND
+    rr.direction = 0
+ORDER BY
+    rr.total_ons DESC,
+    s.station_name ASC;
+
+
+TIME TAKEN TO RUN MODEL QUERY: 0.0003662109375 seconds
+Accuracy of test results (length 5) vs target results (length 5) is 1.0
+
+==========END OF TEST==========
+

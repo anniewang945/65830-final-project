@@ -10,7 +10,7 @@ rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over var
 time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
 """
 
-database_schema = """The SQL table schemas of the database are shown below.
+database_schema_and_example_row = """The SQL table schemas of the database are shown below with an example row from each table.
 CREATE TABLE routes (
   route_id INTEGER,
   line_id TEXT,
@@ -68,9 +68,16 @@ CREATE TABLE time_periods (
   period_end_time TEXT,
   PRIMARY KEY (time_period_id)
 );
+Example row for routes: 0|blue|place-wondl|place-bomnl|0|West|Wonderland to Bowdoin
+Example row for gatest_station_entries: 2022-05-31|00:00:00|place-alfcl|red|5.0
+Example row for lines: blue|Blue Line
+Example row for stations: place-aport|Airport
+Example row for station_orders: 0|place-wondl|1|0.0
+Example row for rail_ridership: Fall 2017|blue|0|time_period_02|place-orhte|37523|1211|82|458|15|1987
+Example row for time_periods: time_period_01|weekday|VERY_EARLY_MORNING|3:00:00|05:59:59
 """
 
-system_knowledge = """Given the following information, your job is to write SQL queries given a user’s request.""" + database_description + database_schema
+system_knowledge = """Given the following information, your job is to write SQL queries given a user’s request.""" + database_description + database_schema_and_example_row
 
 user_prompts = []
 # Q1
