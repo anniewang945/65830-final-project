@@ -2,6 +2,11 @@ from model import Model, GPT_4
 from utils import num_tokens_from_string, compare_accuracy
 import sqlite3
 import time
+import sys
+
+orig_stdout = sys.stdout
+log = open("results/attempt_3.txt", "a+")
+sys.stdout = log
 
 
 # Extracting questions and schemas first
@@ -11,13 +16,15 @@ table_and_schemas = dict()
 target_queries = []
 for l in questions.readlines():
     if l.startswith("Question"):
-        question = l[l.find(": ") + len(": "):l.find(" ||| ")]
-        table = l[l.find(" ||| ") + len(" ||| "):].strip()
+        question = l[l.find(": ") + len(": ") : l.find(" ||| ")]
+        table = l[l.find(" ||| ") + len(" ||| ") :].strip()
         db = "database/{}/{}.sqlite".format(table, table)
         conn = sqlite3.connect(db)
         c = conn.cursor()
         try:
-            schema_results = c.execute("SELECT sql FROM sqlite_master WHERE type='table'").fetchall()
+            schema_results = c.execute(
+                "SELECT sql FROM sqlite_master WHERE type='table'"
+            ).fetchall()
         except Exception as e:
             print("error running sql query: ".upper(), e)
         schema = ""
@@ -29,36 +36,48 @@ for l in questions.readlines():
         if table not in table_and_schemas:
             table_and_schemas[table] = schema
     elif l.startswith("SQL"):
-        target_query = l[l.find("SQL:  ") + len("SQL:  "):]
+        target_query = l[l.find("SQL:  ") + len("SQL:  ") :]
         # print("Target Query: {}\n".format(target_query))
         target_queries.append(target_query)
     # else:
     #     print()
 
-for q, t in zip(questions_and_tables, target_queries):
+with open("contexts.txt", "r") as f:
+    contexts = f.read().split("```")
+assert len(contexts) == len(questions_and_tables)
+
+for i, question_data in enumerate(zip(questions_and_tables, target_queries)):
     # add more context to schema if needed
+    q, t = question_data
     table = questions_and_tables[q]
-    system_knowledge = "Given the following SQL tables schemas, your job is to write queries given a user’s request.\n" + table_and_schemas[table]
+    system_knowledge = (
+        "Given the following SQL tables schemas, your job is to write queries given a user’s request.\n"
+        + table_and_schemas[table]
+    )
     user_prompt = q
+    user_prompt += "\n" + contexts[i]
 
     print("passing system knowledge:".upper() + system_knowledge)
     print("passing user prompt:".upper() + user_prompt)
-    print("total number of tokens in the current prompt:".upper(), num_tokens_from_string(system_knowledge + user_prompt))
+    print(
+        "total number of tokens in the current prompt:".upper(),
+        num_tokens_from_string(system_knowledge + user_prompt),
+    )
 
     model = Model(GPT_4, system_prompt=system_knowledge)
     start = time.time()
     answer = model.query(user_prompt)
     end = time.time()
-    print("model's answer:".upper(), answer, "\n(took", end-start, "seconds)\n")
+    print("model's answer:".upper(), answer, "\n(took", end - start, "seconds)\n")
     print("")
 
     # sometimes gpt-4 provides multiple queries with explanations, we want to extract all sql queries presented
     answer_copy = answer
     test_queries = []
     while answer_copy.find("```sql") != -1:
-        answer_copy = answer_copy[answer_copy.find("```sql") + len("```sql"):]
-        test_queries.append(answer_copy[:answer_copy.find("```")])
-        answer_copy = answer_copy[answer_copy.find("```") + len("```"):]
+        answer_copy = answer_copy[answer_copy.find("```sql") + len("```sql") :]
+        test_queries.append(answer_copy[: answer_copy.find("```")])
+        answer_copy = answer_copy[answer_copy.find("```") + len("```") :]
 
     db = "database/{}/{}.sqlite".format(table, table)
     conn = sqlite3.connect(db)
@@ -69,7 +88,7 @@ for q, t in zip(questions_and_tables, target_queries):
         start = time.time()
         target_result = c.execute(target_query).fetchall()
         end = time.time()
-        print("time taken with running expected query:", end-start, "seconds")
+        print("time taken with running expected query:", end - start, "seconds")
         # comment until next 3 lines if don't want to see results
         print("results from expected query".upper())
         print(target_result)
@@ -80,7 +99,7 @@ for q, t in zip(questions_and_tables, target_queries):
             start = time.time()
             test_result = c.execute(t).fetchall()
             end = time.time()
-            print("time taken with running model query:", end-start, "seconds")
+            print("time taken with running model query:", end - start, "seconds")
             # comment until next 3 lines if don't want to see results
             print("results from sql query above".upper())
             print(test_result)
@@ -93,3 +112,5 @@ for q, t in zip(questions_and_tables, target_queries):
 
     print("===================================\n")
 
+sys.stdout = orig_stdout
+log.close()
