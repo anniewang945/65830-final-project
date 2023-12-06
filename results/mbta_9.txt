@@ -128,3 +128,31 @@ HAVING COUNT(station_orders.route_id) = (
 
 
 error running sql query: near "HAVING": syntax error
+===============
+total number of tokens in the current prompt:480
+
+Generated query:
+SELECT S.station_name, SO.route_id, R.line_id, Count(*) AS RouteCount
+FROM station_orders AS SO 
+JOIN stations AS S ON S.station_id = SO.station_id
+JOIN routes AS R ON SO.route_id = R.route_id
+GROUP BY S.station_name, SO.route_id, R.line_id
+ORDER BY R.line_id, SO.route_id
+
+Accuracy of test results (length 324) vs target results (length 12) is -27.0, 336 incorrect
+
+time taken: 5.076303958892822 seconds
+===============
+total number of tokens in the current prompt:480
+
+Generated query:
+SELECT s.station_name, so.route_id, r.line_id, count(so.route_id) as total_routes
+FROM stations s 
+JOIN station_orders so ON s.station_id = so.station_id
+JOIN routes r ON so.route_id = r.route_id
+GROUP BY s.station_name, so.route_id, r.line_id
+ORDER BY r.line_id ASC, so.route_id ASC;
+
+Accuracy of test results (length 324) vs target results (length 12) is -27.0, 336 incorrect
+
+time taken: 5.730169057846069 seconds
