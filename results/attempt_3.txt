@@ -33,32 +33,36 @@ FOREIGN KEY ("concert_ID") REFERENCES "concert"("concert_ID"),
 FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: What are all distinct countries where singers above age 20 are from ?
-Your SQL query should use columns country.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.country
+2. singer.age
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 275
-MODEL'S ANSWER: To get all distinct countries of singers who are above the age of 20, you can use the following SQL query:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 307
+MODEL'S ANSWER: To find all distinct countries where singers above age 20 are from, we can use a simple SELECT statement with the DISTINCT keyword to ensure we are listing unique countries. We will also include a WHERE clause to filter out singers who are 20 years old or younger.
+
+Here is the SQL query to achieve this:
 
 ```sql
-SELECT DISTINCT "Country"
-FROM "singer"
-WHERE "Age" > 20;
+SELECT DISTINCT singer.Country
+FROM singer
+WHERE singer.Age > 20;
 ```
 
-This will give you a list of unique countries that match the criteria. 
-(took 4.51783013343811 seconds)
+This query selects all unique country names from the `singer` table where the age of the singer is greater than 20. 
+(took 7.472738027572632 seconds)
 
 
-time taken with running expected query: 0.0008199214935302734 seconds
+time taken with running expected query: 0.00028705596923828125 seconds
 RESULTS FROM EXPECTED QUERY
 [('Netherlands',), ('United States',), ('France',)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT DISTINCT "Country"
-FROM "singer"
-WHERE "Age" > 20;
+SELECT DISTINCT singer.Country
+FROM singer
+WHERE singer.Age > 20;
 
-time taken with running model query: 0.00015211105346679688 seconds
+time taken with running model query: 0.00010204315185546875 seconds
 RESULTS FROM SQL QUERY ABOVE
 [('Netherlands',), ('United States',), ('France',)]
 
@@ -103,32 +107,34 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: What are the different countries with singers above age 20 ?
 
-Your SQL query should use column country.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.country
+2. singer.age
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 273
-MODEL'S ANSWER: To find the different countries that have singers above the age of 20, we can use the following SQL query:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 305
+MODEL'S ANSWER: To find the different countries with singers above the age of 20, you would use the DISTINCT keyword to select unique country names from the singer table, where the age of the singers is greater than 20. The SQL query will look like this:
 
 ```sql
-SELECT DISTINCT Country
-FROM singer
-WHERE Age > 20;
+SELECT DISTINCT s.country
+FROM singer s
+WHERE s.age > 20;
 ```
 
-This query selects unique country names from the `singer` table where the age of the singers is greater than 20. 
-(took 3.5981059074401855 seconds)
+This query checks the age column of each singer and ensures that only countries with singers above the age of 20 are included in the results. The DISTINCT keyword makes sure each country is only listed once, regardless of how many singers it may have that meet the criteria. 
+(took 7.1134560108184814 seconds)
 
 
-time taken with running expected query: 0.0003399848937988281 seconds
+time taken with running expected query: 0.00029921531677246094 seconds
 RESULTS FROM EXPECTED QUERY
 [('Netherlands',), ('United States',), ('France',)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT DISTINCT Country
-FROM singer
-WHERE Age > 20;
+SELECT DISTINCT s.country
+FROM singer s
+WHERE s.age > 20;
 
-time taken with running model query: 0.00010585784912109375 seconds
+time taken with running model query: 0.00010704994201660156 seconds
 RESULTS FROM SQL QUERY ABOVE
 [('Netherlands',), ('United States',), ('France',)]
 
@@ -173,38 +179,43 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: List all song names by singers above the average age .
 
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.song_name
+2. singer.age
 Your SQL query should use columns song_name and age.
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 275
-MODEL'S ANSWER: To list all song names by singers above the average age, you'll have to join the "singer" table with a subquery that calculates the average age. You can use the `AVG()` aggregate function to calculate the average age, and then compare each singer's age to this average. Here's the SQL query that would accomplish this:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 316
+MODEL'S ANSWER: To list all song names by singers above the average age, we need to find the average age of all the singers first and then select those singers whose age is above this average. Once we have those singers, we can select their song names. Here's the query to achieve this:
 
 ```sql
-SELECT s.Name, s.Song_Name
-FROM singer s
-WHERE s.Age > (
-    SELECT AVG(Age) 
-    FROM singer
-);
+SELECT 
+    S.Name,
+    S.Song_Name 
+FROM 
+    singer AS S
+WHERE 
+    S.Age > (SELECT AVG(Age) FROM singer);
 ```
 
-This query retrieves the names and song names of singers whose age is greater than the average age of all singers in the "singer" table. The subquery calculates the average age, and the main query uses it to filter the results. 
-(took 9.556155920028687 seconds)
+In the above query, the inner SELECT statement calculates the average age of all singers, and the outer SELECT statement filters out the singers whose ages are above this average. We then select the song names and singer names from the filtered list. 
+(took 11.524022102355957 seconds)
 
 
-time taken with running expected query: 0.00025773048400878906 seconds
+time taken with running expected query: 0.00027298927307128906 seconds
 RESULTS FROM EXPECTED QUERY
 [('You',), ('Sun',), ('Gentleman',)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT s.Name, s.Song_Name
-FROM singer s
-WHERE s.Age > (
-    SELECT AVG(Age) 
-    FROM singer
-);
+SELECT 
+    S.Name,
+    S.Song_Name 
+FROM 
+    singer AS S
+WHERE 
+    S.Age > (SELECT AVG(Age) FROM singer);
 
-time taken with running model query: 7.700920104980469e-05 seconds
+time taken with running model query: 7.104873657226562e-05 seconds
 RESULTS FROM SQL QUERY ABOVE
 [('Joe Sharp', 'You'), ('Rose White', 'Sun'), ('John Nizinik', 'Gentleman')]
 
@@ -249,54 +260,76 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: Show the stadium name and capacity with most number of concerts in year 2014 or after .
 
-Your SQL query should use columns name, capacity, stadium_id, and year.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. concert.stadium_id
+2. concert.year
+3. stadium.stadium_id
+4. stadium.name
+5. stadium.capacity
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 288
-MODEL'S ANSWER: To show the stadium name and capacity that has hosted the most number of concerts in the year 2014 or after, we will need to join the tables `stadium` and `concert` based on `Stadium_ID`. Then, we'll count the number of concerts for each stadium within the specified year range (2014 or after). Finally, we'll select the stadium with the maximum count. Here is the SQL query for this request:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 331
+MODEL'S ANSWER: To find the stadium with the most number of concerts in 2014 or after, we can use a combination of the `concert` and `stadium` tables. Here's the SQL query to accomplish this:
 
 ```sql
-SELECT
+SELECT 
     s.Name,
     s.Capacity
 FROM
     stadium s
 JOIN
-    concert c ON s.Stadium_ID = c.Stadium_ID
-WHERE
-    CAST(c.Year AS INT) >= 2014
-GROUP BY
-    s.Stadium_ID, s.Name, s.Capacity
-ORDER BY
-    COUNT(c.concert_ID) DESC
-LIMIT 1;
+    (SELECT 
+        c.Stadium_ID,
+        COUNT(*) AS NumberOfConcerts
+     FROM 
+        concert c
+     WHERE 
+        c.Year >= '2014'
+     GROUP BY 
+        c.Stadium_ID
+     ORDER BY 
+        NumberOfConcerts DESC
+     LIMIT 1) AS subquery
+ON 
+    s.Stadium_ID = subquery.Stadium_ID;
 ```
 
-This query joins the `stadium` and `concert` tables on the `Stadium_ID` column, filters the concerts to ones in the year 2014 or after by casting the `Year` text column into an integer for comparison, groups the result by `Stadium_ID` (as well as its name and capacity for the selection), orders the stadiums by the descending count of the number of concerts, and limits the results to the very top entry (the stadium with the most concerts). 
-(took 16.14617395401001 seconds)
+This query executes the following steps:
+
+1. It selects records from the `concert` table where the `Year` is 2014 or later.
+2. It then groups the results by `Stadium_ID` and counts the number of concerts for each stadium.
+3. The subquery orders the stadiums by the count of concerts in descending order to find the stadium with the most concerts, and limits the result to just the top one.
+4. The outer query joins the result of the subquery with the `stadium` table to get the stadium name and capacity corresponding to the `Stadium_ID` with the most concerts. 
+(took 19.944621086120605 seconds)
 
 
-time taken with running expected query: 0.0013577938079833984 seconds
+time taken with running expected query: 0.00036406517028808594 seconds
 RESULTS FROM EXPECTED QUERY
 [('Somerset Park', 11998)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT
+SELECT 
     s.Name,
     s.Capacity
 FROM
     stadium s
 JOIN
-    concert c ON s.Stadium_ID = c.Stadium_ID
-WHERE
-    CAST(c.Year AS INT) >= 2014
-GROUP BY
-    s.Stadium_ID, s.Name, s.Capacity
-ORDER BY
-    COUNT(c.concert_ID) DESC
-LIMIT 1;
+    (SELECT 
+        c.Stadium_ID,
+        COUNT(*) AS NumberOfConcerts
+     FROM 
+        concert c
+     WHERE 
+        c.Year >= '2014'
+     GROUP BY 
+        c.Stadium_ID
+     ORDER BY 
+        NumberOfConcerts DESC
+     LIMIT 1) AS subquery
+ON 
+    s.Stadium_ID = subquery.Stadium_ID;
 
-time taken with running model query: 0.00025391578674316406 seconds
+time taken with running model query: 0.00018215179443359375 seconds
 RESULTS FROM SQL QUERY ABOVE
 [('Somerset Park', 11998)]
 
@@ -341,39 +374,42 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: What are the names of the stadiums without any concerts ?
 
-Your SQL query should use columns name and stadium_id.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. stadium.name
+2. stadium.stadium_id
+3. concert.stadium_id
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 275
-MODEL'S ANSWER: To find the names of the stadiums without any concerts, you can use a `LEFT JOIN` from the `stadium` table to the `concert` table and look for rows that have a null `concert_ID`, indicating that no concert has been associated with that stadium. Here's the SQL query to do that:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 313
+MODEL'S ANSWER: To find the names of all stadiums that have not been used for any concerts, you would need to do a LEFT JOIN between the "stadium" and "concert" tables, and look for records where there is no corresponding "concert.stadium_id". Here is the SQL query for the same:
 
 ```sql
-SELECT s.Name, s.Stadium_ID
-FROM stadium s
-LEFT JOIN concert c ON s.Stadium_ID = c.Stadium_ID
-WHERE c.concert_ID IS NULL;
+SELECT stadium.Name
+FROM stadium
+LEFT JOIN concert ON stadium.Stadium_ID = concert.Stadium_ID
+WHERE concert.Stadium_ID IS NULL;
 ```
 
-This query will return the names and IDs of all stadiums that have not hosted any concerts according to the data in your database. 
-(took 11.19009518623352 seconds)
+This query joins the two tables on their "Stadium_ID" fields, and filters for those rows where "concert.Stadium_ID" is NULL, which indicates that there are no concerts associated with that particular stadium. 
+(took 8.48756718635559 seconds)
 
 
-time taken with running expected query: 0.0003077983856201172 seconds
+time taken with running expected query: 0.0003409385681152344 seconds
 RESULTS FROM EXPECTED QUERY
 [('Bayview Stadium',), ('Hampden Park',), ('Forthbank Stadium',), ('Gayfield Park',)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT s.Name, s.Stadium_ID
-FROM stadium s
-LEFT JOIN concert c ON s.Stadium_ID = c.Stadium_ID
-WHERE c.concert_ID IS NULL;
+SELECT stadium.Name
+FROM stadium
+LEFT JOIN concert ON stadium.Stadium_ID = concert.Stadium_ID
+WHERE concert.Stadium_ID IS NULL;
 
-time taken with running model query: 8.273124694824219e-05 seconds
+time taken with running model query: 8.296966552734375e-05 seconds
 RESULTS FROM SQL QUERY ABOVE
-[('Bayview Stadium', 3), ('Hampden Park', 4), ('Forthbank Stadium', 5), ('Gayfield Park', 6)]
+[('Bayview Stadium',), ('Hampden Park',), ('Forthbank Stadium',), ('Gayfield Park',)]
 
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 4) vs target results (length 4) is -1.0
+accuracy of test results (length 4) vs target results (length 4) is 1.0
 
 ===================================
 
@@ -413,56 +449,61 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: Show the name and theme for all concerts and the number of singers in each concert .
 
-Your SQL query should use columns concert_name, theme, and concert_id.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer_in_concert.concert_id
+2. concert.concert_name
+3. concert.theme
+4. concert.concert_id
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 285
-MODEL'S ANSWER: To accomplish this, you would need to join the `concert` table with the `singer_in_concert` table, group the results by concert, and then count the number of singers for each concert. Here's the SQL query to do so:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 329
+MODEL'S ANSWER: To fulfill the request, you can write a SQL query that performs a JOIN between the "concert" and "singer_in_concert" tables, and then use the COUNT aggregate function to get the number of singers for each concert. The query will need to group the results by the concert ID, name, and theme to get the correct count per concert.
+
+Here is the query you can use:
 
 ```sql
-SELECT 
-  c.concert_Name,
-  c.Theme,
-  COUNT(sic.Singer_ID) AS NumberOfSingers
-FROM 
-  concert c
-LEFT JOIN 
-  singer_in_concert sic
-ON 
-  c.concert_ID = sic.concert_ID
-GROUP BY 
-  c.concert_ID, c.concert_Name, c.Theme;
+SELECT
+    c.concert_Name as Name,
+    c.Theme,
+    COUNT(sic.Singer_ID) as Number_of_Singers
+FROM
+    concert c
+LEFT JOIN
+    singer_in_concert sic ON c.concert_ID = sic.concert_ID
+GROUP BY
+    c.concert_ID,
+    c.concert_Name,
+    c.Theme;
 ```
 
-Explanation:
-- `c` is the alias for the `concert` table, and `sic` is the alias for the `singer_in_concert` table.
-- The `LEFT JOIN` is used to ensure that you include all concerts even if they do not have any singers associated with them.
-- The `GROUP BY` clause groups the results by their concert details.
-- The `COUNT(sic.Singer_ID)` function calculates the number of singers in each concert.
+This query performs the following actions:
+- It selects the concert name and theme from the "concert" table.
+- It left joins the "singer_in_concert" table on the concert ID to consider even those concerts where no singers might be associated.
+- It uses COUNT to get the total number of singers associated with each concert by counting the number of Singer_IDs for each group.
+- It groups the result set by the concert ID, name, and theme to ensure that the count of singers is accurate for each distinct concert.
+- The use of LEFT JOIN ensures that even concerts without any singers will be shown in the result, with a count of zero. 
+(took 15.460347175598145 seconds)
 
-Note: In the `singer_in_concert` table schema, the `Singer_ID` column is of type text, which is a bit unusual since it's a foreign key that should normally be an integer to match the primary key type of the `singer` table. In a proper relational database design, the `Singer_ID` should be an int to correspond with the `Singer_ID` in the `singer` table. If this is an oversight, it should be corrected to maintain data integrity and improve query performance. 
-(took 17.430285930633545 seconds)
 
-
-time taken with running expected query: 0.0010080337524414062 seconds
+time taken with running expected query: 0.0002999305725097656 seconds
 RESULTS FROM EXPECTED QUERY
 [('Auditions', 'Free choice', 3), ('Super bootcamp', 'Free choice 2', 2), ('Home Visits', 'Bleeding Love', 1), ('Week 1', 'Wide Awake', 1), ('Week 1', 'Happy Tonight', 2), ('Week 2', 'Party All Night', 1)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
-  c.concert_Name,
-  c.Theme,
-  COUNT(sic.Singer_ID) AS NumberOfSingers
-FROM 
-  concert c
-LEFT JOIN 
-  singer_in_concert sic
-ON 
-  c.concert_ID = sic.concert_ID
-GROUP BY 
-  c.concert_ID, c.concert_Name, c.Theme;
+SELECT
+    c.concert_Name as Name,
+    c.Theme,
+    COUNT(sic.Singer_ID) as Number_of_Singers
+FROM
+    concert c
+LEFT JOIN
+    singer_in_concert sic ON c.concert_ID = sic.concert_ID
+GROUP BY
+    c.concert_ID,
+    c.concert_Name,
+    c.Theme;
 
-time taken with running model query: 0.00013589859008789062 seconds
+time taken with running model query: 0.00011920928955078125 seconds
 RESULTS FROM SQL QUERY ABOVE
 [('Auditions', 'Free choice', 3), ('Super bootcamp', 'Free choice 2', 2), ('Home Visits', 'Bleeding Love', 1), ('Week 1', 'Wide Awake', 1), ('Week 1', 'Happy Tonight', 2), ('Week 2', 'Party All Night', 1)]
 
@@ -507,39 +548,56 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: List singer names and number of concerts for each singer .
 
-Your SQL query should use columns name and singer_id.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.name
+2. singer.singer_id
+3. singer_in_concert.singer_id
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 275
-MODEL'S ANSWER: To fetch the list of singers along with the count of concerts they participated in, you can use the following SQL query:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 316
+MODEL'S ANSWER: To list singer names and the number of concerts for each singer, we need to join the `singer` table with the `singer_in_concert` table on the `singer_id` column and then group the results by the singer's name, counting the number of concerts for each singer. Here's the SQL query to retrieve that information:
 
 ```sql
-SELECT s.Name, COUNT(sic.concert_ID) AS Number_of_Concerts
-FROM singer s
-LEFT JOIN singer_in_concert sic ON s.Singer_ID = sic.Singer_ID
-GROUP BY s.Name, s.Singer_ID;
+SELECT 
+  singer.Name,
+  COUNT(singer_in_concert.concert_ID) AS Number_of_Concerts
+FROM 
+  singer
+JOIN 
+  singer_in_concert 
+ON 
+  singer.Singer_ID = singer_in_concert.Singer_ID
+GROUP BY 
+  singer.Name;
 ```
 
-This query retrieves the name of the singer and the count of concerts from the `singer_in_concert` table by joining with the `singer` table on the `Singer_ID` field. The `LEFT JOIN` ensures that even singers with no concerts will be included in the result, with a concert count of 0. The `GROUP BY` clause is used to group the results by each singer, and the `COUNT` function is used to count the number of concerts. 
-(took 15.564269781112671 seconds)
+This query retrieves each singer's name and counts the number of concert IDs associated with each singer, which represents the number of concerts they've participated in. The result is grouped by the singer's name to ensure that each singer is listed only once with the total number of concerts they've been involved in. 
+(took 15.025277853012085 seconds)
 
 
-time taken with running expected query: 0.0010650157928466797 seconds
+time taken with running expected query: 0.00031304359436035156 seconds
 RESULTS FROM EXPECTED QUERY
 [('Timbaland', 2), ('Justin Brown', 3), ('Rose White', 1), ('John Nizinik', 2), ('Tribal King', 2)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT s.Name, COUNT(sic.concert_ID) AS Number_of_Concerts
-FROM singer s
-LEFT JOIN singer_in_concert sic ON s.Singer_ID = sic.Singer_ID
-GROUP BY s.Name, s.Singer_ID;
+SELECT 
+  singer.Name,
+  COUNT(singer_in_concert.concert_ID) AS Number_of_Concerts
+FROM 
+  singer
+JOIN 
+  singer_in_concert 
+ON 
+  singer.Singer_ID = singer_in_concert.Singer_ID
+GROUP BY 
+  singer.Name;
 
-time taken with running model query: 0.00022292137145996094 seconds
+time taken with running model query: 9.799003601074219e-05 seconds
 RESULTS FROM SQL QUERY ABOVE
-[('Joe Sharp', 0), ('John Nizinik', 2), ('Justin Brown', 3), ('Rose White', 1), ('Timbaland', 2), ('Tribal King', 2)]
+[('John Nizinik', 2), ('Justin Brown', 3), ('Rose White', 1), ('Timbaland', 2), ('Tribal King', 2)]
 
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 6) vs target results (length 5) is 0.8
+accuracy of test results (length 5) vs target results (length 5) is 1.0
 
 ===================================
 
@@ -579,47 +637,48 @@ FOREIGN KEY ("Singer_ID") REFERENCES "singer"("Singer_ID")
 )
 PASSING USER PROMPT: What is the name and country of origin of every singer who has a song with the word 'Hey ' in its title ?
 
-Your SQL query should use columns name, country, and song_name.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.name
+2. singer.country
+3. singer.song_name
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 292
-MODEL'S ANSWER: You can use the following SQL query to retrieve the name and country of origin of every singer who has a song with the word 'Hey' in its title:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 324
+MODEL'S ANSWER: To find the name and country of origin of every singer who has a song with the word 'Hey' in its title, we can execute the following SQL query:
 
 ```sql
 SELECT
-  s.Name,
-  s.Country,
-  s.Song_Name
+  singer.Name,
+  singer.Country
 FROM
-  singer s
+  singer
 WHERE
-  s.Song_Name LIKE '%Hey %';
+  singer.Song_Name LIKE '%Hey %';
 ```
 
-This query will search for any songs in the `singer` table where 'Hey' is a part of the song title, using the `%` wildcard characters before and after the search term to match any sequence of characters. However, to make sure the 'Hey' is a separate word at the beginning of the song title, there is no `%` directly before 'Hey', but a space after 'Hey' and before the second `%` to ensure that it is a separate word followed by other characters. 
-(took 9.009986162185669 seconds)
+This query selects the name and country columns from the 'singer' table and uses the 'LIKE' operator to filter the rows where the song name contains the word 'Hey' followed by a space character, which means that 'Hey' should be at the beginning or in the middle of the song name, but not at the end. If you need to account for 'Hey' anywhere in the song title (including at the end), you would remove the space character in the pattern. 
+(took 10.452270746231079 seconds)
 
 
-time taken with running expected query: 0.00019812583923339844 seconds
+time taken with running expected query: 0.0002460479736328125 seconds
 RESULTS FROM EXPECTED QUERY
 [('Justin Brown', 'France')]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
 SELECT
-  s.Name,
-  s.Country,
-  s.Song_Name
+  singer.Name,
+  singer.Country
 FROM
-  singer s
+  singer
 WHERE
-  s.Song_Name LIKE '%Hey %';
+  singer.Song_Name LIKE '%Hey %';
 
-time taken with running model query: 4.315376281738281e-05 seconds
+time taken with running model query: 6.198883056640625e-05 seconds
 RESULTS FROM SQL QUERY ABOVE
-[('Justin Brown', 'France', 'Hey Oh')]
+[('Justin Brown', 'France')]
 
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 1) vs target results (length 1) is -1.0
+accuracy of test results (length 1) vs target results (length 1) is 1.0
 
 ===================================
 
@@ -646,36 +705,37 @@ CREATE TABLE Student (
 )
 PASSING USER PROMPT: How many pets are owned by students that have an age greater than 20 ?
 
-Your SQL query should use colums stuid and age.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. student.stuid
+2. student.age
+3. has_pet.stuid
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 196
-MODEL'S ANSWER: To find the number of pets owned by students over the age of 20, we need to join the `Student` table with the `Has_Pet` table based on the `StuID` to filter out students with `Age` greater than 20 and then count the distinct pets associated with these students.
-
-Here is the SQL query that accomplishes this.
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 232
+MODEL'S ANSWER: To count the number of pets owned by students over the age of 20, we'll need to perform a JOIN operation between the `Student` and `Has_Pet` tables using the `StuID` column that they both share. We then check the condition for the `Age` column in the `Student` table, and count the distinct pets by their `PetID`. Here's the SQL query you would use:
 
 ```sql
-SELECT COUNT(DISTINCT Has_Pet.PetID)
+SELECT COUNT(DISTINCT Has_Pet.PetID) AS NumberOfPets
 FROM Student
 JOIN Has_Pet ON Student.StuID = Has_Pet.StuID
 WHERE Student.Age > 20;
 ```
 
-This SQL query will return the count of unique pet IDs linked to students whose age is greater than 20. The `DISTINCT` keyword ensures that if a student has more than one record in the `Has_Pet` table for the same pet (unlikely in a well-structured database, but possible due to data duplication), that pet is only counted once. 
-(took 12.432302951812744 seconds)
+The `DISTINCT` keyword is used before `Has_Pet.PetID` to ensure we count each pet once even if there happen to be multiple records for the same pet (though typically primary keys like PetID should be unique). The `COUNT` function will then return the number of unique pets owned by students older than 20 years. 
+(took 11.858589172363281 seconds)
 
 
-time taken with running expected query: 0.001035928726196289 seconds
+time taken with running expected query: 0.00024199485778808594 seconds
 RESULTS FROM EXPECTED QUERY
 [(0,)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT COUNT(DISTINCT Has_Pet.PetID)
+SELECT COUNT(DISTINCT Has_Pet.PetID) AS NumberOfPets
 FROM Student
 JOIN Has_Pet ON Student.StuID = Has_Pet.StuID
 WHERE Student.Age > 20;
 
-time taken with running model query: 0.0002269744873046875 seconds
+time taken with running model query: 0.0001201629638671875 seconds
 RESULTS FROM SQL QUERY ABOVE
 [(0,)]
 
@@ -707,42 +767,42 @@ CREATE TABLE Student (
 )
 PASSING USER PROMPT: Find the number of dog pets that are raised by female students ( with sex F ) .
 
-Your SQL query should use columns stuid, petid, sex, and pettype.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. student.stuid
+2. student.sex
+3. has_pet.stuid
+4. has_pet.petid
+5. pets.petid
+6. pets.pettype
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 204
-MODEL'S ANSWER: To find the number of dog pets that are raised by female students, we'll need to join the three tables (Student, Has_Pet, and Pets) in order to filter out female students who have dogs. The query will be as follows:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 253
+MODEL'S ANSWER: To find the number of dog pets raised by female students, you would need to join the three tables together (`Student`, `Has_Pet`, and `Pets`) and then count the number of records that fulfill the criteria: the `PetType` is 'dog' and the `Sex` is 'F'. Here is the SQL query to achieve that:
 
 ```sql
-SELECT COUNT(DISTINCT hp.PetID) AS NumberOfDogPets
-FROM Student s
-JOIN Has_Pet hp ON s.StuID = hp.StuID
-JOIN Pets p ON hp.PetID = p.PetID
-WHERE s.Sex = 'F' AND p.PetType = 'dog';
+SELECT COUNT(*) AS NumberOfDogPetsByFemaleStudents
+FROM Student
+JOIN Has_Pet ON Student.StuID = Has_Pet.StuID
+JOIN Pets ON Has_Pet.PetID = Pets.PetID
+WHERE Student.Sex = 'F' AND Pets.PetType = 'dog';
 ```
 
-This query does the following:
-- Joins the `Student` and `Has_Pet` tables on `StuID`.
-- Joins the `Has_Pet` and `Pets` tables on `PetID`.
-- Filters the results to only include records where the student is female (`Sex = 'F'`) and the pet is a dog (`PetType = 'dog'`).
-- Counts the distinct `PetID` values to ensure that each dog pet is only counted once, even if it appears in the relationship table `Has_Pet` multiple times for some reason.
-
-Remember to adjust the column `PetType` value if necessary, in case the type of pets people have is stored differently in your database (e.g., 'Dog' instead of 'dog'). 
-(took 23.316400051116943 seconds)
+This query joins the tables on their respective foreign key relationships, then filters the results to include only those records where the student is female and the pet type is 'dog'. The `COUNT(*)` function is then used to find the total number of records that match these criteria. 
+(took 14.185845851898193 seconds)
 
 
-time taken with running expected query: 0.0008738040924072266 seconds
+time taken with running expected query: 0.0002980232238769531 seconds
 RESULTS FROM EXPECTED QUERY
 [(2,)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT COUNT(DISTINCT hp.PetID) AS NumberOfDogPets
-FROM Student s
-JOIN Has_Pet hp ON s.StuID = hp.StuID
-JOIN Pets p ON hp.PetID = p.PetID
-WHERE s.Sex = 'F' AND p.PetType = 'dog';
+SELECT COUNT(*) AS NumberOfDogPetsByFemaleStudents
+FROM Student
+JOIN Has_Pet ON Student.StuID = Has_Pet.StuID
+JOIN Pets ON Has_Pet.PetID = Pets.PetID
+WHERE Student.Sex = 'F' AND Pets.PetType = 'dog';
 
-time taken with running model query: 0.00020384788513183594 seconds
+time taken with running model query: 7.486343383789062e-05 seconds
 RESULTS FROM SQL QUERY ABOVE
 [(2,)]
 
@@ -790,46 +850,42 @@ CREATE TABLE "continents" (
 )
 PASSING USER PROMPT: How many countries does each continent have ? List the continent id , continent name and the number of countries .
 
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. continents.contid
+2. continents.continent
+3. countries.continent
+SQL:  select t1.contid ,  t1.continent ,  count(*) from continents as t1 
+join countries as t2 on t1.contid  =  t2.continent group by t1.contid;
 Your SQL query should use columns contid and continent.
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 352
-MODEL'S ANSWER: To find out the number of countries in each continent, we need to perform a count on "countries" for each continent, then join that result with the "continents" table to include continent names. Here's the SQL query to accomplish that:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 448
+MODEL'S ANSWER: The list of columns provided suggests that we use `continents.contid` and `continents.continent` to display the results, and `countries.continent` to count the countries per continent. Below is the SQL query for the desired result:
 
 ```sql
-SELECT c.ContId, c.Continent, COUNT(co.CountryId) as NumberOfCountries
-FROM continents as c
-LEFT JOIN countries as co ON c.ContId = co.Continent
-GROUP BY c.ContId, c.Continent;
+SELECT continents.ContId, continents.Continent, COUNT(countries.CountryId) AS NumberOfCountries
+FROM continents
+LEFT JOIN countries ON continents.ContId = countries.Continent
+GROUP BY continents.ContId, continents.Continent;
 ```
 
-This query performs the following operations:
+In this query, we are selecting the `ContId` and `Continent` from the `continents` table. We are using a `LEFT JOIN` to bring in the `countries` table based on the relationship of `ContId` to `Continent`. We count the number of countries per continent (Countries with the same `Continent` foreign key value). We use `GROUP BY` on `continents.ContId` and `continents.Continent` to ensure we group the results by continent, with each continent presented only once in the result set. Notice that we're also using the column `countries.CountryId` in the `COUNT` function because this ensures we're counting rows that have a valid country (non-null CountryId). 
 
-1. It selects the `ContId` and `Continent` columns from the `continents` table.
-
-2. It performs a `LEFT JOIN` with the `countries` table on the `Continent` column to match countries to their continents.
-
-3. It then groups the results by `ContId` and `Continent` to ensure the count is specific to each continent.
-
-4. The `COUNT(co.CountryId)` function is used to count the number of countries in each group (i.e., each continent).
-
-5. The result of the count is given an alias `NumberOfCountries`. 
-
-This will give you a list with the continent id, the continent name, and the number of countries within each continent. The `LEFT JOIN` ensures that all continents are listed, even if they have zero countries in the `countries` table. 
-(took 24.75395894050598 seconds)
+The use of `LEFT JOIN` ensures that even if a continent has no countries associated with it in the `countries` table, it will still show up in the result with a count of zero. If you're sure that every continent has at least one country and you want only continents with countries, you could use an `INNER JOIN` instead. However, in most cases, using a `LEFT JOIN` here is safer and ensures all continents are accounted for in the results. 
+(took 22.51109790802002 seconds)
 
 
-time taken with running expected query: 0.0006158351898193359 seconds
+time taken with running expected query: 0.00029206275939941406 seconds
 RESULTS FROM EXPECTED QUERY
 [(1, 'america', 3), (2, 'europe', 6), (3, 'asia', 2), (4, 'africa', 2), (5, 'australia', 2)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT c.ContId, c.Continent, COUNT(co.CountryId) as NumberOfCountries
-FROM continents as c
-LEFT JOIN countries as co ON c.ContId = co.Continent
-GROUP BY c.ContId, c.Continent;
+SELECT continents.ContId, continents.Continent, COUNT(countries.CountryId) AS NumberOfCountries
+FROM continents
+LEFT JOIN countries ON continents.ContId = countries.Continent
+GROUP BY continents.ContId, continents.Continent;
 
-time taken with running model query: 0.00011396408081054688 seconds
+time taken with running model query: 0.00015878677368164062 seconds
 RESULTS FROM SQL QUERY ABOVE
 [(1, 'america', 3), (2, 'europe', 6), (3, 'asia', 2), (4, 'africa', 2), (5, 'australia', 2)]
 
@@ -877,65 +933,56 @@ CREATE TABLE "continents" (
 )
 PASSING USER PROMPT: How many models does each car maker produce ? List maker full name , id and the number .
 
-Your SQL query should use columns fullname, id, and maker.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. car_makers.fullname
+2. car_makers.id
+3. model_list.maker
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 352
-MODEL'S ANSWER: To retrieve the number of models each car maker produces along with the maker's full name and ID, we can write a SQL query that joins the `car_makers` table with the `model_list` table and groups the results by the car maker. Here is the SQL query:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 391
+MODEL'S ANSWER: To calculate how many models each car maker produces, we need to join the `car_makers` table with the `model_list` table using the `Id` field from `car_makers` and the `Maker` field from `model_list`. We will then group the results by the maker's `Id` and `FullName` to count the number of models associated with each maker. Here is the query:
 
 ```sql
 SELECT 
-    cm.FullName,
-    cm.Id,
-    COUNT(ml.ModelId) AS NumberOfModels
+    car_makers.Id, 
+    car_makers.FullName, 
+    COUNT(model_list.Model) AS NumberOfModels
 FROM 
-    car_makers cm
-LEFT JOIN 
-    model_list ml 
-ON 
-    cm.Id = ml.Maker
+    car_makers
+JOIN 
+    model_list ON car_makers.Id = model_list.Maker
 GROUP BY 
-    cm.Id
-ORDER BY 
-    cm.FullName;
+    car_makers.Id, 
+    car_makers.FullName;
 ```
 
-This query does the following:
-
-1. Joins the `car_makers` table with the `model_list` table on the `Id` (maker ID) column.
-2. Counts the number of models (`ModelId`) associated with each maker.
-3. Uses `GROUP BY` to aggregate results by car maker `Id`.
-4. Selects the `FullName` and `Id` from the `car_makers` table, and the resulting count of models as `NumberOfModels`.
-5. Orders the results by the `FullName` of the car maker for easier readability. 
-(took 12.1288480758667 seconds)
+This query will list each car maker along with their `Id`, `FullName` and the number of models they produce. 
+(took 14.467374086380005 seconds)
 
 
-time taken with running expected query: 0.0008289813995361328 seconds
+time taken with running expected query: 0.0003159046173095703 seconds
 RESULTS FROM EXPECTED QUERY
 [('American Motor Company', 1, 1), ('Volkswagen', 2, 2), ('BMW', 3, 1), ('General Motors', 4, 5), ('Ford Motor Company', 5, 3), ('Chrysler', 6, 4), ('Citroen', 7, 1), ('Nissan Motors', 8, 2), ('Fiat', 9, 1), ('Honda', 11, 1), ('Mazda', 12, 1), ('Daimler Benz', 13, 2), ('Opel', 14, 1), ('Peugeaut', 15, 1), ('Renault', 16, 1), ('Saab', 17, 1), ('Subaru', 18, 1), ('Toyota', 19, 2), ('Triumph', 20, 1), ('Volvo', 21, 1), ('Kia Motors', 22, 1), ('Hyundai', 23, 1)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
 SELECT 
-    cm.FullName,
-    cm.Id,
-    COUNT(ml.ModelId) AS NumberOfModels
+    car_makers.Id, 
+    car_makers.FullName, 
+    COUNT(model_list.Model) AS NumberOfModels
 FROM 
-    car_makers cm
-LEFT JOIN 
-    model_list ml 
-ON 
-    cm.Id = ml.Maker
+    car_makers
+JOIN 
+    model_list ON car_makers.Id = model_list.Maker
 GROUP BY 
-    cm.Id
-ORDER BY 
-    cm.FullName;
+    car_makers.Id, 
+    car_makers.FullName;
 
-time taken with running model query: 0.00023126602172851562 seconds
+time taken with running model query: 0.00013899803161621094 seconds
 RESULTS FROM SQL QUERY ABOVE
-[('American Motor Company', 1, 1), ('BMW', 3, 1), ('Chrysler', 6, 4), ('Citroen', 7, 1), ('Daimler Benz', 13, 2), ('Fiat', 9, 1), ('Ford Motor Company', 5, 3), ('General Motors', 4, 5), ('Honda', 11, 1), ('Hyundai', 23, 1), ('Kia Motors', 22, 1), ('Mazda', 12, 1), ('Nissan Motors', 8, 2), ('Opel', 14, 1), ('Peugeaut', 15, 1), ('Renault', 16, 1), ('Saab', 17, 1), ('Subaru', 18, 1), ('Toyota', 19, 2), ('Triumph', 20, 1), ('Volkswagen', 2, 2), ('Volvo', 21, 1)]
+[(1, 'American Motor Company', 1), (2, 'Volkswagen', 2), (3, 'BMW', 1), (4, 'General Motors', 5), (5, 'Ford Motor Company', 3), (6, 'Chrysler', 4), (7, 'Citroen', 1), (8, 'Nissan Motors', 2), (9, 'Fiat', 1), (11, 'Honda', 1), (12, 'Mazda', 1), (13, 'Daimler Benz', 2), (14, 'Opel', 1), (15, 'Peugeaut', 1), (16, 'Renault', 1), (17, 'Saab', 1), (18, 'Subaru', 1), (19, 'Toyota', 2), (20, 'Triumph', 1), (21, 'Volvo', 1), (22, 'Kia Motors', 1), (23, 'Hyundai', 1)]
 
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 22) vs target results (length 22) is 1.0
+accuracy of test results (length 22) vs target results (length 22) is -1.0
 
 ===================================
 
@@ -978,53 +1025,45 @@ CREATE TABLE "continents" (
 )
 PASSING USER PROMPT: What is the full name of each car maker , along with its id and how many models it produces ?
 
-Your SQL query should use columns fullname, id, and maker.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. car_makers.fullname
+2. car_makers.id
+3. model_list.maker
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 354
-MODEL'S ANSWER: To determine the full name of each car maker along with its ID and the number of models it produces, you need to perform a JOIN operation between `car_makers` and `model_list` based on the maker ID, and then aggregate the number of models per maker. After that, we group by the maker ID and their full names. Here is how you can write the SQL query to achieve this:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 393
+MODEL'S ANSWER: To find out the full name of each car maker along with its id and the number of models it produces, we'll need to join the `car_makers` table with the `model_list` table on their respective maker-related columns. We will then count the number of models produced by each car maker.
+
+Here's the SQL query that does this:
 
 ```sql
-SELECT 
-    cm.Id,
-    cm.FullName,
-    COUNT(ml.ModelId) as NumberOfModels
-FROM 
-    car_makers cm
-LEFT JOIN 
-    model_list ml ON cm.Id = ml.Maker
-GROUP BY 
-    cm.Id, cm.FullName;
+SELECT
+  car_makers.Id AS MakerId,
+  car_makers.FullName,
+  COUNT(model_list.ModelId) AS ModelCount
+FROM car_makers
+LEFT JOIN model_list ON car_makers.Id = model_list.Maker
+GROUP BY car_makers.Id, car_makers.FullName;
 ```
 
-This query does the following:
-
-- Selects the maker's ID `Id`, the maker's full name `FullName`, and counts the number of models per maker `COUNT(ml.ModelId)`.
-- Performs a LEFT JOIN between `car_makers` (aliased as `cm`) and `model_list` (aliased as `ml`) on their respective maker IDs.
-- Groups the results by the maker's ID `Id` and full name `FullName` to ensure that we get unique entries for each car maker.
-- Outputs the full name and ID of each car maker, along with the count of models it produces, as a new column `NumberOfModels`.
-
-This query will return a list of all car makers even if they have no associated models, because it uses a LEFT JOIN, which includes all rows from the `car_makers` table and the matching rows from the `model_list`, giving `NULL` in columns from `model_list` if there is no match. The `COUNT` function counts the number of non-NULL `ModelId` entries, effectively giving the number of models for each maker. 
-(took 21.232606887817383 seconds)
+This query uses a LEFT JOIN to ensure that we include all car makers in the output, even if some of them do not have any models associated with them (in which case, `ModelCount` would be 0 for those makers). We use `GROUP BY` to group results by car maker, and we count the number of model IDs associated with each car maker to get the number of models for each. 
+(took 16.616517305374146 seconds)
 
 
-time taken with running expected query: 0.0003211498260498047 seconds
+time taken with running expected query: 0.0003390312194824219 seconds
 RESULTS FROM EXPECTED QUERY
 [('American Motor Company', 1, 1), ('Volkswagen', 2, 2), ('BMW', 3, 1), ('General Motors', 4, 5), ('Ford Motor Company', 5, 3), ('Chrysler', 6, 4), ('Citroen', 7, 1), ('Nissan Motors', 8, 2), ('Fiat', 9, 1), ('Honda', 11, 1), ('Mazda', 12, 1), ('Daimler Benz', 13, 2), ('Opel', 14, 1), ('Peugeaut', 15, 1), ('Renault', 16, 1), ('Saab', 17, 1), ('Subaru', 18, 1), ('Toyota', 19, 2), ('Triumph', 20, 1), ('Volvo', 21, 1), ('Kia Motors', 22, 1), ('Hyundai', 23, 1)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
-    cm.Id,
-    cm.FullName,
-    COUNT(ml.ModelId) as NumberOfModels
-FROM 
-    car_makers cm
-LEFT JOIN 
-    model_list ml ON cm.Id = ml.Maker
-GROUP BY 
-    cm.Id, cm.FullName;
+SELECT
+  car_makers.Id AS MakerId,
+  car_makers.FullName,
+  COUNT(model_list.ModelId) AS ModelCount
+FROM car_makers
+LEFT JOIN model_list ON car_makers.Id = model_list.Maker
+GROUP BY car_makers.Id, car_makers.FullName;
 
-time taken with running model query: 0.00020623207092285156 seconds
+time taken with running model query: 0.0002090930938720703 seconds
 RESULTS FROM SQL QUERY ABOVE
 [(1, 'American Motor Company', 1), (2, 'Volkswagen', 2), (3, 'BMW', 1), (4, 'General Motors', 5), (5, 'Ford Motor Company', 3), (6, 'Chrysler', 4), (7, 'Citroen', 1), (8, 'Nissan Motors', 2), (9, 'Fiat', 1), (11, 'Honda', 1), (12, 'Mazda', 1), (13, 'Daimler Benz', 2), (14, 'Opel', 1), (15, 'Peugeaut', 1), (16, 'Renault', 1), (17, 'Saab', 1), (18, 'Subaru', 1), (19, 'Toyota', 2), (20, 'Triumph', 1), (21, 'Volvo', 1), (22, 'Kia Motors', 1), (23, 'Hyundai', 1)]
 
@@ -1072,42 +1111,48 @@ CREATE TABLE "continents" (
 )
 PASSING USER PROMPT: Which model of the car has the minimum horsepower ?
 
-Your SQL query should use columns model, makeid, id, and horsepower.
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. car_names.model
+2. car_names.makeid
+3. cars_data.id
+4. cars_data.horsepower
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 346
-MODEL'S ANSWER: To find the model of the car with the minimum horsepower, you need to first join the necessary tables so you can refer to the 'model' and 'horsepower' columns together. Then, you can order by 'horsepower' and select the model with the minimum horsepower. However, the 'horsepower' column is of TEXT datatype, which cannot be directly used for ordering numerically. Thus, we need to change the TEXT to INTEGER for proper comparison.
-
-Here is an SQL query that accomplishes this:
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 387
+MODEL'S ANSWER: To find the model of the car with the minimum horsepower, we can write the following SQL query:
 
 ```sql
-SELECT cn.Model, cn.MakeId, cd.Id, cd.Horsepower
+SELECT cn.Model
 FROM car_names cn
-JOIN cars_data cd ON cn.MakeId = cd.Id
+INNER JOIN cars_data cd ON cn.MakeId = cd.Id
 WHERE cd.Horsepower <> 'NA'
-ORDER BY CAST(cd.Horsepower as INTEGER)
+ORDER BY CAST(cd.Horsepower AS INTEGER) ASC
 LIMIT 1;
 ```
 
-This query is assuming that 'Horsepower' may have some non-numeric values, such as 'NA' (which is common for missing data in some datasets). The `WHERE cd.Horsepower <> 'NA'` clause filters out these non-numeric values, and `CAST(cd.Horsepower as INTEGER)` converts the valid 'Horsepower' values into integers so that they can be compared numerically. Finally, we order by this converted 'Horsepower' in ascending order and limit the results to the first row to get the minimum horsepower. 
-(took 14.645013093948364 seconds)
+Explanation:
+1. We join `car_names` (`cn`) with `cars_data` (`cd`) on the `MakeId` and `Id` fields to correlate the model names with horsepower values.
+2. We include a WHERE clause to filter out any records where Horsepower is not available (`'NA'`), as we cannot compare non-numeric values.
+3. We order the results by the `Horsepower` after casting it to INTEGER (assuming that Horsepower is stored as TEXT) in ascending order to find the smallest horsepower first.
+4. We limit the result to one row to get only the model with the minimum horsepower. 
+(took 13.729828834533691 seconds)
 
 
-time taken with running expected query: 0.003371000289916992 seconds
+time taken with running expected query: 0.00043582916259765625 seconds
 RESULTS FROM EXPECTED QUERY
 [('amc',)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT cn.Model, cn.MakeId, cd.Id, cd.Horsepower
+SELECT cn.Model
 FROM car_names cn
-JOIN cars_data cd ON cn.MakeId = cd.Id
+INNER JOIN cars_data cd ON cn.MakeId = cd.Id
 WHERE cd.Horsepower <> 'NA'
-ORDER BY CAST(cd.Horsepower as INTEGER)
+ORDER BY CAST(cd.Horsepower AS INTEGER) ASC
 LIMIT 1;
 
-time taken with running model query: 0.0003771781921386719 seconds
+time taken with running model query: 0.0002162456512451172 seconds
 RESULTS FROM SQL QUERY ABOVE
-[('ford', 39, 39, 'null')]
+[('ford',)]
 
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 1) vs target results (length 1) is -1.0
@@ -1153,33 +1198,38 @@ CREATE TABLE "continents" (
 )
 PASSING USER PROMPT: Which distinct car models are the produced after 1980 ?
 
-Your SQL query should use colums model, makeid, id, and year.
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 349
-MODEL'S ANSWER: To find distinct car models produced after 1980, you should join the tables "car_names" and "cars_data" because you need to match the model names (from "car_names") with their respective years of production (from "cars_data"). We are particularly interested in "Model", "MakeId" from "car_names" and "Id", "Year" from "cars_data". Here's the query to accomplish this:
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. model_list.model
+2. car_names.model
+3. car_names.makeid
+4. cars_data.id
+5. cars_data.year
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 392
+MODEL'S ANSWER: To find distinct car models produced after 1980, we need to join the `car_names` table with the `cars_data` table and filter the results based on the `Year` column. Here is an SQL query to get the distinct models:
 
 ```sql
-SELECT DISTINCT cn.Model
-FROM car_names cn
-INNER JOIN cars_data cd ON cn.MakeId = cd.Id
-WHERE cd.Year > 1980;
+SELECT DISTINCT car_names.Model 
+FROM car_names
+JOIN cars_data ON car_names.MakeId = cars_data.Id
+WHERE cars_data.Year > 1980;
 ```
 
-This query performs an inner join operation between the "car_names" table (aliased as "cn") and the "cars_data" table (aliased as "cd"), matching rows where "MakeId" from "car_names" equals "Id" from "cars_data". The `WHERE` clause filters the results to include only those cars made after 1980, and `DISTINCT` is used to ensure that each car model is listed only once in the result set. 
-(took 12.490977048873901 seconds)
+This will give us a list of distinct models where the year of production is after 1980. 
+(took 6.951375961303711 seconds)
 
 
-time taken with running expected query: 0.0008482933044433594 seconds
+time taken with running expected query: 0.00035500526428222656 seconds
 RESULTS FROM EXPECTED QUERY
 [('plymouth',), ('buick',), ('dodge',), ('chevrolet',), ('toyota',), ('honda',), ('subaru',), ('datsun',), ('mazda',), ('ford',), ('volkswagen',), ('renault',), ('peugeot',), ('saab',), ('volvo',), ('oldsmobile',), ('chrysler',), ('pontiac',), ('amc',), ('mercury',), ('nissan',)]
 
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT DISTINCT cn.Model
-FROM car_names cn
-INNER JOIN cars_data cd ON cn.MakeId = cd.Id
-WHERE cd.Year > 1980;
+SELECT DISTINCT car_names.Model 
+FROM car_names
+JOIN cars_data ON car_names.MakeId = cars_data.Id
+WHERE cars_data.Year > 1980;
 
-time taken with running model query: 0.00011992454528808594 seconds
+time taken with running model query: 0.00015020370483398438 seconds
 RESULTS FROM SQL QUERY ABOVE
 [('plymouth',), ('buick',), ('dodge',), ('chevrolet',), ('toyota',), ('honda',), ('subaru',), ('datsun',), ('mazda',), ('ford',), ('volkswagen',), ('renault',), ('peugeot',), ('saab',), ('volvo',), ('oldsmobile',), ('chrysler',), ('pontiac',), ('amc',), ('mercury',), ('nissan',)]
 
