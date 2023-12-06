@@ -6,6 +6,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 1. station_orders.station_id
 2. station_orders.route_id
 3. station_orders.distance_from_last_station_miles
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 Find the first and last station for each route on each line.
 Report the line name, route direction name, and first and last station name.
@@ -20,6 +22,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 6. stations.station_name
 7. lines.line_id
 8. lines.line_name
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the “Kendall/MIT” Red Line station.
 Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.
@@ -37,6 +41,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 10. stations.station_id
 11. time_periods.time_period_id
 12. time_periods.period_start_time
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 Find the total length in miles and number of stations of each line’s routes.
 Report the route id, direction, route - name, number of stations, and length in miles for each route.
@@ -53,6 +59,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 7. station_orders.route_id
 8. lines.line_name
 9. lines.line_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 For each station in each season, find the average number of line service days.
 (That is, find the average of the number of number service days over different lines, directions and time periods, but do not sum over different values for season.)
@@ -65,6 +73,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 3. rail_ridership.number_service_days
 4. stations.station_name
 5. stations.station_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021).
 Report the station 6.5830/6.5831 Problem Set 1 (Fall 2023) 4 name(s) and the number of gated entries.
@@ -76,6 +86,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 4. gated_station_entries.service_date
 5. station.station_name
 6. stations.station_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 Find the station, time period, and season with the largest number of people who get off (the largest “total offs”).
 A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total offs (e.g., the total offs for Kendall/MIT with a direction of 0 should be considered separately from the total offs for Kendall/MIT with a direction of 1 when you are computing the largest total offs).
@@ -92,6 +104,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 8. time_periods.time_period_id
 9. time_periods.day_type
 10. time_periods.period_start_time
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 Find every Orange Line station in Fall 2018 that, during time period 01 and the direction of 0, had a total ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction.
 Report the station name and the total ons value.
@@ -108,8 +122,9 @@ Your SQL query may need to use the following list of columns (given in format <P
 8. stations.station_name
 9. lines.line_id
 10. lines.line_name
-```
 
+Provide only your SQL query, and do not give any additional explanation.
+```
 Find the station with most number of routes passing through it. 
 (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions.)
 Report station name, route id, line id, and total number of routes passing through the station.
@@ -122,6 +137,8 @@ Your SQL query may need to use the following list of columns (given in format <P
 4. stations.station_id
 5. routes.line_id
 6. routes.route_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
 For each line, in the Fall 2019 season, find the station with 'maximally bypassed ratio'.
 That is, the station “s” that has the largest ratio “(a - b)/a”, where “a” is the the sum of average flow values for all time periods and all directions of “s” and “b” is the total sum of: the sum of its average ons and sum of its average offs values.
@@ -139,3 +156,5 @@ Your SQL query may need to use the following list of columns (given in format <P
 7. stations.station_name
 8. lines.line_id
 9. lines.line_name
+
+Provide only your SQL query, and do not give any additional explanation.

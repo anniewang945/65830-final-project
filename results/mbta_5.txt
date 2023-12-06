@@ -1,127 +1,110 @@
 ===============
-total number of tokens in the current prompt:481
+total number of tokens in the current prompt:495
 
 Generated query:
-
-SELECT 
-  s.station_name,
-  rr.season,
-  AVG(rr.number_service_days) AS avg_number_service_days
-FROM 
-  rail_ridership rr
-JOIN 
-  stations s ON rr.station_id = s.station_id
-GROUP BY 
-  s.station_name,
-  rr.season
-ORDER BY 
-  AVG(rr.number_service_days) DESC,
-  rr.season,
-  s.station_name;
-
+SELECT stations.station_name, rail_ridership.season, AVG(rail_ridership.number_service_days) AS avg_service_days
+FROM rail_ridership
+JOIN stations ON rail_ridership.station_id = stations.station_id
+GROUP BY rail_ridership.station_id, rail_ridership.season
+ORDER BY avg_service_days DESC, rail_ridership.season ASC, stations.station_name ASC;
 
 Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
 
-time taken: 3.0049731731414795 seconds
+time taken: 3.974912166595459 seconds
 ===============
-total number of tokens in the current prompt:481
+total number of tokens in the current prompt:495
 
 Generated query:
+SELECT
+    s.station_name,
+    r.season,
+    AVG(r.number_service_days) AS average_service_days
+FROM
+    rail_ridership r
+JOIN
+    stations s ON r.station_id = s.station_id
+GROUP BY
+    s.station_name, r.season
+ORDER BY
+    average_service_days DESC, r.season ASC, s.station_name ASC;
 
+Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
+
+time taken: 3.8026700019836426 seconds
+===============
+total number of tokens in the current prompt:495
+
+Generated query:
+SELECT stations.station_name, rail_ridership.season, AVG(rail_ridership.number_service_days) as average_service_days
+FROM rail_ridership
+INNER JOIN stations 
+ON rail_ridership.station_id = stations.station_id
+GROUP BY stations.station_name, rail_ridership.season
+ORDER BY average_service_days DESC, rail_ridership.season ASC, stations.station_name ASC;
+
+Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
+
+time taken: 4.0783209800720215 seconds
+===============
+total number of tokens in the current prompt:495
+
+Generated query:
+SELECT 
+    stations.station_name, 
+    rail_ridership.season, 
+    AVG(rail_ridership.number_service_days) as averaged_service_days 
+FROM 
+    rail_ridership 
+JOIN 
+    stations 
+ON 
+    rail_ridership.station_id = stations.station_id 
+GROUP BY 
+    stations.station_name, 
+    rail_ridership.season 
+ORDER BY 
+    averaged_service_days DESC, 
+    rail_ridership.season ASC, 
+    stations.station_name ASC;
+
+Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
+
+time taken: 5.22571587562561 seconds
+===============
+total number of tokens in the current prompt:495
+
+Generated query:
 SELECT 
   stations.station_name, 
-  rail_ridership.season,
-  AVG(rail_ridership.number_service_days) AS avg_service_days
-FROM rail_ridership
-JOIN stations ON rail_ridership.station_id = stations.station_id
-GROUP BY stations.station_name, rail_ridership.season
-ORDER BY avg_service_days DESC, rail_ridership.season, stations.station_name;
-
-
-Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
-
-time taken: 2.227141857147217 seconds
-===============
-total number of tokens in the current prompt:481
-
-Generated query:
-
-SELECT 
-  s.station_name,
-  r.season,
-  AVG(rr.number_service_days) AS avg_service_days
-FROM stations s
-JOIN rail_ridership rr ON s.station_id = rr.station_id
-GROUP BY s.station_name, r.season
-ORDER BY 
-  avg_service_days DESC, 
-  r.season ASC, 
-  s.station_name ASC;
-
-
-error running sql query: no such column: r.season
-===============
-total number of tokens in the current prompt:481
-
-Generated query:
-
-SELECT 
-  stations.station_name,
-  rail_ridership.season,
-  AVG(rail_ridership.number_service_days) AS avg_service_days
+  rail_ridership.season, 
+  AVG(rail_ridership.number_service_days) AS averaged_service_days
 FROM 
-  rail_ridership
+  rail_ridership 
 JOIN 
-  stations ON rail_ridership.station_id = stations.station_id
+  stations 
+ON 
+  rail_ridership.station_id = stations.station_id
 GROUP BY 
-  stations.station_name,
+  rail_ridership.station_id, 
   rail_ridership.season
 ORDER BY 
-  avg_service_days DESC,
-  rail_ridership.season ASC,
+  averaged_service_days DESC, 
+  rail_ridership.season ASC, 
   stations.station_name ASC;
 
-
 Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
 
-time taken: 1.4770541191101074 seconds
+time taken: 5.22698187828064 seconds
 ===============
-total number of tokens in the current prompt:481
+total number of tokens in the current prompt:495
 
 Generated query:
-
-SELECT stations.station_name, rail_ridership.season,
-    AVG(rail_ridership.number_service_days) AS avg_service_days
+SELECT stations.station_name, rail_ridership.season, AVG(rail_ridership.number_service_days) as avg_service_days
 FROM rail_ridership
-JOIN stations ON rail_ridership.station_id = stations.station_id
-GROUP BY stations.station_name, rail_ridership.season
-ORDER BY avg_service_days DESC, rail_ridership.season, stations.station_name;
-
-
-Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
-
-time taken: 1.8406660556793213 seconds
-===============
-total number of tokens in the current prompt:481
-
-Generated query:
-
-SELECT 
-    s.station_name,
-    rr.season,
-    AVG(rr.number_service_days) AS avg_service_days
-FROM 
-    stations s
-JOIN 
-    rail_ridership rr ON s.station_id = rr.station_id
-GROUP BY 
-    s.station_name, rr.season
-ORDER BY 
-    avg_service_days DESC, 
-    rr.season ASC, 
-    s.station_name ASC;
-
+JOIN stations ON stations.station_id = rail_ridership.station_id
+GROUP BY rail_ridership.station_id, rail_ridership.season
+ORDER BY avg_service_days DESC, rail_ridership.season ASC, stations.station_name ASC;
 
 Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
 
-time taken: 2.045753240585327 seconds
+time taken: 4.189167261123657 seconds

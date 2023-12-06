@@ -1,96 +1,83 @@
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:451
 
 Generated query:
-
 SELECT station_id, route_id, distance_from_last_station_miles
 FROM station_orders
 WHERE distance_from_last_station_miles >= 1
 ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
 
-
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 2.236750841140747 seconds
+time taken: 3.384921073913574 seconds
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:451
 
 Generated query:
-
-SELECT station_id, route_id, distance_from_last_station_miles
+SELECT 
+station_id, 
+route_id,
+distance_from_last_station_miles
 FROM station_orders
 WHERE distance_from_last_station_miles >= 1
-ORDER BY distance_from_last_station_miles DESC, route_id, station_id;
-
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC
 
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 2.428415060043335 seconds
+time taken: 2.2199649810791016 seconds
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:451
 
 Generated query:
-
-SELECT 
-  station_id, 
-  route_id, 
-  distance_from_last_station_miles
+SELECT station_id, route_id, distance_from_last_station_miles
 FROM station_orders
 WHERE distance_from_last_station_miles >= 1
 ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
 
-
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 1.58070707321167 seconds
+time taken: 3.39208722114563 seconds
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:451
 
 Generated query:
-
-SELECT station_id, route_id, distance_from_last_station_miles
-FROM station_orders
-WHERE distance_from_last_station_miles >= 1
-ORDER BY distance_from_last_station_miles DESC, route_id, station_id;
-
-
-Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
-
-time taken: 1.3715710639953613 seconds
-===============
-total number of tokens in the current prompt:437
-
-Generated query:
-
-SELECT so.station_id, so.route_id, so.distance_from_last_station_miles
-FROM station_orders so
-WHERE so.distance_from_last_station_miles >= 1
-ORDER BY
-  so.distance_from_last_station_miles DESC,
-  so.route_id ASC,
-  so.station_id ASC;
-
-
-Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
-
-time taken: 1.2625188827514648 seconds
-===============
-total number of tokens in the current prompt:437
-
-Generated query:
-
 SELECT 
-  so.station_id,
-  so.route_id,
-  so.distance_from_last_station_miles AS distance
-FROM station_orders so
-WHERE so.distance_from_last_station_miles >= 1
+    station_id, 
+    route_id, 
+    distance_from_last_station_miles 
+FROM 
+    station_orders 
+WHERE 
+    distance_from_last_station_miles >= 1 
 ORDER BY 
-  distance DESC, 
-  so.route_id ASC, 
-  so.station_id ASC;
-
+    distance_from_last_station_miles DESC, 
+    route_id ASC, 
+    station_id ASC;
 
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 1.6756908893585205 seconds
+time taken: 3.063304901123047 seconds
+===============
+total number of tokens in the current prompt:451
+
+Generated query:
+SELECT station_id, route_id, distance_from_last_station_miles
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
+
+time taken: 2.126539707183838 seconds
+===============
+total number of tokens in the current prompt:451
+
+Generated query:
+SELECT station_id, route_id, distance_from_last_station_miles
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
+
+time taken: 2.727529764175415 seconds

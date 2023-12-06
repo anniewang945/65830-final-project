@@ -1,117 +1,83 @@
 ===============
-total number of tokens in the current prompt:551
+total number of tokens in the current prompt:565
 
 Generated query:
-
-WITH max_total_offs AS (
-  SELECT 
-    MAX(total_offs) AS max_offs
-  FROM rail_ridership
-),
-station_max_offs AS (
-  SELECT 
-    r.season,
-    r.line_id,
-    r.station_id,
-    r.time_period_id,
-    r.total_offs,
-    s.station_name,
-    t.day_type,
-    t.period_start_time
-  FROM rail_ridership r
-  JOIN stations s ON r.station_id = s.station_id
-  JOIN time_periods t ON r.time_period_id = t.time_period_id
-  CROSS JOIN max_total_offs
-  WHERE r.total_offs = max_offs
-)
 SELECT 
-  day_type, 
-  period_start_time, 
-  season, 
-  line_id, 
-  station_name, 
-  total_offs
-FROM station_max_offs;
-
+    time_periods.day_type, 
+    time_periods.period_start_time, 
+    rail_ridership.season, 
+    rail_ridership.line_id, 
+    stations.station_name, 
+    rail_ridership.total_offs 
+FROM 
+    rail_ridership
+JOIN
+    stations ON rail_ridership.station_id = stations.station_id
+JOIN
+    time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
+ORDER BY 
+    rail_ridership.total_offs DESC
+LIMIT 1;
 
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 2.9823009967803955 seconds
+time taken: 5.992690086364746 seconds
 ===============
-total number of tokens in the current prompt:551
+total number of tokens in the current prompt:565
 
 Generated query:
-
-WITH max_total_offs AS (
-  SELECT 
-    MAX(total_offs) AS max_total_offs
-  FROM rail_ridership
-),
-station_max_total_offs AS (
-  SELECT 
-    season, 
-    line_id, 
-    station_id, 
-    time_period_id, 
-    total_offs,
-    stations.station_name,
-    time_periods.day_type,
-    time_periods.period_start_time
-  FROM rail_ridership
-  JOIN stations ON rail_ridership.station_id = stations.station_id
-  JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
-  WHERE total_offs IN (SELECT * FROM max_total_offs)
-)
 SELECT 
-  day_type,
-  period_start_time,
-  season,
-  line_id,
-  station_name,
-  total_offs
-FROM station_max_total_offs;
-
-
-error running sql query: ambiguous column name: station_id
-===============
-total number of tokens in the current prompt:551
-
-Generated query:
-
-WITH max_offs AS (
-  SELECT
-    station_id,
-    MAX(total_offs) AS max_offs
-  FROM rail_ridership
-  GROUP BY station_id
-)
-SELECT
-  time_periods.day_type,
-  time_periods.period_start_time,
-  rail_ridership.season,
-  rail_ridership.line_id,
-  stations.station_name,
-  rail_ridership.total_offs
-FROM max_offs
-JOIN rail_ridership ON max_offs.station_id = rail_ridership.station_id AND max_offs.max_offs = rail_ridership.total_offs
-JOIN stations ON rail_ridership.station_id = stations.station_id
-JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id;
-
-
-Accuracy of test results (length 113) vs target results (length 1) is -111.0, 112 incorrect
-
-time taken: 3.8985440731048584 seconds
-===============
-total number of tokens in the current prompt:551
-
-Generated query:
-
-WITH MaxTotalOffs AS (
-  SELECT 
-    MAX(total_offs) AS max_total_offs
-  FROM 
+    time_periods.day_type, 
+    time_periods.period_start_time, 
+    rail_ridership.season,
+    rail_ridership.line_id,
+    stations.station_name,
+    rail_ridership.total_offs
+FROM 
     rail_ridership
-)
+JOIN 
+    stations 
+ON 
+    rail_ridership.station_id = stations.station_id
+JOIN 
+    time_periods
+ON 
+    rail_ridership.time_period_id = time_periods.time_period_id
+ORDER BY 
+    rail_ridership.total_offs DESC
+LIMIT 1;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 5.543751955032349 seconds
+===============
+total number of tokens in the current prompt:565
+
+Generated query:
+SELECT 
+    TP.day_type, 
+    TP.period_start_time, 
+    RR.season, 
+    RR.line_id, 
+    S.station_name, 
+    RR.total_offs
+FROM 
+    rail_ridership RR
+JOIN 
+    stations S ON RR.station_id = S.station_id
+JOIN 
+    time_periods TP ON RR.time_period_id = TP.time_period_id
+ORDER BY 
+    RR.total_offs DESC
+LIMIT 1;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 4.682536363601685 seconds
+===============
+total number of tokens in the current prompt:565
+
+Generated query:
 SELECT 
   time_periods.day_type, 
   time_periods.period_start_time, 
@@ -121,71 +87,68 @@ SELECT
   rail_ridership.total_offs
 FROM 
   rail_ridership
-JOIN 
-  stations ON rail_ridership.station_id = stations.station_id
-JOIN 
-  time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
-JOIN 
-  MaxTotalOffs ON MaxTotalOffs.max_total_offs = rail_ridership.total_offs
+  JOIN stations ON rail_ridership.station_id = stations.station_id
+  JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
 ORDER BY 
   rail_ridership.total_offs DESC
 LIMIT 1;
 
-
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 2.268908977508545 seconds
+time taken: 5.242834806442261 seconds
 ===============
-total number of tokens in the current prompt:551
+total number of tokens in the current prompt:565
 
 Generated query:
-
-WITH max_total_offs AS (
-  SELECT 
-    t1.station_id,
-    t1.total_offs,
-    t1.time_period_id,
-    t1.season,
-    t1.line_id,
-    t2.station_name,
-    t3.day_type,
-    t3.period_start_time
-  FROM rail_ridership t1
-  JOIN stations t2 ON t1.station_id = t2.station_id
-  JOIN time_periods t3 ON t1.time_period_id = t3.time_period_id
-  WHERE t1.total_offs = (
-    SELECT MAX(total_offs) 
-    FROM rail_ridership
-  )
-)
-SELECT * FROM max_total_offs;
-
-
-Accuracy of test results (length 1) vs target results (length 1) is -1.0, 2 incorrect
-
-time taken: 2.8045318126678467 seconds
-===============
-total number of tokens in the current prompt:551
-
-Generated query:
-
 SELECT 
     time_periods.day_type, 
     time_periods.period_start_time, 
     rail_ridership.season, 
     rail_ridership.line_id, 
     stations.station_name, 
-    rail_ridership.total_offs 
-FROM rail_ridership
-JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
-JOIN stations ON rail_ridership.station_id = stations.station_id
-WHERE rail_ridership.total_offs = (
-    SELECT 
-        MAX(total_offs) 
-    FROM rail_ridership
-)
-
+    rail_ridership.total_offs
+FROM 
+    rail_ridership
+INNER JOIN 
+    stations
+ON 
+    rail_ridership.station_id = stations.station_id
+INNER JOIN 
+    time_periods
+ON 
+    rail_ridership.time_period_id = time_periods.time_period_id
+ORDER BY 
+    rail_ridership.total_offs DESC
+LIMIT 1;
 
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 2.9135689735412598 seconds
+time taken: 6.036526679992676 seconds
+===============
+total number of tokens in the current prompt:565
+
+Generated query:
+SELECT 
+    time_periods.day_type,
+    time_periods.period_start_time,
+    rail_ridership.season,
+    rail_ridership.line_id,
+    stations.station_name,
+    rail_ridership.total_offs
+FROM 
+    rail_ridership
+JOIN 
+    stations
+ON 
+    rail_ridership.station_id = stations.station_id
+JOIN 
+    time_periods
+ON 
+    rail_ridership.time_period_id = time_periods.time_period_id
+ORDER BY 
+    rail_ridership.total_offs DESC
+LIMIT 1;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 5.675519943237305 seconds
