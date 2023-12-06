@@ -68,6 +68,7 @@ user_prompts.append(
             "Report the station ID, route ID, and distance (in miles) to the previous station, sorted by decreasing distance.",
             "Break ties in distance by sorting by route ID and then station ID, both in ascending order.",
             "Your SQL query should use columns station_id, route_id, and distance_from_last_station_miles.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -80,6 +81,7 @@ user_prompts.append(
             "Report the line name, route direction name, and first and last station name.",
             "Sort the results by the line name, direction name, first station name, and then last station name—all in ascending order.",
             "Your SQL query should use columns first_station_id, last_station_id, line_name, line_id, direction_desc, and station_name.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -91,6 +93,7 @@ user_prompts.append(
             "Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the “Kendall/MIT” Red Line station.",
             "Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.",
             "Your SQL query should use columns time_period_id, period_start_time, period_end_time, station_id, station_name, season, line_id, direction, and total_ons.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -104,6 +107,7 @@ user_prompts.append(
             "Exclude the Green Line since the distance between stations is missing.",
             "Sort the results by total number of stations in descending order (break tie using total length in miles in descending).",
             "Your SQL query should use columns line_name, station_id, route_id, direction, route_name, distance_from_last_station_miles, and line_id, along with the COUNT and SUM aggregations functions.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -117,6 +121,7 @@ user_prompts.append(
             "Report the station name, season, and averaged number service days value, sorted by that average value in descending order.",
             "Break ties by sorting by season and then station name, both in ascending order.",
             "Your SQL querys hould use columns station_name, season, number_service_days, station_id, along with the AVG aggregation function.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -128,6 +133,7 @@ user_prompts.append(
             "Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021).",
             "Report the station 6.5830/6.5831 Problem Set 1 (Fall 2023) 4 name(s) and the number of gated entries.",
             "Your SQL query should use station_name, gated_entries, service_date, and station_id, along with the MAX and SUM aggregation functions.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -139,6 +145,7 @@ user_prompts.append(
             "Find the station, time period, and season with the largest number of people who get off (the largest “total offs”).",
             "A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total offs (e.g., the total offs for Kendall/MIT with a direction of 0 should be considered separately from the total offs for Kendall/MIT with a direction of 1 when you are computing the largest total offs). Report the day type, period start time, season, line id, station name, and total offs for this station.",
             "Your SQL query should use day_type, period_start_time, season, line_id, station_name, total_offs, station_id, and time_period_id, along with the MAX aggregation function.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -150,6 +157,7 @@ user_prompts.append(
             "Find every Orange Line station in Fall 2018 that, during time period 01 and the direction of 0, had a total ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total ons value.",
             "Sort the results by total ons in descending order and then station name in ascending order.",
             "Your SQL query should use columns station_name, total_ons, station_id, line_id, season, line_name, time_period_id, and direction.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -161,6 +169,7 @@ user_prompts.append(
             "Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions)."
             "Report station name, route id, line id, and total number of routes passing through the station. Sort the results by line id in ascending order and then route id in ascending order.",
             "Your SQL query should use columns station_id, route_cnt, route_id, station_name, and line_id, along with the MAX and COUNT aggregation function.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )
@@ -173,6 +182,7 @@ user_prompts.append(
             "That is, the station “s” that has the largest ratio “(a - b)/a”, where “a” is the the sum of average flow values for all time periods and all directions of “s” and “b” is the total sum of: the sum of its average ons and sum of its average offs values.",
             "Therefore, the ratio “(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name, and its bypassed ratio. Sort the results by line name in ascending order. HINT: You may need to use function CAST(total flow AS REAL) to cast the summation of flows (i.e. “a” above) to real number.",
             "Your SQL query should use columns station_id, line_id, average_flow, average_ons, average_offs, season, station_name, and line_name, along with the MAX, CAST, and SUM functions.",
+            "Provide only your SQL query, and do not give any additional explanation.",
         ]
     )
 )

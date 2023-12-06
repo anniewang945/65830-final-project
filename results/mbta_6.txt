@@ -1,179 +1,111 @@
 ===============
-total number of tokens in the current prompt:477
+total number of tokens in the current prompt:427
 
 Generated query:
-
-SELECT tp.day_type, tp.period_start_time, rr.season, rr.line_id, s.station_name, rr.total_offs
-FROM rail_ridership rr
-JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-JOIN stations s ON rr.station_id = s.station_id
-WHERE (rr.station_id, rr.direction, rr.total_offs) IN
-    (SELECT station_id, direction, MAX(total_offs)
-     FROM rail_ridership
-     GROUP BY station_id, direction)
-ORDER BY rr.total_offs DESC
+SELECT stations.station_name, SUM(gated_station_entries.gated_entries) AS total_entries
+FROM stations
+JOIN gated_station_entries ON stations.station_id = gated_station_entries.station_id
+WHERE gated_station_entries.service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY stations.station_name
+ORDER BY total_entries DESC
 LIMIT 1;
 
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-Accuracy of test results (length 1) vs target results (length 1) is 1.0
-
-time taken: 2.5528807640075684 seconds
+time taken: 3.653252124786377 seconds
 ===============
-total number of tokens in the current prompt:477
+total number of tokens in the current prompt:427
 
 Generated query:
-
-SELECT t.day_type, 
-       tp.period_start_time, 
-       r.season, 
-       r.line_id, 
-       s.station_name, 
-       rr.total_offs
-  FROM rail_ridership rr
-  JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-  JOIN routes r ON rr.line_id = r.line_id
-  JOIN stations s ON rr.station_id = s.station_id
- WHERE rr.total_offs = (SELECT MAX(total_offs) 
-                          FROM rail_ridership)
-
-
-===============
-total number of tokens in the current prompt:477
-
-Generated query:
-
-SELECT
-  t.day_type,
-  tp.period_start_time,
-  r.season,
-  r.line_id,
-  s.station_name,
-  MAX(rr.total_offs) AS total_offs,
-  rr.station_id,
-  rr.time_period_id
-FROM
-  rail_ridership rr
-  JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-  JOIN routes r ON rr.line_id = r.line_id
-  JOIN stations s ON rr.station_id = s.station_id
-  JOIN (
-    SELECT
-      station_id,
-      MAX(total_offs) AS max_total_offs
-    FROM
-      rail_ridership
-    GROUP BY
-      station_id, season, line_id, direction
-  ) max_offs ON rr.station_id = max_offs.station_id
-               AND rr.total_offs = max_offs.max_total_offs
-               AND rr.season = r.season
-               AND rr.line_id = r.line_id
-               AND rr.direction = r.direction
-  JOIN time_periods t ON tp.time_period_id = t.time_period_id
-GROUP BY
-  t.day_type,
-  tp.period_start_time,
-  r.season,
-  r.line_id,
-  s.station_name,
-  rr.station_id,
-  rr.time_period_id;
-
-
-===============
-total number of tokens in the current prompt:477
-
-Generated query:
-
 SELECT 
-  t.day_type, 
-  tp.period_start_time, 
-  rr.season, 
-  rr.line_id, 
-  s.station_name, 
-  rr.total_offs
+  stations.station_name, 
+  SUM(gated_station_entries.gated_entries) as total_gated_entries
 FROM 
-  rail_ridership rr
-JOIN 
-  stations s ON rr.station_id = s.station_id
-JOIN 
-  time_periods tp ON rr.time_period_id = tp.time_period_id
-JOIN 
-  (SELECT 
-    season, 
-    MAX(total_offs) AS max_total_offs 
-   FROM 
-    rail_ridership 
-   GROUP BY season) t_max
-ON rr.season = t_max.season
-  AND rr.total_offs = t_max.max_total_offs
-  AND rr.direction = 0
-
-
-===============
-total number of tokens in the current prompt:477
-
-Generated query:
-
-SELECT t.day_type, 
-       t.period_start_time, 
-       r.season, 
-       r.line_id, 
-       s.station_name, 
-       MAX(rr.total_offs) AS max_total_offs
-FROM rail_ridership AS rr
-JOIN time_periods AS t ON rr.time_period_id = t.time_period_id
-JOIN routes AS r ON rr.line_id = r.line_id AND rr.direction = r.direction
-JOIN stations AS s ON rr.station_id = s.station_id
-GROUP BY t.day_type, t.period_start_time, r.season, r.line_id, s.station_name
-ORDER BY max_total_offs DESC
-LIMIT 1;
-
-
-error running sql query: no such column: r.season
-===============
-total number of tokens in the current prompt:477
-
-Generated query:
-
-WITH total_offs_per_station AS (
-  SELECT 
-    r.line_id,
-    s.station_name,
-    tp.day_type,
-    tp.period_start_time,
-    rr.season,
-    rr.station_id,
-    rr.time_period_id,
-    SUM(total_offs) AS total_offs
-  FROM
-    rail_ridership rr
-  JOIN stations s ON rr.station_id = s.station_id
-  JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-  JOIN routes r ON rr.line_id = r.line_id
-  GROUP BY 
-    r.line_id, 
-    s.station_name, 
-    tp.day_type, 
-    tp.period_start_time, 
-    rr.season, 
-    rr.station_id, 
-    rr.time_period_id
-)
-SELECT 
-  day_type, 
-  period_start_time, 
-  season, 
-  line_id, 
-  station_name, 
-  total_offs 
-FROM 
-  total_offs_per_station
+  gated_station_entries
+INNER JOIN 
+  stations ON gated_station_entries.station_id = stations.station_id
 WHERE 
-  (total_offs, station_id, time_period_id) IN 
-  (SELECT MAX(total_offs), station_id, time_period_id FROM total_offs_per_station);
+  (service_date LIKE '2021-06-%' OR 
+  service_date LIKE '2021-07-%' OR 
+  service_date LIKE '2021-08-%')
+GROUP BY 
+  stations.station_name
+ORDER BY 
+  total_gated_entries DESC
+LIMIT 1;
 
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-Accuracy of test results (length 1) vs target results (length 1) is -1.0, 2 incorrect
+time taken: 6.023723125457764 seconds
+===============
+total number of tokens in the current prompt:427
 
-time taken: 5.553790807723999 seconds
+Generated query:
+SELECT 
+    s.station_name, 
+    SUM(g.gated_entries) AS total_gated_entries
+FROM 
+    gated_station_entries g
+JOIN 
+    stations s ON g.station_id = s.station_id
+WHERE 
+    g.service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY 
+    s.station_name
+ORDER BY 
+    total_gated_entries DESC
+LIMIT 1;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 3.9854960441589355 seconds
+===============
+total number of tokens in the current prompt:427
+
+Generated query:
+SELECT s.station_name, SUM(g.gated_entries) as total_gated_entries
+FROM stations s
+JOIN gated_station_entries g
+  ON s.station_id = g.station_id
+WHERE g.service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY s.station_name
+ORDER BY total_gated_entries DESC
+LIMIT 1;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 4.300943851470947 seconds
+===============
+total number of tokens in the current prompt:427
+
+Generated query:
+SELECT s.station_name, MAX(t.total_gated_entries) 
+FROM stations s 
+JOIN 
+(
+	SELECT station_id, SUM(gated_entries) AS total_gated_entries 
+	FROM gated_station_entries
+	WHERE (strftime('%m', service_date) IN ('06', '07', '08')) AND (strftime('%Y', service_date) = '2021')
+	GROUP BY station_id
+) t 
+ON s.station_id = t.station_id;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 5.199457883834839 seconds
+===============
+total number of tokens in the current prompt:427
+
+Generated query:
+SELECT s.station_name, SUM(g.gated_entries) as total_gated_entries
+FROM stations s
+JOIN gated_station_entries g
+ON s.station_id = g.station_id
+WHERE g.service_date BETWEEN '2021-06-01' AND '2021-08-31'
+GROUP BY s.station_name
+ORDER BY total_gated_entries DESC
+LIMIT 1;
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 5.0769641399383545 seconds

@@ -1,127 +1,172 @@
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:430
 
 Generated query:
-
-SELECT r.line_id, r.route_id, r.direction, r.route_name, 
-       COUNT(so.station_id) AS number_of_stations, 
-       SUM(so.distance_from_last_station_miles) AS total_length_miles
-  FROM routes r
-       JOIN station_orders so ON r.route_id = so.route_id
-       JOIN lines l ON r.line_id = l.line_id
- WHERE l.line_name != 'Green Line'
-GROUP BY r.line_id, r.route_id, r.direction, r.route_name
-ORDER BY COUNT(so.station_id) DESC, SUM(so.distance_from_last_station_miles) DESC;
-
-
-Accuracy of test results (length 10) vs target results (length 10) is -1.0
-
-time taken: 3.0820372104644775 seconds
-===============
-total number of tokens in the current prompt:437
-
-Generated query:
-
-SELECT r.route_id, r.direction, r.route_name, 
-       COUNT(so.station_id) AS number_of_stations, 
-       SUM(so.distance_from_last_station_miles) AS total_length_miles
-FROM routes r
-JOIN station_orders so ON r.route_id = so.route_id
-JOIN lines l ON r.line_id = l.line_id
-WHERE l.line_name != 'Green Line'
-GROUP BY r.route_id, r.direction, r.route_name
-ORDER BY number_of_stations DESC, total_length_miles DESC;
-
-
-Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
-
-time taken: 2.2001240253448486 seconds
-===============
-total number of tokens in the current prompt:437
-
-Generated query:
-
 SELECT 
-    r.line_id, 
-    r.route_id, 
-    r.direction, 
-    r.route_name,
-    COUNT(so.station_id) AS number_of_stations,
-    SUM(so.distance_from_last_station_miles) AS total_length_in_miles
+    rail_ridership.season, 
+    rail_ridership.line_id, 
+    rail_ridership.direction, 
+    SUM(rail_ridership.total_ons) as total_ons
 FROM 
-    routes r
-JOIN 
-    station_orders so 
-ON 
-    r.route_id = so.route_id
-JOIN 
-    lines l 
-ON 
-    r.line_id = l.line_id
+    rail_ridership
+INNER JOIN 
+    time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
+INNER JOIN 
+    stations ON rail_ridership.station_id = stations.station_id
 WHERE 
-    l.line_name != 'Green Line'
+    stations.station_name = 'Kendall/MIT' AND
+    time_periods.day_type = 'Weekday' AND
+    (time_periods.period_start_time BETWEEN '16:00:00' AND '18:30:00' OR 
+    time_periods.period_end_time BETWEEN '16:00:00' AND '18:30:00')
 GROUP BY 
-    r.line_id, r.route_id, r.direction, r.route_name
+    rail_ridership.season, 
+    rail_ridership.line_id, 
+    rail_ridership.direction
 ORDER BY 
-    number_of_stations DESC, total_length_in_miles DESC;
+    rail_ridership.season ASC, 
+    rail_ridership.direction ASC;
 
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
 
-Accuracy of test results (length 10) vs target results (length 10) is -1.0, 20 incorrect
-
-time taken: 2.6609981060028076 seconds
+time taken: 10.717080116271973 seconds
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:430
 
 Generated query:
+SELECT 
+  r.season, 
+  r.line_id, 
+  r.direction, 
+  SUM(r.total_ons) AS total_ons
+FROM 
+  rail_ridership r
+JOIN 
+  time_periods t ON r.time_period_id = t.time_period_id
+JOIN 
+  stations s ON r.station_id = s.station_id
+JOIN 
+  lines l ON r.line_id = l.line_id
+WHERE 
+  t.period_start_time >= '16:00' AND 
+  t.period_end_time <= '18:30' AND 
+  t.day_type = 'weekday' AND 
+  s.station_name = 'Kendall/MIT' AND 
+  l.line_name = 'Red Line'
+GROUP BY 
+  r.season, 
+  r.line_id, 
+  r.direction
+ORDER BY 
+  r.season ASC, 
+  r.direction ASC;
 
-SELECT r.route_id, r.direction, r.route_name, 
-    COUNT(s.station_id) AS number_of_stations, 
-    SUM(so.distance_from_last_station_miles) AS total_length_in_miles
-FROM routes r
-JOIN station_orders so ON r.route_id = so.route_id
-JOIN stations s ON so.station_id = s.station_id
-JOIN lines l ON r.line_id = l.line_id
-WHERE l.line_name != 'Green Line'
-GROUP BY r.route_id, r.direction, r.route_name
-ORDER BY number_of_stations DESC, total_length_in_miles DESC;
+Accuracy of test results (length 6) vs target results (length 6) is -1.0, 12 incorrect
 
-
-Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
-
-time taken: 4.68964409828186 seconds
+time taken: 7.169696092605591 seconds
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:430
 
 Generated query:
+SELECT 
+  rr.season, 
+  rr.line_id, 
+  rr.direction, 
+  SUM(rr.total_ons) as total_ons
+FROM 
+  rail_ridership rr
+JOIN 
+  stations s ON rr.station_id = s.station_id
+JOIN 
+  lines l ON rr.line_id = l.line_id 
+JOIN 
+  time_periods tp ON rr.time_period_id = tp.time_period_id
+WHERE 
+  s.station_name = 'Kendall/MIT' 
+  AND l.line_name = 'Red Line' 
+  AND tp.day_type = 'Weekday' 
+  AND tp.period_start_time >= '16:00' 
+  AND tp.period_end_time <= '18:30'
+GROUP BY 
+  rr.season, 
+  rr.line_id, 
+  rr.direction 
+ORDER BY 
+  rr.season ASC, 
+  rr.direction ASC;
 
-SELECT r.route_id, r.direction, r.route_name, COUNT(so.station_id) AS number_of_stations, SUM(so.distance_from_last_station_miles) AS total_length
-FROM routes r
-JOIN station_orders so ON r.route_id = so.route_id
-JOIN lines l ON r.line_id = l.line_id
-WHERE l.line_name != 'Green Line'
-GROUP BY r.route_id, r.direction, r.route_name
-ORDER BY COUNT(so.station_id) DESC, SUM(so.distance_from_last_station_miles) DESC;
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
 
-
-Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
-
-time taken: 3.5265138149261475 seconds
+time taken: 7.470937013626099 seconds
 ===============
-total number of tokens in the current prompt:437
+total number of tokens in the current prompt:430
 
 Generated query:
+SELECT 
+  rail_ridership.season,
+  rail_ridership.line_id,
+  rail_ridership.direction,
+  SUM(rail_ridership.total_ons) as total_ons
+FROM 
+  rail_ridership
+  JOIN stations ON rail_ridership.station_id = stations.station_id
+  JOIN lines ON rail_ridership.line_id = lines.line_id
+  JOIN time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
+WHERE 
+  stations.station_name = 'Kendall/MIT' AND
+  lines.line_name = 'Red Line' AND
+  time_periods.day_type = 'Weekday' AND
+  time_periods.period_start_time <= '16:00:00' AND 
+  time_periods.period_end_time >= '18:30:00'
+GROUP BY 
+  rail_ridership.season,
+  rail_ridership.line_id,
+  rail_ridership.direction
+ORDER BY 
+  rail_ridership.season ASC,
+  rail_ridership.direction ASC;
 
-SELECT r.line_id, r.route_id, r.direction, r.route_name, 
-       COUNT(so.station_id) as number_of_stations,
-       SUM(so.distance_from_last_station_miles) as total_length_in_miles
-FROM routes r
-JOIN station_orders so ON r.route_id = so.route_id
-JOIN lines l ON r.line_id = l.line_id
-WHERE l.line_name != 'Green Line'
-GROUP BY r.line_id, r.route_id, r.direction, r.route_name
-ORDER BY number_of_stations DESC, total_length_in_miles DESC;
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
 
+time taken: 9.9308180809021 seconds
+===============
+total number of tokens in the current prompt:430
 
-Accuracy of test results (length 10) vs target results (length 10) is -1.0, 20 incorrect
+Generated query:
+SELECT rail_ridership.season, rail_ridership.line_id, rail_ridership.direction, SUM(rail_ridership.total_ons) as total_ons
+FROM rail_ridership
+JOIN time_periods
+  ON rail_ridership.time_period_id = time_periods.time_period_id
+JOIN stations
+  ON rail_ridership.station_id = stations.station_id
+JOIN lines
+  ON rail_ridership.line_id = lines.line_id
+WHERE time_periods.day_type = 'Weekday'
+AND time_periods.period_start_time >= '16:00'
+AND time_periods.period_end_time <= '18:30'
+AND stations.station_name = 'Kendall/MIT'
+AND lines.line_name = 'Red Line'
+GROUP BY rail_ridership.season, rail_ridership.line_id, rail_ridership.direction
+ORDER BY rail_ridership.season ASC, rail_ridership.direction ASC;
 
-time taken: 3.2653040885925293 seconds
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
+
+time taken: 7.74023175239563 seconds
+===============
+total number of tokens in the current prompt:430
+
+Generated query:
+SELECT r.season, r.line_id, r.direction, SUM(r.total_ons) as total_ons
+FROM rail_ridership as r
+JOIN time_periods as t ON r.time_period_id = t.time_period_id
+JOIN stations as s ON r.station_id = s.station_id
+JOIN lines as l ON r.line_id = l.line_id
+WHERE s.station_name = 'Kendall/MIT' AND l.line_name = 'Red Line'
+AND t.day_type = 'Weekday'
+AND t.period_start_time >= '16:00:00'
+AND t.period_end_time <= '18:30:00'
+GROUP BY r.season, r.line_id, r.direction
+ORDER BY r.season ASC, r.direction ASC;
+
+Accuracy of test results (length 0) vs target results (length 6) is 0.0, 6 incorrect
+
+time taken: 6.814384698867798 seconds

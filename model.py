@@ -1,8 +1,10 @@
 from openai import OpenAI
 import time
 import os
+import regex
 
 GPT_3 = "gpt-3.5-turbo-1106"
+GPT_4 = "gpt-4"
 DEFAULT_SYS = "You are a helpful assistant."
 api_key = os.environ[
     "OPENAI_API_KEY"
@@ -42,5 +44,5 @@ class Model:
 
 
 if __name__ == "__main__":
-    model = Model(GPT_3)
+    model = Model(GPT_4)
     print(model.query("what is the today's date?"))

@@ -1,104 +1,170 @@
 ===============
-total number of tokens in the current prompt:438
+total number of tokens in the current prompt:451
 
 Generated query:
-
 SELECT 
-    s.station_name,
-    r.season,
-    AVG(rr.number_service_days) AS averaged_service_days
+    r.route_id,
+    r.direction,
+    r.route_name,
+    COUNT(so.station_id) AS number_of_stations,
+    SUM(so.distance_from_last_station_miles) AS length_in_miles
 FROM 
-    rails_ridership rr
-JOIN routes r ON rr.line_id = r.line_id AND r.direction = rr.direction
-JOIN stations s ON rr.station_id = s.station_id
+    routes r
+LEFT JOIN 
+    station_orders so ON r.route_id = so.route_id
+LEFT JOIN 
+    lines l ON r.line_id = l.line_id
+WHERE 
+    l.line_name <> 'Green Line'
 GROUP BY 
-    s.station_name, r.season
+    r.route_id,
+    r.direction,
+    r.route_name
 ORDER BY 
-    averaged_service_days DESC, r.season ASC, s.station_name ASC;
+    COUNT(so.station_id) DESC, 
+    SUM(so.distance_from_last_station_miles) DESC;
 
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
 
+time taken: 6.481182098388672 seconds
 ===============
-total number of tokens in the current prompt:438
+total number of tokens in the current prompt:451
 
 Generated query:
+SELECT
+    r.route_id,
+    r.direction,
+    r.route_name,
+    COUNT(so.station_id) as num_stations,
+    IFNULL(SUM(so.distance_from_last_station_miles), 0) as total_length_miles
+FROM
+    routes r
+    INNER JOIN station_orders so ON r.route_id = so.route_id
+    INNER JOIN lines l ON r.line_id = l.line_id
+WHERE
+    l.line_name <> 'Green Line'
+GROUP BY
+    r.route_id, r.direction, r.route_name
+ORDER BY
+    num_stations DESC, total_length_miles DESC;
 
-SELECT s.station_name, rs.season, AVG(rr.number_service_days) AS averaged_number_service_days
-FROM stations s
-JOIN rail_ridership rr ON s.station_id = rr.station_id
-GROUP BY s.station_name, rs.season
-ORDER BY AVG(rr.number_service_days) DESC, rs.season ASC, s.station_name ASC;
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
 
-
+time taken: 5.215013027191162 seconds
 ===============
-total number of tokens in the current prompt:438
+total number of tokens in the current prompt:451
 
 Generated query:
-
 SELECT 
-    s.station_name,
-    rr.season,
-    AVG(rr.number_service_days) AS averaged_number_service_days
+  r.route_id, 
+  r.direction, 
+  r.route_name, 
+  COUNT(s.station_id) as number_of_stations, 
+  SUM(so.distance_from_last_station_miles) as total_length_in_miles
 FROM 
+  routes r 
+  JOIN station_orders so ON r.route_id = so.route_id 
+  JOIN stations s ON so.station_id = s.station_id 
+  JOIN lines l ON r.line_id = l.line_id
+WHERE 
+  l.line_name != 'Green Line'
+GROUP BY 
+  r.route_id, 
+  r.direction, 
+  r.route_name
+ORDER BY 
+  COUNT(s.station_id) DESC, 
+  SUM(so.distance_from_last_station_miles) DESC;
+
+Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
+
+time taken: 7.123546838760376 seconds
+===============
+total number of tokens in the current prompt:451
+
+Generated query:
+SELECT 
+    r.route_id AS route_id, 
+    r.direction AS direction, 
+    r.route_name AS route_name, 
+    COUNT(s.station_id) AS number_of_stations, 
+    SUM(so.distance_from_last_station_miles) AS total_length_miles
+FROM 
+    routes r
+JOIN 
+    station_orders so
+    ON r.route_id = so.route_id
+JOIN 
     stations s
-INNER JOIN 
-    rail_ridership rr 
-ON 
-    s.station_id = rr.station_id
+    ON so.station_id = s.station_id
+JOIN 
+    lines l 
+    ON r.line_id = l.line_id
+WHERE 
+    l.line_name != 'Green Line'
 GROUP BY 
-    s.station_id, rr.season
+    r.route_id, 
+    r.direction, 
+    r.route_name
 ORDER BY 
-    AVG(rr.number_service_days) DESC,
-    rr.season,
-    s.station_name;
+    COUNT(s.station_id) DESC,
+    SUM(so.distance_from_last_station_miles) DESC;
 
+Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
 
-Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
-
-time taken: 1.3842339515686035 seconds
+time taken: 7.350928068161011 seconds
 ===============
-total number of tokens in the current prompt:438
+total number of tokens in the current prompt:451
 
 Generated query:
+SELECT 
+  r.route_id, 
+  r.direction, 
+  r.route_name, 
+  COUNT(s.station_id) AS number_of_stations, 
+  SUM(so.distance_from_last_station_miles) AS length_in_miles
+FROM 
+  routes r
+  JOIN station_orders so ON r.route_id = so.route_id
+  JOIN stations s ON s.station_id = so.station_id
+  JOIN lines l ON l.line_id = r.line_id
+WHERE 
+  l.line_name != 'Green Line'
+GROUP BY 
+  r.route_id, 
+  r.direction, 
+  r.route_name
+ORDER BY 
+  number_of_stations DESC, 
+  length_in_miles DESC;
 
-SELECT s.station_name, r.season, AVG(rr.number_service_days) AS avg_service_days
-FROM stations s
-JOIN station_orders so ON s.station_id = so.station_id
-JOIN routes r ON so.route_id = r.route_id
-JOIN rail_ridership rr ON r.line_id = rr.line_id AND r.direction = rr.direction AND s.station_id = rr.station_id
-GROUP BY s.station_name, r.season
-ORDER BY avg_service_days DESC, r.season, s.station_name ASC;
+Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
 
-
+time taken: 7.596928834915161 seconds
 ===============
-total number of tokens in the current prompt:438
+total number of tokens in the current prompt:451
 
 Generated query:
+SELECT 
+  r.route_id,
+  r.direction,
+  r.route_name,
+  COUNT(so.station_id) AS num_stations,
+  SUM(so.distance_from_last_station_miles) AS total_miles
+FROM
+  routes r 
+  JOIN station_orders so ON r.route_id = so.route_id
+  JOIN lines l ON r.line_id = l.line_id
+WHERE 
+  l.line_name != 'Green Line'
+GROUP BY 
+  r.route_id,
+  r.direction,
+  r.route_name
+ORDER BY 
+  num_stations DESC, 
+  total_miles DESC;
 
-SELECT s.station_name, 
-       rr.season, 
-       AVG(rr.number_service_days) AS averaged_number_service_days
-  FROM stations s
-      JOIN rail_ridership rr ON s.station_id = rr.station_id
- GROUP BY s.station_name, rr.season
- ORDER BY AVG(rr.number_service_days) DESC, rr.season ASC, s.station_name ASC;
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
 
-
-Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
-
-time taken: 2.825272798538208 seconds
-===============
-total number of tokens in the current prompt:438
-
-Generated query:
-
-SELECT s.station_name, rr.season, 
-    AVG(rr.number_service_days) AS averaged_number_service_days
-FROM stations s
-JOIN rail_ridership rr ON s.station_id = rr.station_id
-GROUP BY s.station_name, rr.season
-ORDER BY AVG(rr.number_service_days) DESC, rr.season ASC, s.station_name ASC;
-
-
-Accuracy of test results (length 339) vs target results (length 339) is 1.0, 0 incorrect
-
-time taken: 2.315164804458618 seconds
+time taken: 5.612836122512817 seconds
