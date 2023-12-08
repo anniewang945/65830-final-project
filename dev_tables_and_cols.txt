@@ -1,0 +1,84 @@
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.country
+2. singer.age
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.country
+2. singer.age
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.song_name
+2. singer.age
+Your SQL query should use columns song_name and age.
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. concert.stadium_id
+2. concert.year
+3. stadium.stadium_id
+4. stadium.name
+5. stadium.capacity
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. stadium.name
+2. stadium.stadium_id
+3. concert.stadium_id
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer_in_concert.concert_id
+2. concert.concert_name
+3. concert.theme
+4. concert.concert_id
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.name
+2. singer.singer_id
+3. singer_in_concert.singer_id
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. singer.name
+2. singer.country
+3. singer.song_name
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. student.stuid
+2. student.age
+3. has_pet.stuid
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. student.stuid
+2. student.sex
+3. has_pet.stuid
+4. has_pet.petid
+5. pets.petid
+6. pets.pettype
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. continents.contid
+2. continents.continent
+3. countries.continent
+SQL:  select t1.contid ,  t1.continent ,  count(*) from continents as t1 
+join countries as t2 on t1.contid  =  t2.continent group by t1.contid;
+Your SQL query should use columns contid and continent.
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. car_makers.fullname
+2. car_makers.id
+3. model_list.maker
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. car_makers.fullname
+2. car_makers.id
+3. model_list.maker
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. car_names.model
+2. car_names.makeid
+3. cars_data.id
+4. cars_data.horsepower
+```
+Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
+1. model_list.model
+2. car_names.model
+3. car_names.makeid
+4. cars_data.id
+5. cars_data.year

@@ -58,12 +58,20 @@ for l in questions.readlines():
     # else:
     #     print()
 
+with open("dev_tables_and_cols.txt", "r") as f:
+    tables_and_cols_context = f.read().split("```")
+assert len(tables_and_cols_context) == len(questions_and_tables)
+
+i = 0
 for q, t in zip(questions_and_tables, target_queries):
     # add more context to schema if needed
     table = questions_and_tables[q]
-    system_knowledge = "Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.\n" + table_and_schemas[table]
+    system_knowledge = "Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.\n" 
+    system_knowledge += table_and_schemas[table]
     system_knowledge += "\n\nThe following paragraphs further describe the database.\n" + db_and_descriptions[table]
+    
     user_prompt = q
+    user_prompt += "\n" + tables_and_cols_context[i]
 
     print("passing system knowledge:".upper() + system_knowledge)
     print("passing user prompt:".upper() + user_prompt)
@@ -115,4 +123,5 @@ for q, t in zip(questions_and_tables, target_queries):
     except Exception as e:
         print("error running sql query: ".upper(), e)
 
+    i += 1
     print("===================================\n")
