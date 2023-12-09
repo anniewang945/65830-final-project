@@ -1,0 +1,29 @@
+Your SQL query should use columns country.
+```
+Your SQL query should use column country.
+```
+Your SQL query should use columns song_name and age.
+```
+Your SQL query should use columns name, capacity, stadium_id, and year.
+```
+Your SQL query should use columns name and stadium_id.
+```
+Your SQL query should use columns concert_name, theme, and concert_id.
+```
+Your SQL query should use columns name and singer_id.
+```
+Your SQL query should use columns name, country, and song_name.
+```
+Your SQL query should use colums stuid and age.
+```
+Your SQL query should use columns stuid, petid, sex, and pettype.
+```
+Your SQL query should use columns contid and continent.
+```
+Your SQL query should use columns fullname, id, and maker.
+```
+Your SQL query should use columns fullname, id, and maker.
+```
+Your SQL query should use columns model, makeid, id, and horsepower.
+```
+Your SQL query should use colums model, makeid, id, and year.

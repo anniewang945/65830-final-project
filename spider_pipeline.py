@@ -58,7 +58,7 @@ for l in questions.readlines():
     # else:
     #     print()
 
-with open("dev_tables_and_cols.txt", "r") as f:
+with open("dev_cols.txt", "r") as f:
     tables_and_cols_context = f.read().split("```")
 assert len(tables_and_cols_context) == len(questions_and_tables)
 
