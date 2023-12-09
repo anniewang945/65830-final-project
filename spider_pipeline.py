@@ -132,6 +132,8 @@ for q, t in zip(questions_and_tables, target_queries):
             print()
     except Exception as e:
         print("error running sql query: ".upper(), e)
+        print("comparing query accuracy with target".upper())
+        print(compare_accuracy([], target_result))
 
     i += 1
     print("===================================\n")
