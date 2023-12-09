@@ -1,77 +1,10 @@
-db_id: pets_1
-The database has the following 3 tables.
-The table named Student records information about a student in each row.
-The column named StuID in the Student table records the student's id.
-The column named LName in the Student table records the student's last name.
-The column named Fname in the Student table records the student's first name.
-The column named Age in the Student table records the student's age.
-The column named Sex in the Student table records the student's sex.
-The column named Major in the Student table records the student's major.
-The column named Advisor in the Student table records the student's advisor.
-The column named city_code in the Student table records the student's city code.
-The table named Has_Pet records a pet ownership in each row.
-The column named StuID in the Has_Pet table records the student id of the pet owner, and the column named PetID records the id of the pet owned.
-The table named Pets records information about a pet in each row.
-The column named PetID in the Pets table records the pet's id.
-The column named PetType in the Pets table records the pet's type.
-The column named pet_age in the Pets table records the pet's age.
-The column named weight in the Pets table records the pet's weight
-
-db_id: concert_singer
-The database has the following 4 tables.
-The table named stadium records information about a stadium in each row.
-The column named Stadium_ID in the stadium table records the stadium's id.
-The column named Location in the stadium table records the stadium's location.
-The column named Name in the stadium table records the stadium's name.
-The column named Capacity in the stadium table records the stadium's capacity.
-The column named Highest in the stadium table records the stadium's highest attendance.
-The column named Lowest in the stadium table records the stadium's lowest attendance.
-The column named Average in the stadium table records the stadium's average attendance.
-The table named singer records information about a singer in each row.
-The column named Singer_ID in the singer table records the singer's id.
-The column named Name in the singer table records the singer's name.
-The column named Country in the singer table records the singer's country.
-The column named Song_Name in the singer table records the name of the singer's song.
-The column named Song_release_year in the singer table records release year of the song.
-The column named Age in the singer table records the singer's age.
-The column named Is_male in the singer table records whether the singer is male.
-The table named concert records information about a concert in each row.
-The column named concert_ID in the concert table records the concert's id.
-The column named concert_Name in the concert table records the concert's name.
-The column named Theme in the concert table records the concert's theme.
-The column named Stadium_ID in the concert table records the concert's stadium id.
-The column named Year in the concert table records the concert's year.
-The table named singer_in_concert records which singer performed in which concert.
-The column named concert_ID in the singer_in_concert table records a concert's id, and the column named Singer_ID records the id of the singer who performed in the concert.
-
-db_id: car_1
-The database has the following 6 tables.
-The table named continents records information about a continent in each row.
-The column named ContId in the continents table records the continent's id.
-The column named Continent in the continents table records continent's name.
-The table named countries records information about a country in each row.
-The column named CountryId in the countries table records the country's id.
-The column named CountryName in the countries table records the country's name.
-The column named Continent in the countries table records the continent that the country is in.
-The table named car_makers records information about a car maker in each row.
-The column named Id in the car_makers table records the car maker's id.
-The column named Maker in the car_makers table records the acronym of the car maker's name.
-The column named FullName in the car_makers table records the car maker's full name.
-The column named Country in the car_makers table records the car maker's country.
-The table named model_list records information about a model in each row.
-The column named ModelId in the model_list table records the model's id.
-The column named Maker in the model_list table records the model's car maker.
-The column named Model in the model_list table records the model's name.
-The table named car_names records information about the make of a car in each row.
-The column named MakeId in the car_names table records the car make's id.
-The column named Model in the car_names table records the car make's model
-The column named Make in the car_names table records the car make's name.
-The table named cars_data records further information about the make of a car in each row.
-The column named Id in the cars_data table records the car make's id.
-The column named MPG in the cars_data table records the number of miles the car make can drive using one gallon of fuel.
-The column named Cylinders in the cars_data table records the number of cylinders in the car make.
-The column named Edispl in the cars_data table records the car make's engine displacement volume in cubic inches.
-The column named Horsepower in the cars_data table records the power of the car make's engine in horsepowers.
-The column named Weight in the cars_data table records the weight of the car in lbs.
-The column named Accelerate in the cars_data table records the time taken to accelerate the car from 0 to 60mph in seconds (possibly with fractions of a second).
-The column named Year in the cars_data table records the year in which the car make was created.
+db_id: mbta
+The dataset is derived using data from the Massachusetts Bay Transportation Authority’s (MBTA) Open Data Portal. This dataset includes information about the MBTA’s subway lines (e.g. lines, stations, ridership, etc.).
+The database tables include:
+lines: contains the ID and name of each T rail line in the dataset. Note that the Silver Line is not included.
+routes: details the different rail routes that operate on the lines; for example, the Red Line has one route which services Braintree to Alewife and another distinct route which services Ashmont to Alewife. The table contains a unique route ID, the route name, the ID of the line it belongs to, the IDs of the first and last stations of that route, and the direction, given in a binary field and a string description.
+stations: contains the ID and name of each T station in the dataset. Note that this stations list is a snapshot of the past (to be specific, June 2020); newly opened stations, such as the Union Square station, are not included, and vintage stations, such as the BU West station, are included.
+station_orders: describes the order of stations along each route. The table contains a route ID, station ID, number in the order of that route, and distance (in miles) from the previous station to the current station. Note that all initial stations of each route have a set distance of 0 since there is no previous station. In addition, all Green Line distances are set to NULL since the MBTA did not provide a complete dataset in this case.
+gated_station_entries: contains the number of people entering the gates of each station in half-hour increments. The table contains the service date and time, station and line IDs (some stations have gates for multiple lines; e.g. Downtown Crossing is a station on both the Red and Orange lines), and number of entries. Note that the number of gated entries are sometimes not whole numbers in the table; if you aggregate over multiple lines on the same station most should sum to a whole number (except for stations which exist on the Silver Line, like South Station).
+rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over various time slices of the week. The table contains the season (i.e. “Fall 2017”), line ID, direction, time period ID, and station ID as the primary key; further, we have the total number of people who got on the train, the total number of people who got off the train, the number of non-holiday days in operation during that portion of the season, the average number of people who got on the train per operating day, the average number of people who got off the train per operating day, and the average flow, or number of people who were in the train or boarded or disembarked at that station.
+time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).

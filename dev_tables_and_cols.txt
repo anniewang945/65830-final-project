@@ -1,84 +1,160 @@
+Find all stations which are at least 1 mile away from the previous station.
+Report the station ID, route ID, and distance (in miles) to the previous station, sorted by decreasing distance.
+Break ties in distance by sorting by route ID and then station ID, both in ascending order.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. singer.country
-2. singer.age
+1. station_orders.station_id
+2. station_orders.route_id
+3. station_orders.distance_from_last_station_miles
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Find the first and last station for each route on each line.
+Report the line name, route direction name, and first and last station name.
+Sort the results by the line name, direction name, first station name, and then last station name—all in ascending order.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. singer.country
-2. singer.age
+1. routes.first_station_id
+2. routes.last_station_id
+3. routes.direction_desc
+4. routes.line_id
+5. stations.station_id
+6. stations.station_name
+7. lines.line_id
+8. lines.line_name
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the “Kendall/MIT” Red Line station.
+Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. singer.song_name
-2. singer.age
-Your SQL query should use columns song_name and age.
+1. rail_ridership.season
+2. rail_ridership.line_id
+3. rail_ridership.direction
+4. rail_ridership.total_ons
+5. rail_ridership.station_id
+6. rail_ridership.time_period_id
+7. lines.line_id
+8. lines.line_name
+9. stations.station_name
+10. stations.station_id
+11. time_periods.time_period_id
+12. time_periods.period_start_time
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Find the total length in miles and number of stations of each line’s routes.
+Report the route id, direction, route - name, number of stations, and length in miles for each route.
+Exclude the Green Line since the distance between stations is missing.
+Sort the results by total number of stations in descending order (break tie using total length in miles in descending).
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. concert.stadium_id
-2. concert.year
-3. stadium.stadium_id
-4. stadium.name
-5. stadium.capacity
+1. routes.route_id
+2. routes.direction
+3. routes.route_name
+4. routes.line_id
+5. station_orders.station_id
+6. station_orders.distance_from_last_station_miles
+7. station_orders.route_id
+8. lines.line_name
+9. lines.line_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+For each station in each season, find the average number of line service days.
+(That is, find the average of the number of number service days over different lines, directions and time periods, but do not sum over different values for season.)
+Report the station name, season, and averaged number service days value, sorted by that average value in descending order.
+Break ties by sorting by season and then station name, both in ascending order.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. stadium.name
-2. stadium.stadium_id
-3. concert.stadium_id
+1. rail_ridership.station_id
+2. rail_ridership.season
+3. rail_ridership.number_service_days
+4. stations.station_name
+5. stations.station_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021).
+Report the station 6.5830/6.5831 Problem Set 1 (Fall 2023) 4 name(s) and the number of gated entries.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. singer_in_concert.concert_id
-2. concert.concert_name
-3. concert.theme
-4. concert.concert_id
+1. gated_station_entries.service_date
+2. gated_station_entries.gated_entries
+3. gated_station_entries.station_id
+4. gated_station_entries.service_date
+5. station.station_name
+6. stations.station_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Find the station, time period, and season with the largest number of people who get off (the largest “total offs”).
+A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total offs (e.g., the total offs for Kendall/MIT with a direction of 0 should be considered separately from the total offs for Kendall/MIT with a direction of 1 when you are computing the largest total offs).
+Report the day type, period start time, season, line id, station name, and total offs for this station.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. singer.name
-2. singer.singer_id
-3. singer_in_concert.singer_id
+1. rail_ridership.season
+2. rail_ridership.line_id
+3. rail_ridership.station_id
+4. rail_ridership.time_period_id
+5. rail_ridership.total_offs
+6. stations.station_id
+7. stations.station_name
+8. time_periods.time_period_id
+9. time_periods.day_type
+10. time_periods.period_start_time
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Find every Orange Line station in Fall 2018 that, during time period 01 and the direction of 0, had a total ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction.
+Report the station name and the total ons value.
+Sort the results by total ons in descending order and then station name in ascending order.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. singer.name
-2. singer.country
-3. singer.song_name
+1. rail_ridership.total_ons
+2. rail_ridership.station_id
+3. rail_ridership.season
+4. rail_ridership.line_id
+5. rail_ridership.time_period_id
+6. rail_ridership.direction
+7. stations.station_id
+8. stations.station_name
+9. lines.line_id
+10. lines.line_name
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+Find the station with most number of routes passing through it. 
+(E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions.)
+Report station name, route id, line id, and total number of routes passing through the station.
+Sort the results by line id in ascending order and then route id in ascending order.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. student.stuid
-2. student.age
-3. has_pet.stuid
+1. station_orders.station_id
+2. stations.station_name
+3. station_orders.route_id
+4. stations.station_id
+5. routes.line_id
+6. routes.route_id
+
+Provide only your SQL query, and do not give any additional explanation.
 ```
+For each line, in the Fall 2019 season, find the station with 'maximally bypassed ratio'.
+That is, the station “s” that has the largest ratio “(a - b)/a”, where “a” is the the sum of average flow values for all time periods and all directions of “s” and “b” is the total sum of: the sum of its average ons and sum of its average offs values.
+Therefore, the ratio “(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name, and its bypassed ratio.
+Sort the results by line name in ascending order.
+HINT: You may need to use function CAST(total flow AS REAL) to cast the summation of flows (i.e. “a” above) to real number.
+
 Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. student.stuid
-2. student.sex
-3. has_pet.stuid
-4. has_pet.petid
-5. pets.petid
-6. pets.pettype
-```
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. continents.contid
-2. continents.continent
-3. countries.continent
-SQL:  select t1.contid ,  t1.continent ,  count(*) from continents as t1 
-join countries as t2 on t1.contid  =  t2.continent group by t1.contid;
-Your SQL query should use columns contid and continent.
-```
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. car_makers.fullname
-2. car_makers.id
-3. model_list.maker
-```
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. car_makers.fullname
-2. car_makers.id
-3. model_list.maker
-```
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. car_names.model
-2. car_names.makeid
-3. cars_data.id
-4. cars_data.horsepower
-```
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. model_list.model
-2. car_names.model
-3. car_names.makeid
-4. cars_data.id
-5. cars_data.year
+1. rail_ridership.station_id
+2. rail_ridership.line_id
+3. rail_ridership.average_flow
+4. rail_ridership.average_ons
+5. rail_ridership.average_offs
+6. stations.station_id
+7. stations.station_name
+8. lines.line_id
+9. lines.line_name
+
+Provide only your SQL query, and do not give any additional explanation.
