@@ -8,6 +8,10 @@ from model import GPT_4, Model
 from utils import compare_accuracy, num_tokens_from_string
 
 
+INCLUDE_EXAMPLE_ROW = False
+INCLUDE_REQUIRED_COLUMNS = False
+INCLUDE_REQUIRED_TABLES_AND_COLUMNS = False
+
 # Extract database descriptions
 db_and_descriptions = dict()
 db_desc = open("dev_db_descriptions.txt")
@@ -44,9 +48,11 @@ for l in questions.readlines():
         for r in schema_results:
             for s in r:
                 schema += s
-                table_name = s[len("CREATE TABLE "):s.find("(")]
-                schema_results = c.execute("SELECT * FROM {} LIMIT 1".format(table_name)).fetchone()
-                schema += "\nExample row for {}: {}\n".format(table_name, schema_results)
+                if INCLUDE_EXAMPLE_ROW:
+                    table_name = s[len("CREATE TABLE "):s.find("(")]
+                    schema_results = c.execute("SELECT * FROM {} LIMIT 1".format(table_name)).fetchone()
+                    schema += "\nExample row for {}: {}\n".format(table_name, schema_results)
+
         # print("Question: {}\nSchema: {}".format(question, schema))
         questions_and_tables[question] = table
         if table not in table_and_schemas:
@@ -58,20 +64,24 @@ for l in questions.readlines():
     # else:
     #     print()
 
-with open("dev_cols.txt", "r") as f:
-    tables_and_cols_context = f.read().split("```")
-assert len(tables_and_cols_context) == len(questions_and_tables)
+if INCLUDE_REQUIRED_COLUMNS:
+    with open("dev_cols.txt", "r") as f:
+        additional_context = f.read().split("```")
+    assert len(additional_context) == len(questions_and_tables)
 
 i = 0
 for q, t in zip(questions_and_tables, target_queries):
     # add more context to schema if needed
     table = questions_and_tables[q]
-    system_knowledge = "Given the following SQL tables schemas and its example row (SELECT * FROM table limit 1;), your job is to write queries given a user’s request.\n" 
+    system_knowledge = "Given the following SQL tables schemas "
+    system_knowledge += "" if not INCLUDE_EXAMPLE_ROW else "and its example row (SELECT * FROM table limit 1;)," 
+    system_knowledge += "your job is to write queries given a user’s request.\n" 
     system_knowledge += table_and_schemas[table]
     system_knowledge += "\n\nThe following paragraphs further describe the database.\n" + db_and_descriptions[table]
     
     user_prompt = q
-    user_prompt += "\n" + tables_and_cols_context[i]
+    if INCLUDE_REQUIRED_COLUMNS:
+        user_prompt += "\n" + additional_context[i]
 
     print("passing system knowledge:".upper() + system_knowledge)
     print("passing user prompt:".upper() + user_prompt)
