@@ -10,7 +10,7 @@ from utils import compare_accuracy, num_tokens_from_string
 DB_DESCRIPTIONS_FILE_PATH = "dev_db_descriptions.txt"
 MBTA_DATABASE_PATH = "database/mbta/mbta.sqlite"
 QUESTIONS_FILE_PATH = "dev_questions_mbta.txt"
-SCHEMA_INFO_FILE_PATH = "dev_tables_and_cols.txt"
+SCHEMA_INFO_FILE_PATH = "dev_cols_only.txt"
 
 VERBOSE_PRINTING = False
 INCLUDE_EXAMPLE_ROW = True

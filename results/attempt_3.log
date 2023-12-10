@@ -76,52 +76,31 @@ rail_ridership: includes ridership trends for Fall 2017, 2018, and 2019 over var
 time_periods: identifies time slices of the week used to interpret rail ridership patterns. The table contains an ID for each time period (e.g., time_period_01), the type of day (e.g., weekday), a textual description of the time period (e.g., AM PEAK), and the start and end times for the time slice in 24 hour notation (e.g., 03:00:00).
 
 PASSING USER PROMPT:Find all stations which are at least 1 mile away from the previous station. Report the station ID, route ID, and distance (in miles) to the previous station, sorted by decreasing distance. Break ties in distance by sorting by route ID and then station ID, both in ascending order.
-Find all stations which are at least 1 mile away from the previous station.
-Report the station ID, route ID, and distance (in miles) to the previous station, sorted by decreasing distance.
-Break ties in distance by sorting by route ID and then station ID, both in ascending order.
+Your SQL query should use columns station_id, route_id, and distance_from_last_station_miles.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. station_orders.station_id
-2. station_orders.route_id
-3. station_orders.distance_from_last_station_miles
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1310
+MODEL'S ANSWER: To find all stations which are at least 1 mile away from the previous station, we need to query the `station_orders` table, apply a WHERE clause for the distance criteria, and sort the results according to the requirement. The query will look like this:
 
-Provide only your SQL query, and do not give any additional explanation.
+```sql
+SELECT station_id, route_id, distance_from_last_station_miles
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1.0
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+```
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1418
-MODEL'S ANSWER: ```sql
-SELECT 
-  station_id, 
-  route_id, 
-  distance_from_last_station_miles 
-FROM 
-  station_orders 
-WHERE 
-  distance_from_last_station_miles >= 1 
-ORDER BY 
-  distance_from_last_station_miles DESC, 
-  route_id ASC, 
-  station_id ASC;
-``` 
-(took 3.4304168224334717 seconds)
+This query selects the relevant columns, filters to only include stations that are at least 1 mile away from their previous station, and then orders the results first by distance in descending order to get the farthest stations first, and then by `route_id` and `station_id` in ascending order to break any ties in the distance. 
+(took 8.119419574737549 seconds)
 
 
-time taken with running expected query: 0.0003275871276855469 seconds
+time taken with running expected query: 0.00030231475830078125 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
-  station_id, 
-  route_id, 
-  distance_from_last_station_miles 
-FROM 
-  station_orders 
-WHERE 
-  distance_from_last_station_miles >= 1 
-ORDER BY 
-  distance_from_last_station_miles DESC, 
-  route_id ASC, 
-  station_id ASC;
+SELECT station_id, route_id, distance_from_last_station_miles
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1.0
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
 
-time taken with running model query: 8.058547973632812e-05 seconds
+time taken with running model query: 7.152557373046875e-05 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 20) vs target results (length 20) is 1.0
 
@@ -206,53 +185,59 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Find the first and last station for each route on each line. Report the line name, route direction name, and first and last station name. Sort the results by the line name, direction name, first station name, and then last station name, all in ascending order.
 
-Find the first and last station for each route on each line.
-Report the line name, route direction name, and first and last station name.
-Sort the results by the line name, direction name, first station name, and then last station name—all in ascending order.
+Your SQL query should use columns first_station_id, last_station_id, line_name, line_id, direction_desc, and station_name.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. routes.first_station_id
-2. routes.last_station_id
-3. routes.direction_desc
-4. routes.line_id
-5. stations.station_id
-6. stations.station_name
-7. lines.line_id
-8. lines.line_name
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1313
+MODEL'S ANSWER: To find the first and last station for each route on each line, including the line name, route direction name, and first and last station name, we'll need to join the `routes`, `lines`, and `stations` tables. Here's the SQL query to get the desired result:
 
-Provide only your SQL query, and do not give any additional explanation.
+```sql
+SELECT
+    l.line_name,
+    r.direction_desc,
+    fs.station_name AS first_station_name,
+    ls.station_name AS last_station_name
+FROM
+    routes r
+JOIN
+    lines l ON r.line_id = l.line_id
+JOIN
+    stations fs ON r.first_station_id = fs.station_id
+JOIN
+    stations ls ON r.last_station_id = ls.station_id
+ORDER BY
+    l.line_name ASC,
+    r.direction_desc ASC,
+    fs.station_name ASC,
+    ls.station_name ASC;
+```
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1434
-MODEL'S ANSWER: ```sql
-SELECT 
-  l.line_name,
-  r.direction_desc,
-  fs.station_name AS first_station_name,
-  ls.station_name AS last_station_name
-FROM routes r
-JOIN lines l ON r.line_id = l.line_id
-JOIN stations fs ON r.first_station_id = fs.station_id
-JOIN stations ls ON r.last_station_id = ls.station_id
-ORDER BY l.line_name ASC, r.direction_desc ASC, fs.station_name ASC, ls.station_name ASC;
-``` 
-(took 5.1307103633880615 seconds)
+This query joins the `routes` table with the `lines`, `stations` for the `first_station_id`, and `stations` again for the `last_station_id` (aliased as `fs` and `ls` respectively). The result is sorted by the line name, route direction name, first station name, and last station name, all in ascending order, as requested. 
+(took 14.54504108428955 seconds)
 
 
-time taken with running expected query: 0.0004031658172607422 seconds
+time taken with running expected query: 0.0002002716064453125 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
-  l.line_name,
-  r.direction_desc,
-  fs.station_name AS first_station_name,
-  ls.station_name AS last_station_name
-FROM routes r
-JOIN lines l ON r.line_id = l.line_id
-JOIN stations fs ON r.first_station_id = fs.station_id
-JOIN stations ls ON r.last_station_id = ls.station_id
-ORDER BY l.line_name ASC, r.direction_desc ASC, fs.station_name ASC, ls.station_name ASC;
+SELECT
+    l.line_name,
+    r.direction_desc,
+    fs.station_name AS first_station_name,
+    ls.station_name AS last_station_name
+FROM
+    routes r
+JOIN
+    lines l ON r.line_id = l.line_id
+JOIN
+    stations fs ON r.first_station_id = fs.station_id
+JOIN
+    stations ls ON r.last_station_id = ls.station_id
+ORDER BY
+    l.line_name ASC,
+    r.direction_desc ASC,
+    fs.station_name ASC,
+    ls.station_name ASC;
 
-time taken with running model query: 0.00016689300537109375 seconds
+time taken with running model query: 7.390975952148438e-05 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 18) vs target results (length 18) is 1.0
 
@@ -337,88 +322,68 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the "Kendall/MIT” Red Line station. Report the season, line ID, direction, and total_ons, sorted by the season and direction in ascending order.
 
-Report the historical total_ons on weekdays between 4:00 PM and 6:30 PM per season for the “Kendall/MIT” Red Line station.
-Report the season, line ID, direction, and total ons, sorted by the season and direction in ascending order.
+Your SQL query should use columns time_period_id, period_start_time, period_end_time, station_id, station_name, season, line_id, direction, and total_ons.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. rail_ridership.season
-2. rail_ridership.line_id
-3. rail_ridership.direction
-4. rail_ridership.total_ons
-5. rail_ridership.station_id
-6. rail_ridership.time_period_id
-7. lines.line_id
-8. lines.line_name
-9. stations.station_name
-10. stations.station_id
-11. time_periods.time_period_id
-12. time_periods.period_start_time
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1325
+MODEL'S ANSWER: To generate the desired report, we would need to first identify the `time_period_id` that corresponds to weekdays between 4:00 PM and 6:30 PM. We need this information to accurately filter the data in the `rail_ridership` table. Additionally, we need to join the required tables to get the station name, season, and line ID. Let's begin by structuring our SQL query. 
 
-Provide only your SQL query, and do not give any additional explanation.
+First, let's identify the `time_period_id` for the given time window of 4:00 PM to 6:30 PM on weekdays:
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1485
-MODEL'S ANSWER: ```sql
-SELECT 
-  rr.season,
-  rr.line_id,
-  rr.direction,
-  rr.total_ons
-FROM 
-  rail_ridership rr
-JOIN 
-  stations s ON rr.station_id = s.station_id
-JOIN 
-  time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE 
-  s.station_name = 'Kendall/MIT' 
-  AND rr.line_id = 'red' 
-  AND tp.day_type = 'weekday'
-  AND (
-    tp.period_start_time >= '16:00:00' AND tp.period_end_time <= '18:30:00'
-    OR 
-    tp.period_start_time <= '16:00:00' AND tp.period_end_time >= '16:00:00'
-    OR 
-    tp.period_start_time <= '18:30:00' AND tp.period_end_time >= '18:30:00'
-  )
-ORDER BY 
-  rr.season ASC, 
-  rr.direction ASC;
-``` 
-(took 13.435037851333618 seconds)
+```sql
+SELECT time_period_id
+FROM time_periods
+WHERE day_type = 'weekday'
+  AND period_start_time <= '16:00:00'
+  AND period_end_time >= '18:30:00';
+```
+
+Then, we can join this information with the `stations` and `rail_ridership` tables to retrieve the historical total on-boardings (`total_ons`) for the "Kendall/MIT" Red Line station during the identified time period:
+
+```sql
+SELECT r.season, r.line_id, r.direction, r.total_ons
+FROM rail_ridership r
+JOIN stations s ON r.station_id = s.station_id
+JOIN time_periods tp ON r.time_period_id = tp.time_period_id
+WHERE tp.day_type = 'weekday'
+  AND tp.period_start_time <= '16:00:00'
+  AND tp.period_end_time >= '18:30:00'
+  AND s.station_name = 'Kendall/MIT'
+  AND r.line_id = 'red'
+ORDER BY r.season ASC, r.direction ASC;
+```
+
+This query selects the season, line ID (which should be "Red" for the Kendall/MIT `station_name`), direction, and the total_ons from the `rail_ridership` table, applying the specified filters and joining with the `stations` and `time_periods` tables to get the correct time period and station information. The results are to be sorted by season and direction in ascending order. 
+(took 18.525638103485107 seconds)
 
 
-time taken with running expected query: 0.002086639404296875 seconds
+time taken with running expected query: 0.0019373893737792969 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
-  rr.season,
-  rr.line_id,
-  rr.direction,
-  rr.total_ons
-FROM 
-  rail_ridership rr
-JOIN 
-  stations s ON rr.station_id = s.station_id
-JOIN 
-  time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE 
-  s.station_name = 'Kendall/MIT' 
-  AND rr.line_id = 'red' 
-  AND tp.day_type = 'weekday'
-  AND (
-    tp.period_start_time >= '16:00:00' AND tp.period_end_time <= '18:30:00'
-    OR 
-    tp.period_start_time <= '16:00:00' AND tp.period_end_time >= '16:00:00'
-    OR 
-    tp.period_start_time <= '18:30:00' AND tp.period_end_time >= '18:30:00'
-  )
-ORDER BY 
-  rr.season ASC, 
-  rr.direction ASC;
+SELECT time_period_id
+FROM time_periods
+WHERE day_type = 'weekday'
+  AND period_start_time <= '16:00:00'
+  AND period_end_time >= '18:30:00';
 
-time taken with running model query: 0.0014789104461669922 seconds
+time taken with running model query: 2.384185791015625e-05 seconds
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 42) vs target results (length 6) is -5.0
+accuracy of test results (length 0) vs target results (length 6) is 0.0
+
+
+SELECT r.season, r.line_id, r.direction, r.total_ons
+FROM rail_ridership r
+JOIN stations s ON r.station_id = s.station_id
+JOIN time_periods tp ON r.time_period_id = tp.time_period_id
+WHERE tp.day_type = 'weekday'
+  AND tp.period_start_time <= '16:00:00'
+  AND tp.period_end_time >= '18:30:00'
+  AND s.station_name = 'Kendall/MIT'
+  AND r.line_id = 'red'
+ORDER BY r.season ASC, r.direction ASC;
+
+time taken with running model query: 0.0005724430084228516 seconds
+COMPARING QUERY ACCURACY WITH TARGET
+accuracy of test results (length 0) vs target results (length 6) is 0.0
 
 ===================================
 
@@ -501,73 +466,67 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Find the total length in miles and number of stations of each line’s routes. Report the route_id, direction, route_name, number of stations, and length in miles for each route. Exclude the Green Line since the distance between stations is missing. Sort the results by total number of stations in descending order (break tie using total length in miles in descending).
 
-Find the total length in miles and number of stations of each line’s routes.
-Report the route id, direction, route - name, number of stations, and length in miles for each route.
-Exclude the Green Line since the distance between stations is missing.
-Sort the results by total number of stations in descending order (break tie using total length in miles in descending).
+Your SQL query should use columns line_name, station_id, route_id, direction, route_name, distance_from_last_station_miles, and line_id, along with the COUNT and SUM aggregations functions.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. routes.route_id
-2. routes.direction
-3. routes.route_name
-4. routes.line_id
-5. station_orders.station_id
-6. station_orders.distance_from_last_station_miles
-7. station_orders.route_id
-8. lines.line_name
-9. lines.line_id
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1344
+MODEL'S ANSWER: To find the total length in miles and number of stations for each line’s route, we need to join the `station_orders` table with the `routes` to get the distance information, and then aggregate based on `route_id`. We will exclude the Green Line by joining with the `lines` table and checking the `line_name`. The results will be ordered by the total number of stations in descending order, with a tie-breaker being the total length in miles in descending order.
 
-Provide only your SQL query, and do not give any additional explanation.
+Here is the SQL query to obtain the desired results:
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1480
-MODEL'S ANSWER: ```sql
+```sql
 SELECT 
-  r.route_id,
-  r.direction,
-  r.route_name,
-  COUNT(so.station_id) AS number_of_stations,
-  SUM(so.distance_from_last_station_miles) AS length_in_miles
+    r.route_id,
+    r.direction,
+    r.route_name,
+    COUNT(so.station_id) AS number_of_stations,
+    SUM(so.distance_from_last_station_miles) AS length_in_miles
 FROM 
-  routes r
+    station_orders so
 JOIN 
-  station_orders so ON r.route_id = so.route_id
+    routes r ON so.route_id = r.route_id
 JOIN 
-  lines l ON r.line_id = l.line_id
+    lines l ON r.line_id = l.line_id
 WHERE 
-  l.line_name != 'Green Line'
+    l.line_name != 'Green Line'
 GROUP BY 
-  r.route_id
+    r.route_id, 
+    r.direction, 
+    r.route_name
 ORDER BY 
-  number_of_stations DESC, 
-  length_in_miles DESC;
-``` 
-(took 5.727891206741333 seconds)
+    number_of_stations DESC,
+    length_in_miles DESC;
+```
+
+This query first joins the `station_orders` table with `routes` and `lines` tables to obtain distance and other route information while excluding any routes associated with the Green Line. It then groups the results by `route_id`, `direction`, and `route_name` to ensure we have separated routes. Finally, it orders the results first by the number of stations in descending order and then by the total length in miles (also in descending order) to break any ties. 
+(took 17.345147609710693 seconds)
 
 
-time taken with running expected query: 0.0005323886871337891 seconds
+time taken with running expected query: 0.00024080276489257812 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
 SELECT 
-  r.route_id,
-  r.direction,
-  r.route_name,
-  COUNT(so.station_id) AS number_of_stations,
-  SUM(so.distance_from_last_station_miles) AS length_in_miles
+    r.route_id,
+    r.direction,
+    r.route_name,
+    COUNT(so.station_id) AS number_of_stations,
+    SUM(so.distance_from_last_station_miles) AS length_in_miles
 FROM 
-  routes r
+    station_orders so
 JOIN 
-  station_orders so ON r.route_id = so.route_id
+    routes r ON so.route_id = r.route_id
 JOIN 
-  lines l ON r.line_id = l.line_id
+    lines l ON r.line_id = l.line_id
 WHERE 
-  l.line_name != 'Green Line'
+    l.line_name != 'Green Line'
 GROUP BY 
-  r.route_id
+    r.route_id, 
+    r.direction, 
+    r.route_name
 ORDER BY 
-  number_of_stations DESC, 
-  length_in_miles DESC;
+    number_of_stations DESC,
+    length_in_miles DESC;
 
-time taken with running model query: 0.00022792816162109375 seconds
+time taken with running model query: 9.965896606445312e-05 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 10) vs target results (length 10) is 1.0
 
@@ -652,63 +611,53 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:For each station in each season, find the average number of line service days. (That is, find the average of the number of number_service_days over different lines, directions and time periods, but do not sum over different values for season.) Report the station name, season, and averaged number_service_days value, sorted by that average value in descending order. Break ties by sorting by season and then station name, both in ascending order.
 
-For each station in each season, find the average number of line service days.
-(That is, find the average of the number of number service days over different lines, directions and time periods, but do not sum over different values for season.)
-Report the station name, season, and averaged number service days value, sorted by that average value in descending order.
-Break ties by sorting by season and then station name, both in ascending order.
+Your SQL querys hould use columns station_name, season, number_service_days, station_id, along with the AVG aggregation function.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. rail_ridership.station_id
-2. rail_ridership.season
-3. rail_ridership.number_service_days
-4. stations.station_name
-5. stations.station_id
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1346
+MODEL'S ANSWER: To find the average number of line service days for each station in each season, we will need to group our query by station_name and season. We'll need to join the `stations` table with the `rail_ridership` table to get the station names. Then, we will use the AVG function to calculate the average number of service days and sort by this average (in descending order), season, and station name (both in ascending order). Here is the SQL query to achieve this:
 
-Provide only your SQL query, and do not give any additional explanation.
-
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1491
-MODEL'S ANSWER: ```sql
-SELECT 
+```sql
+SELECT
   s.station_name,
-  r.season,
-  AVG(r.number_service_days) AS averaged_service_days
-FROM 
-  rail_ridership r
-INNER JOIN 
-  stations s ON r.station_id = s.station_id
-GROUP BY 
-  r.station_id, 
-  s.station_name, 
-  r.season
-ORDER BY 
+  rr.season,
+  AVG(rr.number_service_days) AS averaged_service_days
+FROM
+  stations s
+JOIN
+  rail_ridership rr ON s.station_id = rr.station_id
+GROUP BY
+  s.station_name,
+  rr.season
+ORDER BY
   averaged_service_days DESC,
-  r.season ASC,
+  rr.season ASC,
   s.station_name ASC;
-``` 
-(took 5.258013486862183 seconds)
+```
+
+This query will give you the desired report, with each station's name and its corresponding season, along with the average number of line service days, sorted by the average number of service days in descending order, with ties broken by the season then the station name. 
+(took 14.534793615341187 seconds)
 
 
-time taken with running expected query: 0.015231847763061523 seconds
+time taken with running expected query: 0.004388332366943359 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
+SELECT
   s.station_name,
-  r.season,
-  AVG(r.number_service_days) AS averaged_service_days
-FROM 
-  rail_ridership r
-INNER JOIN 
-  stations s ON r.station_id = s.station_id
-GROUP BY 
-  r.station_id, 
-  s.station_name, 
-  r.season
-ORDER BY 
+  rr.season,
+  AVG(rr.number_service_days) AS averaged_service_days
+FROM
+  stations s
+JOIN
+  rail_ridership rr ON s.station_id = rr.station_id
+GROUP BY
+  s.station_name,
+  rr.season
+ORDER BY
   averaged_service_days DESC,
-  r.season ASC,
+  rr.season ASC,
   s.station_name ASC;
 
-time taken with running model query: 0.004929304122924805 seconds
+time taken with running model query: 0.003751516342163086 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 339) vs target results (length 339) is 1.0
 
@@ -793,60 +742,75 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021). Report the station name(s) and the number of gated entries.
 
-Find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021).
-Report the station 6.5830/6.5831 Problem Set 1 (Fall 2023) 4 name(s) and the number of gated entries.
+Your SQL query should use station_name, gated_entries, service_date, and station_id, along with the MAX and SUM aggregation functions.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. gated_station_entries.service_date
-2. gated_station_entries.gated_entries
-3. gated_station_entries.station_id
-4. gated_station_entries.service_date
-5. station.station_name
-6. stations.station_id
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1299
+MODEL'S ANSWER: To find the station(s) with the most gated entries over the summer of 2021 (June, July, August of 2021), we need to sum the gated_entries grouped by station_id over those months, and then find the station(s) with the maximum sum. We'll join the `stations` table to get the station names. Here's the SQL query to achieve this:
 
-Provide only your SQL query, and do not give any additional explanation.
+```sql
+WITH SummerEntries AS (
+    SELECT
+        gs.station_id,
+        SUM(gs.gated_entries) AS total_entries
+    FROM
+        gated_station_entries gs
+    WHERE
+        gs.service_date >= '2021-06-01' AND gs.service_date <= '2021-08-31'
+    GROUP BY
+        gs.station_id
+),
+MaxEntries AS (
+    SELECT
+        MAX(total_entries) AS max_entries
+    FROM
+        SummerEntries
+)
+SELECT
+    s.station_name,
+    se.total_entries
+FROM
+    SummerEntries se
+JOIN
+    stations s ON se.station_id = s.station_id
+JOIN
+    MaxEntries me ON se.total_entries = me.max_entries;
+```
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1424
-MODEL'S ANSWER: ```sql
-SELECT 
-  s.station_name,
-  SUM(g.gated_entries) AS total_gated_entries
-FROM 
-  gated_station_entries g
-JOIN 
-  stations s ON g.station_id = s.station_id
-WHERE 
-  g.service_date BETWEEN '2021-06-01' AND '2021-08-31'
-GROUP BY 
-  s.station_name
-ORDER BY 
-  total_gated_entries DESC
-LIMIT 
-  1;
-``` 
-(took 5.564423084259033 seconds)
+This query uses two common table expressions (CTEs). The first CTE `SummerEntries` calculates the total number of entries for each station over the summer months. The second CTE `MaxEntries` finds the maximum number of entries from the results of the first CTE. Finally, the main query extracts the station names corresponding to the maximum number of entries by joining the `stations` table and filters out the results by joining with the `MaxEntries` CTE. 
+(took 19.271936655044556 seconds)
 
 
-time taken with running expected query: 1.0206632614135742 seconds
+time taken with running expected query: 0.9860324859619141 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT 
-  s.station_name,
-  SUM(g.gated_entries) AS total_gated_entries
-FROM 
-  gated_station_entries g
-JOIN 
-  stations s ON g.station_id = s.station_id
-WHERE 
-  g.service_date BETWEEN '2021-06-01' AND '2021-08-31'
-GROUP BY 
-  s.station_name
-ORDER BY 
-  total_gated_entries DESC
-LIMIT 
-  1;
+WITH SummerEntries AS (
+    SELECT
+        gs.station_id,
+        SUM(gs.gated_entries) AS total_entries
+    FROM
+        gated_station_entries gs
+    WHERE
+        gs.service_date >= '2021-06-01' AND gs.service_date <= '2021-08-31'
+    GROUP BY
+        gs.station_id
+),
+MaxEntries AS (
+    SELECT
+        MAX(total_entries) AS max_entries
+    FROM
+        SummerEntries
+)
+SELECT
+    s.station_name,
+    se.total_entries
+FROM
+    SummerEntries se
+JOIN
+    stations s ON se.station_id = s.station_id
+JOIN
+    MaxEntries me ON se.total_entries = me.max_entries;
 
-time taken with running model query: 0.1367342472076416 seconds
+time taken with running model query: 0.08659887313842773 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 1) vs target results (length 1) is 1.0
 
@@ -931,51 +895,81 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Find the station, time period, and season with the largest number of people who get off (the largest "total_offs”). A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total_offs (e.g., the total_offs for Kendall/MIT with a direction of 0 should be considered separately from the total_offs for Kendall/MIT with a direction of 1 when you are computing the largest total_offs). Report the day_type, period_start time, season, line_id, station_name, and total_offs for this station.
 
-Find the station, time period, and season with the largest number of people who get off (the largest “total offs”).
-A station may be associated with multiple directions; consider these directions to be distinct for the purposes of finding the largest total offs (e.g., the total offs for Kendall/MIT with a direction of 0 should be considered separately from the total offs for Kendall/MIT with a direction of 1 when you are computing the largest total offs).
-Report the day type, period start time, season, line id, station name, and total offs for this station.
+Your SQL query should use day_type, period_start_time, season, line_id, station_name, total_offs, station_id, and time_period_id, along with the MAX aggregation function.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. rail_ridership.season
-2. rail_ridership.line_id
-3. rail_ridership.station_id
-4. rail_ridership.time_period_id
-5. rail_ridership.total_offs
-6. stations.station_id
-7. stations.station_name
-8. time_periods.time_period_id
-9. time_periods.day_type
-10. time_periods.period_start_time
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1391
+MODEL'S ANSWER: To find the station, time period, and season with the largest number of people who get off (the largest "total_offs”), we need to join the `rail_ridership`, `stations`, `time_periods`, and `lines` tables and then use the `MAX` aggregate function to determine the maximum `total_offs`. However, please note that according to SQL rules, you cannot directly include non-aggregated columns in the SELECT clause alongside an aggregated column such as `MAX(total_offs)`. Therefore, we'll first perform a subquery to determine the maximum `total_offs` and then join it back to the other tables to get the rest of the needed information.
 
-Provide only your SQL query, and do not give any additional explanation.
+Here's the SQL query we'd use:
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1594
-MODEL'S ANSWER: ```sql
-SELECT tp.day_type, tp.period_start_time, rr.season, rr.line_id, s.station_name, rr.total_offs
-FROM rail_ridership rr
-JOIN stations s ON rr.station_id = s.station_id
-JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE rr.total_offs = (
-  SELECT MAX(rr2.total_offs)
-  FROM rail_ridership rr2
-)
-``` 
-(took 4.304388999938965 seconds)
+```sql
+SELECT 
+    tp.day_type,
+    tp.period_start_time,
+    rr.season,
+    rr.line_id,
+    st.station_name,
+    rr.total_offs
+FROM 
+    rail_ridership rr
+JOIN 
+    (SELECT 
+        MAX(total_offs) AS max_total_offs
+     FROM 
+        rail_ridership) AS max_rr
+ON 
+    rr.total_offs = max_rr.max_total_offs
+JOIN 
+    stations st
+ON 
+    rr.station_id = st.station_id
+JOIN 
+    time_periods tp
+ON 
+    rr.time_period_id = tp.time_period_id
+JOIN 
+    lines l
+ON 
+    rr.line_id = l.line_id;
+```
+
+Please note that if there are multiple records with the same highest total_offs number, then the query will return all of them. If you only want one record (in case of ties), you can add a `LIMIT 1` clause at the end of the query. However, this would return an arbitrary record among the tied ones unless further ORDER BY criteria are defined. 
+(took 20.950159072875977 seconds)
 
 
-time taken with running expected query: 0.00150299072265625 seconds
+time taken with running expected query: 0.0019392967224121094 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT tp.day_type, tp.period_start_time, rr.season, rr.line_id, s.station_name, rr.total_offs
-FROM rail_ridership rr
-JOIN stations s ON rr.station_id = s.station_id
-JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE rr.total_offs = (
-  SELECT MAX(rr2.total_offs)
-  FROM rail_ridership rr2
-)
+SELECT 
+    tp.day_type,
+    tp.period_start_time,
+    rr.season,
+    rr.line_id,
+    st.station_name,
+    rr.total_offs
+FROM 
+    rail_ridership rr
+JOIN 
+    (SELECT 
+        MAX(total_offs) AS max_total_offs
+     FROM 
+        rail_ridership) AS max_rr
+ON 
+    rr.total_offs = max_rr.max_total_offs
+JOIN 
+    stations st
+ON 
+    rr.station_id = st.station_id
+JOIN 
+    time_periods tp
+ON 
+    rr.time_period_id = tp.time_period_id
+JOIN 
+    lines l
+ON 
+    rr.line_id = l.line_id;
 
-time taken with running model query: 0.0005731582641601562 seconds
+time taken with running model query: 0.004700422286987305 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 1) vs target results (length 1) is 1.0
 
@@ -1060,75 +1054,103 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Find every Orange Line station in Fall 2018 that, during time_period_01 and the direction of 0, had a total_ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction. Report the station name and the total_ons value. Sort the results by total_ons in descending order and then station name in ascending order.
 
-Find every Orange Line station in Fall 2018 that, during time period 01 and the direction of 0, had a total ons passenger count that was greater than average for all Orange Line stations at that same time period, same season, and in the same direction.
-Report the station name and the total ons value.
-Sort the results by total ons in descending order and then station name in ascending order.
+Your SQL query should use columns station_name, total_ons, station_id, line_id, season, line_name, time_period_id, and direction.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. rail_ridership.total_ons
-2. rail_ridership.station_id
-3. rail_ridership.season
-4. rail_ridership.line_id
-5. rail_ridership.time_period_id
-6. rail_ridership.direction
-7. stations.station_id
-8. stations.station_name
-9. lines.line_id
-10. lines.line_name
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1347
+MODEL'S ANSWER: To fulfill the user's request, we need to join multiple tables: `rail_ridership` for the total_ons values, `stations` for the station names, and `lines` for filtering by the Orange Line. We must also first calculate the average total_ons for all Orange Line stations during Fall 2018, time_period_01, and direction 0. We'll start by determining this average and then select stations with total_ons above this average:
 
-Provide only your SQL query, and do not give any additional explanation.
-
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1521
-MODEL'S ANSWER: ```sql
-WITH OrangeLineAverage AS (
-    SELECT AVG(rr.total_ons) as avg_total_ons
-    FROM rail_ridership rr
-    JOIN lines l ON rr.line_id = l.line_id
-    WHERE rr.season = 'Fall 2018' 
-    AND rr.line_id = 'orange' 
-    AND rr.time_period_id = 'time_period_01' 
-    AND rr.direction = 0
+```sql
+WITH AverageTotalOns AS (
+  SELECT
+    AVG(rr.total_ons) as avg_total_ons
+  FROM
+    rail_ridership rr
+  JOIN
+    lines l ON rr.line_id = l.line_id
+  WHERE
+    rr.season = 'Fall 2018' AND
+    rr.time_period_id = 'time_period_01' AND
+    rr.direction = 0 AND
+    l.line_name = 'Orange Line'
+),
+OrangeStationsAboveAverage AS (
+  SELECT
+    s.station_name,
+    rr.total_ons,
+    rr.station_id
+  FROM
+    rail_ridership rr
+  JOIN
+    stations s ON rr.station_id = s.station_id
+  JOIN
+    lines l ON rr.line_id = l.line_id
+  JOIN
+    AverageTotalOns ON rr.total_ons > AverageTotalOns.avg_total_ons
+  WHERE
+    rr.season = 'Fall 2018' AND
+    rr.time_period_id = 'time_period_01' AND
+    rr.direction = 0 AND
+    l.line_name = 'Orange Line'
 )
-SELECT s.station_name, rr.total_ons
-FROM rail_ridership rr
-JOIN stations s ON rr.station_id = s.station_id
-JOIN lines l ON rr.line_id = l.line_id
-JOIN OrangeLineAverage ON 1=1
-WHERE rr.season = 'Fall 2018' 
-AND rr.line_id = 'orange' 
-AND rr.time_period_id = 'time_period_01' 
-AND rr.direction = 0
-AND rr.total_ons > OrangeLineAverage.avg_total_ons
-ORDER BY rr.total_ons DESC, s.station_name ASC;
-``` 
-(took 12.091768980026245 seconds)
+SELECT
+  station_name,
+  total_ons
+FROM
+  OrangeStationsAboveAverage
+ORDER BY
+  total_ons DESC, 
+  station_name ASC;
+```
+
+This query calculates the average total_ons for the Orange Line during the specified season, time period, and direction and stores it in the `AverageTotalOns` CTE. Then it selects the station names and total_ons values from the `rail_ridership` table where the total_ons is above this average, joining with the `stations` and `lines` tables for additional data filtering. Finally, it presents the results sorted by the requested criteria. 
+(took 24.21830940246582 seconds)
 
 
-time taken with running expected query: 0.0004744529724121094 seconds
+time taken with running expected query: 0.0004076957702636719 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-WITH OrangeLineAverage AS (
-    SELECT AVG(rr.total_ons) as avg_total_ons
-    FROM rail_ridership rr
-    JOIN lines l ON rr.line_id = l.line_id
-    WHERE rr.season = 'Fall 2018' 
-    AND rr.line_id = 'orange' 
-    AND rr.time_period_id = 'time_period_01' 
-    AND rr.direction = 0
+WITH AverageTotalOns AS (
+  SELECT
+    AVG(rr.total_ons) as avg_total_ons
+  FROM
+    rail_ridership rr
+  JOIN
+    lines l ON rr.line_id = l.line_id
+  WHERE
+    rr.season = 'Fall 2018' AND
+    rr.time_period_id = 'time_period_01' AND
+    rr.direction = 0 AND
+    l.line_name = 'Orange Line'
+),
+OrangeStationsAboveAverage AS (
+  SELECT
+    s.station_name,
+    rr.total_ons,
+    rr.station_id
+  FROM
+    rail_ridership rr
+  JOIN
+    stations s ON rr.station_id = s.station_id
+  JOIN
+    lines l ON rr.line_id = l.line_id
+  JOIN
+    AverageTotalOns ON rr.total_ons > AverageTotalOns.avg_total_ons
+  WHERE
+    rr.season = 'Fall 2018' AND
+    rr.time_period_id = 'time_period_01' AND
+    rr.direction = 0 AND
+    l.line_name = 'Orange Line'
 )
-SELECT s.station_name, rr.total_ons
-FROM rail_ridership rr
-JOIN stations s ON rr.station_id = s.station_id
-JOIN lines l ON rr.line_id = l.line_id
-JOIN OrangeLineAverage ON 1=1
-WHERE rr.season = 'Fall 2018' 
-AND rr.line_id = 'orange' 
-AND rr.time_period_id = 'time_period_01' 
-AND rr.direction = 0
-AND rr.total_ons > OrangeLineAverage.avg_total_ons
-ORDER BY rr.total_ons DESC, s.station_name ASC;
+SELECT
+  station_name,
+  total_ons
+FROM
+  OrangeStationsAboveAverage
+ORDER BY
+  total_ons DESC, 
+  station_name ASC;
 
-time taken with running model query: 0.0002505779266357422 seconds
+time taken with running model query: 0.0014116764068603516 seconds
 COMPARING QUERY ACCURACY WITH TARGET
 accuracy of test results (length 5) vs target results (length 5) is 1.0
 
@@ -1213,70 +1235,107 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:Find the station with most number of routes passing through it. (E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions) Report station_name, route_id, line_id, and total number of routes passing through the station. Sort the results by line_id in ascending order and then route_id in ascending order.
 
-Find the station with most number of routes passing through it. 
-(E.g. North Station has six routes passing through it: orange line in both directions and two green lines in both directions.)
-Report station name, route id, line id, and total number of routes passing through the station.
-Sort the results by line id in ascending order and then route id in ascending order.
+Your SQL query should use columns station_id, route_cnt, route_id, station_name, and line_id, along with the MAX and COUNT aggregation function.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. station_orders.station_id
-2. stations.station_name
-3. station_orders.route_id
-4. stations.station_id
-5. routes.line_id
-6. routes.route_id
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1337
+MODEL'S ANSWER: To find the station with the most number of routes passing through it, we'll need to join the `station_orders` table with the `routes` and `stations` tables. We'll count the number of unique routes passing through each station, find the station with the maximum count, and then report the details for that station.
 
-Provide only your SQL query, and do not give any additional explanation.
+```sql
+WITH StationRouteCounts AS (
+  SELECT 
+    so.station_id, 
+    COUNT(DISTINCT so.route_id) AS route_cnt
+  FROM 
+    station_orders so
+  GROUP BY 
+    so.station_id
+),
+MaxRouteCount AS (
+  SELECT 
+    MAX(route_cnt) AS max_route_cnt
+  FROM 
+    StationRouteCounts
+),
+StationWithMostRoutes AS (
+  SELECT 
+    src.station_id,
+    src.route_cnt
+  FROM 
+    StationRouteCounts src
+  JOIN MaxRouteCount mrc ON src.route_cnt = mrc.max_route_cnt
+)
+SELECT 
+  st.station_name,
+  r.route_id,
+  r.line_id,
+  smr.route_cnt AS total_number_of_routes
+FROM 
+  StationWithMostRoutes smr
+JOIN routes r ON smr.station_id IN 
+  (
+    SELECT DISTINCT so.station_id 
+    FROM station_orders so 
+    WHERE so.route_id = r.route_id
+  )
+JOIN stations st ON smr.station_id = st.station_id
+ORDER BY 
+  r.line_id ASC, 
+  r.route_id ASC;
+```
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1463
-MODEL'S ANSWER: ```sql
-SELECT
-  stations.station_name,
-  routes.route_id,
-  routes.line_id,
-  COUNT(*) AS total_routes
-FROM
-  station_orders
-JOIN stations ON station_orders.station_id = stations.station_id
-JOIN routes ON station_orders.route_id = routes.route_id
-GROUP BY
-  stations.station_name,
-  routes.line_id,
-  routes.route_id
-ORDER BY
-  COUNT(*) DESC,
-  routes.line_id ASC,
-  routes.route_id ASC
-LIMIT 1;
-``` 
-(took 5.257941246032715 seconds)
+This query uses Common Table Expressions (CTEs) to first determine the count of routes for each station, then finds the maximum route count, and finally identifies the station(s) with that maximum count. The main query then retrieves the routes passing through the station with the most routes and orders the results first by the line ID and then by the route ID.
+
+The usage of `DISTINCT` ensures that if a station has multiple entries for the same route (which is possible if a route goes through the station in both directions), it will only be counted once. 
+(took 16.994885444641113 seconds)
 
 
-time taken with running expected query: 0.0008883476257324219 seconds
+time taken with running expected query: 0.0011529922485351562 seconds
 RUNNING SQL QUERY(S) FROM MODEL:
 
-SELECT
-  stations.station_name,
-  routes.route_id,
-  routes.line_id,
-  COUNT(*) AS total_routes
-FROM
-  station_orders
-JOIN stations ON station_orders.station_id = stations.station_id
-JOIN routes ON station_orders.route_id = routes.route_id
-GROUP BY
-  stations.station_name,
-  routes.line_id,
-  routes.route_id
-ORDER BY
-  COUNT(*) DESC,
-  routes.line_id ASC,
-  routes.route_id ASC
-LIMIT 1;
+WITH StationRouteCounts AS (
+  SELECT 
+    so.station_id, 
+    COUNT(DISTINCT so.route_id) AS route_cnt
+  FROM 
+    station_orders so
+  GROUP BY 
+    so.station_id
+),
+MaxRouteCount AS (
+  SELECT 
+    MAX(route_cnt) AS max_route_cnt
+  FROM 
+    StationRouteCounts
+),
+StationWithMostRoutes AS (
+  SELECT 
+    src.station_id,
+    src.route_cnt
+  FROM 
+    StationRouteCounts src
+  JOIN MaxRouteCount mrc ON src.route_cnt = mrc.max_route_cnt
+)
+SELECT 
+  st.station_name,
+  r.route_id,
+  r.line_id,
+  smr.route_cnt AS total_number_of_routes
+FROM 
+  StationWithMostRoutes smr
+JOIN routes r ON smr.station_id IN 
+  (
+    SELECT DISTINCT so.station_id 
+    FROM station_orders so 
+    WHERE so.route_id = r.route_id
+  )
+JOIN stations st ON smr.station_id = st.station_id
+ORDER BY 
+  r.line_id ASC, 
+  r.route_id ASC;
 
-time taken with running model query: 0.0006287097930908203 seconds
+time taken with running model query: 0.0008511543273925781 seconds
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 1) vs target results (length 12) is -0.08333333333333333
+accuracy of test results (length 12) vs target results (length 12) is 1.0
 
 ===================================
 
@@ -1359,74 +1418,69 @@ time_periods: identifies time slices of the week used to interpret rail ridershi
 
 PASSING USER PROMPT:For each line, in the Fall 2019 season, find the station with "maximally bypassed ratio”. That is, the station "s” that has the largest ratio "(a - b)/a”, where "a” is the the sum of average_flow values for all time periods and all directions of "s” and "b” is the total sum of: the sum of its average_ons and sum of its average_offs values. Therefore, the ratio "(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name, and its bypassed ratio. Sort the results by line name in ascending order. HINT: You may need to use function C AST(total_flow AS REAL) to cast the summation of flows (i.e. "a” above) to real number.
 
-For each line, in the Fall 2019 season, find the station with 'maximally bypassed ratio'.
-That is, the station “s” that has the largest ratio “(a - b)/a”, where “a” is the the sum of average flow values for all time periods and all directions of “s” and “b” is the total sum of: the sum of its average ons and sum of its average offs values.
-Therefore, the ratio “(a - b)/a” represents the proportion of people who bypassed one station. Report the station name, its line name, and its bypassed ratio.
-Sort the results by line name in ascending order.
-HINT: You may need to use function CAST(total flow AS REAL) to cast the summation of flows (i.e. “a” above) to real number.
+Your SQL query should use columns station_id, line_id, average_flow, average_ons, average_offs, season, station_name, and line_name, along with the MAX, CAST, and SUM functions.
 
-Your SQL query may need to use the following list of columns (given in format <PARENT TABLE NAME>.<COLUMN NAME>, without the brackets):
-1. rail_ridership.station_id
-2. rail_ridership.line_id
-3. rail_ridership.average_flow
-4. rail_ridership.average_ons
-5. rail_ridership.average_offs
-6. stations.station_id
-7. stations.station_name
-8. lines.line_id
-9. lines.line_name
+TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1450
+MODEL'S ANSWER: To calculate the station with the maximally bypassed ratio for each line, we need to find the values of "a" and "b" by aggregating data from the `rail_ridership` table for the Fall 2019 season. We then compute the ratio (a - b) / a for each station, and retrieve the station with the highest ratio for each line. We will need to join the `stations` and `lines` tables to get the station names and line names respectively. 
 
-Provide only your SQL query, and do not give any additional explanation.
+Here is the SQL query that accomplishes this:
 
-TOTAL NUMBER OF TOKENS IN THE CURRENT PROMPT: 1697
-MODEL'S ANSWER: ```sql
-WITH StationFlows AS (
-  SELECT 
-    rr.line_id,
-    rr.station_id,
-    SUM(rr.average_flow) AS total_flow,
-    SUM(rr.average_ons + rr.average_offs) AS total_ons_offs
-  FROM
-    rail_ridership rr
-  WHERE 
-    rr.season = 'Fall 2019'
-  GROUP BY
-    rr.line_id,
-    rr.station_id
-),
-BypassRatios AS (
-  SELECT
-    sf.line_id,
-    sf.station_id,
-    CASE
-      WHEN total_flow > 0 THEN (CAST(total_flow AS REAL) - total_ons_offs) / CAST(total_flow AS REAL)
-      ELSE 0
-    END AS bypass_ratio
-  FROM
-    StationFlows sf
-)
-SELECT
-  st.station_name,
-  l.line_name,
-  br.bypass_ratio
-FROM
-  BypassRatios br
-  INNER JOIN stations st ON br.station_id = st.station_id
-  INNER JOIN lines l ON br.line_id = l.line_id
-WHERE 
-  (br.line_id, br.bypass_ratio) IN (
+```sql
+WITH StationRatios AS (
     SELECT 
-      line_id, 
-      MAX(bypass_ratio)
+        rr.station_id, 
+        rr.line_id, 
+        SUM(rr.average_flow) AS total_flow, -- "a"
+        SUM(rr.average_ons) + SUM(rr.average_offs) AS total_ons_offs, -- "b"
+        CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.average_ons) + SUM(rr.average_offs)) AS flow_difference -- "a" - "b"
     FROM 
-      BypassRatios
+        rail_ridership rr
+    WHERE 
+        rr.season = 'Fall 2019'
     GROUP BY 
-      line_id
-  )
+        rr.station_id, rr.line_id
+),
+RatiosWithStationNames AS (
+    SELECT 
+        sr.station_id, 
+        l.line_name, 
+        s.station_name, 
+        sr.line_id, 
+        sr.total_flow, 
+        sr.total_ons_offs,
+        sr.flow_difference,
+        CASE 
+            WHEN sr.total_flow > 0 THEN (sr.flow_difference / CAST(sr.total_flow AS REAL))
+            ELSE 0
+        END AS bypassed_ratio -- (a - b) / a
+    FROM 
+        StationRatios sr
+    JOIN 
+        stations s ON sr.station_id = s.station_id
+    JOIN 
+        lines l ON sr.line_id = l.line_id
+)
+SELECT 
+    R1.station_name,
+    R1.line_name,
+    MAX(R1.bypassed_ratio) AS maximally_bypassed_ratio
+FROM 
+    RatiosWithStationNames R1
+JOIN 
+    (SELECT line_id, MAX(bypassed_ratio) AS max_bypassed_ratio FROM RatiosWithStationNames GROUP BY line_id) R2
+    ON R1.line_id = R2.line_id AND R1.bypassed_ratio = R2.max_bypassed_ratio
+GROUP BY 
+    R1.line_name, R1.station_name
 ORDER BY 
-  l.line_name;
-``` 
-(took 14.951077938079834 seconds)
+    R1.line_name ASC;
+```
+
+This query proceeds in several steps:
+1. The first CTE `StationRatios` groups entries by `station_id` and `line_id` and calculates the total flow (a), the sum of average_ons and average_offs (b), and the difference between the two (a - b).
+2. The second CTE `RatiosWithStationNames` joins `StationRatios` with `stations` and `lines` to add the station and line names, and computes the bypassed ratio (a - b) / a.
+3. The final SELECT finds the station with the maximum bypassed ratio for each line using another join with a subquery that finds the maximum bypassed ratio for each line. It groups the results by line names and station names to ensure the uniqueness of the output.
+4. The results are ordered by line_name in ascending order as per the request. 
+(took 41.38188552856445 seconds)
 
 
 ERROR RUNNING SQL QUERY:  near "(": syntax error

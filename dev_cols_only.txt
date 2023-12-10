@@ -1,0 +1,19 @@
+Your SQL query should use columns station_id, route_id, and distance_from_last_station_miles.
+```
+Your SQL query should use columns first_station_id, last_station_id, line_name, line_id, direction_desc, and station_name.
+```
+Your SQL query should use columns time_period_id, period_start_time, period_end_time, station_id, station_name, season, line_id, direction, and total_ons.
+```
+Your SQL query should use columns line_name, station_id, route_id, direction, route_name, distance_from_last_station_miles, and line_id, along with the COUNT and SUM aggregations functions.
+```
+Your SQL querys hould use columns station_name, season, number_service_days, station_id, along with the AVG aggregation function.
+```
+Your SQL query should use station_name, gated_entries, service_date, and station_id, along with the MAX and SUM aggregation functions.
+```
+Your SQL query should use day_type, period_start_time, season, line_id, station_name, total_offs, station_id, and time_period_id, along with the MAX aggregation function.
+```
+Your SQL query should use columns station_name, total_ons, station_id, line_id, season, line_name, time_period_id, and direction.
+```
+Your SQL query should use columns station_id, route_cnt, route_id, station_name, and line_id, along with the MAX and COUNT aggregation function.
+```
+Your SQL query should use columns station_id, line_id, average_flow, average_ons, average_offs, season, station_name, and line_name, along with the MAX, CAST, and SUM functions.
