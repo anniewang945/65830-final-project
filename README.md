@@ -1,4 +1,4 @@
-# 65380-final-project
+# 6.5830 Final Project: Leveraging GPT-4 for Enhanced SQL Query Generation using Natural Language Prompts
 
 This repository contains the pipeline code and data to run our experiments as described in our accompanying paper. We utilize 4 base contexts and their permutations:
 - Example Rows
@@ -14,22 +14,22 @@ The naming convention of the branches is datasetname_context.
 This branch includes the file initial_pipeline.py. This is the base branch for all other branches. Nothing to run on this branch.
 
 ### MBTA Data Set
-Instead of going through each branch to explore each context in detail, you can also go to branch mbta-db-desc-w-example-row-w-req-tables-and-cols and change lines 15-18 in the file mentioned there to feed in different contexts. See how underneath u
+Instead of going through each branch to explore each context in detail, you can also go to branch mbta-db-desc-w-example-row-w-req-tables-and-cols and change lines 15-18 in the file mentioned [its section](#mbta-db-desc-w-example-row-w-req-tables-and-cols) to feed in different contexts.
 #### mbta
 This branch is for the MBTA data set with schema only (aka no context). You only need to run the file initial_pipeline.py (change the path to the MBTA database to your local copy on line 11) once and you will populate a results folder with files named for each question in the PSET 1, starting index 0. Each file for a question will contain all 3 trials. 
 #### mbta-db-description-context
 This branch is for the MBTA data set with database descriptions passed in. You only need to run the file initial_pipeline.py (change the path to the MBTA database to your local copy on line 11) once and you will populate a results_db_description folder with files named for each question in the PSET 1, starting index 0. Each file for a question will contain all 3 trials. 
-- mbta-example-row-context
+#### mbta-example-row-context
 This branch is for the MBTA data set with example rows passed in. You will need to run the file initial_pipeline.py (change the path to the MBTA database to your local copy on line 104) for every trial and question in PSET1. For each trial, you will need to pass in the question you are testing from PSET1 on line 79, and the expected target query on line 109. This branch does not generate a results folder and prints out its results in stdout. 
-- mbta-req-cols-only
+#### mbta-req-cols-only
 This branch is for the MBTA data set with only required columns passed in. You only need to run the file initial_pipeline.py (change the path to the MBTA database to your local copy on line 10) once and you will populate a results folder with files named for each question in the PSET 1, starting index 1. Each file for a question will contain all 3 trials. 
-- mbta-req-cols-and-tables
+#### mbta-req-cols-and-tables
 This branch is for the MBTA data set with required columns and tables passed in. You only need to run the file initial_pipeline.py (change the path to the MBTA database to your local copy on line 10) once and you will populate a results folder with files named for each question in the PSET 1, starting index 1. Each file for a question will contain all 3 trials.
-- mbta-db-desc-w-example-row
+#### mbta-db-desc-w-example-row
 This branch is for the MBTA data set with database descriptions and example rows passed in. You only need to run the file initial_pipeline.py (change the path to the MBTA database to your local copy on line 11) once and you will populate a results_db_desc_w_example_row folder with files named for each question in the PSET 1, starting index 0. Each file for a question will contain all 3 trials. 
-- mbta-db-desc-w-example-row-w-req-cols
+#### mbta-db-desc-w-example-row-w-req-cols
 This branch is for the MBTA data set with database descriptions, example rows, and required columns passed in. You only need to run the file mbta_pipeline.py (change the path to the MBTA database to your local copy on line 11) 3 times (or as many trials you wish) and you will populate a results folder with files named for each trial run, starting index 1. Each file for a trial will contain containing all 10 questions in one file.
-- mbta-db-desc-w-example-row-w-req-tables-and-cols
+#### mbta-db-desc-w-example-row-w-req-tables-and-cols
 This branch is for the MBTA data set with database descriptions, example rows, required columns, and required tables passed in. You only need to run the file mbta_pipeline.py (change the path to the MBTA database to your local copy on line 11) 3 times (or as many trials you wish) and you will populate a results folder with files named for each trial run, starting index 1. Each file for a trial will contain containing all 10 questions in one file. 
 - spider
 - spider-db-description-context
