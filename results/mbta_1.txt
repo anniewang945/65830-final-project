@@ -3,13 +3,19 @@ total number of tokens in the current prompt:416
 
 Generated query:
 SELECT station_id, route_id, distance_from_last_station_miles
-FROM station_orders 
-WHERE distance_from_last_station_miles >= 1 
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1
 ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+
+Test results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Target results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
 
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 2.3054442405700684 seconds
+time taken: 3.1751012802124023 seconds
 ===============
 total number of tokens in the current prompt:416
 
@@ -19,9 +25,15 @@ FROM station_orders
 WHERE distance_from_last_station_miles >= 1
 ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
 
+Test results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Target results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 2.3696110248565674 seconds
+time taken: 2.2543439865112305 seconds
 ===============
 total number of tokens in the current prompt:416
 
@@ -31,42 +43,66 @@ FROM station_orders
 WHERE distance_from_last_station_miles >= 1
 ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
 
-Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
+Test results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
 
-time taken: 2.3428030014038086 seconds
-===============
-total number of tokens in the current prompt:416
-
-Generated query:
-SELECT station_id, route_id, distance_from_last_station_miles
-FROM station_orders
-WHERE distance_from_last_station_miles >= 1
-ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+Target results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
 
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 2.5356857776641846 seconds
-===============
-total number of tokens in the current prompt:416
-
-Generated query:
-SELECT station_id, route_id, distance_from_last_station_miles
-FROM station_orders
-WHERE distance_from_last_station_miles >= 1
-ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
-
-Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
-
-time taken: 2.6439642906188965 seconds
+time taken: 3.219899892807007 seconds
 ===============
 total number of tokens in the current prompt:416
 
 Generated query:
 SELECT station_id, route_id, distance_from_last_station_miles
 FROM station_orders 
-WHERE distance_from_last_station_miles >= 1
+WHERE distance_from_last_station_miles >= 1 
 ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+
+Test results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Target results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
 
 Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
 
-time taken: 2.223667860031128 seconds
+time taken: 2.8527228832244873 seconds
+===============
+total number of tokens in the current prompt:416
+
+Generated query:
+SELECT station_id, route_id, distance_from_last_station_miles
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+
+Test results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Target results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
+
+time taken: 2.6086370944976807 seconds
+===============
+total number of tokens in the current prompt:416
+
+Generated query:
+SELECT station_id, route_id, distance_from_last_station_miles
+FROM station_orders
+WHERE distance_from_last_station_miles >= 1
+ORDER BY distance_from_last_station_miles DESC, route_id ASC, station_id ASC;
+
+Test results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Target results:
+[('place-nqncy', 15, 3.53), ('place-jfk', 17, 3.53), ('place-brntn', 15, 1.86), ('place-qamnl', 17, 1.86), ('place-welln', 12, 1.75), ('place-mlmnl', 13, 1.75), ('place-qamnl', 15, 1.33), ('place-qnctr', 17, 1.33), ('place-qnctr', 15, 1.28), ('place-wlsta', 17, 1.28), ('place-sull', 12, 1.19), ('place-welln', 13, 1.19), ('place-wimnl', 0, 1.08), ('place-orhte', 1, 1.08), ('place-cntsq', 14, 1.08), ('place-cntsq', 15, 1.08), ('place-harsq', 16, 1.07), ('place-harsq', 17, 1.07), ('place-fldcr', 14, 1.0), ('place-shmnl', 16, 1.0)]
+
+Accuracy of test results (length 20) vs target results (length 20) is 1.0, 0 incorrect
+
+time taken: 2.1760330200195312 seconds

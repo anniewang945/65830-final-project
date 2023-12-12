@@ -26,7 +26,7 @@ for _ in range(6):
         )
 
         try:
-            with open(f"results/mbta_{i+1}.txt", "a") as f:
+            with open(f"results/mbta_{i+1}.txt", "a+") as f:
                 f.write("===============\n")
                 f.write(
                     "total number of tokens in the current prompt:"
@@ -36,6 +36,8 @@ for _ in range(6):
                 f.write(f"Generated query:\n{test_query}\n\n")
                 test_result = c.execute(test_query).fetchall()
                 target_result = c.execute(target_query).fetchall()
+                f.write(f"Test results:\n{test_result}\n\n")
+                f.write(f"Target results:\n{target_result}\n\n")
                 f.write(compare_accuracy(test_result, target_result) + "\n\n")
                 f.write(f"time taken: {end - start} seconds\n")
         except Exception as e:

@@ -2,43 +2,96 @@
 total number of tokens in the current prompt:491
 
 Generated query:
-SELECT 
-    tp.day_type, 
-    tp.period_start_time, 
-    rr.season, 
-    rr.line_id, 
-    s.station_name, 
-    rr.total_offs
-FROM 
-    rail_ridership rr
-JOIN 
-    stations s ON rr.station_id = s.station_id
-JOIN 
-    time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE 
-    rr.total_offs = (
-        SELECT 
-            MAX(total_offs) 
-        FROM 
-            rail_ridership
-    );
-
-Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
-
-time taken: 4.772284984588623 seconds
-===============
-total number of tokens in the current prompt:491
-
-Generated query:
 SELECT tp.day_type, tp.period_start_time, rr.season, rr.line_id, s.station_name, rr.total_offs
 FROM rail_ridership rr
-JOIN stations s ON rr.station_id = s.station_id
+JOIN stations s ON rr.station_id = s.station_id 
 JOIN time_periods tp ON rr.time_period_id = tp.time_period_id
-WHERE rr.total_offs = (SELECT MAX(total_offs) FROM rail_ridership);
+WHERE rr.total_offs = (
+  SELECT max(total_offs)
+  FROM rail_ridership
+);
+
+Test results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Target results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
 
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 3.5848209857940674 seconds
+time taken: 4.131657838821411 seconds
+===============
+total number of tokens in the current prompt:491
+
+Generated query:
+SELECT
+  time_periods.day_type,
+  time_periods.period_start_time,
+  rail_ridership.season,
+  rail_ridership.line_id,
+  stations.station_name,
+  rail_ridership.total_offs
+FROM
+  rail_ridership
+JOIN
+  time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
+JOIN
+  stations ON rail_ridership.station_id = stations.station_id
+WHERE
+  rail_ridership.total_offs = (
+    SELECT
+      MAX(total_offs)
+    FROM
+      rail_ridership
+  );
+
+Test results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Target results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 5.349518060684204 seconds
+===============
+total number of tokens in the current prompt:491
+
+Generated query:
+SELECT
+  t.day_type,
+  t.period_start_time,
+  r.season,
+  r.line_id,
+  s.station_name,
+  r.total_offs
+FROM
+  rail_ridership r
+JOIN
+  stations s
+ON
+  r.station_id = s.station_id
+JOIN
+  time_periods t
+ON
+  r.time_period_id = t.time_period_id
+WHERE
+  r.total_offs = (
+    SELECT
+      MAX(total_offs)
+    FROM
+      rail_ridership
+  );
+
+Test results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Target results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
+
+time taken: 5.120933771133423 seconds
 ===============
 total number of tokens in the current prompt:491
 
@@ -57,46 +110,17 @@ JOIN
 JOIN 
     time_periods tp ON rr.time_period_id = tp.time_period_id
 WHERE 
-    rr.total_offs = (
-        SELECT 
-            MAX(total_offs) 
-        FROM 
-            rail_ridership
-    );
+    rr.total_offs = (SELECT MAX(total_offs) FROM rail_ridership);
+
+Test results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Target results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
 
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 4.781152963638306 seconds
-===============
-total number of tokens in the current prompt:491
-
-Generated query:
-SELECT 
-   time_periods.day_type,
-   time_periods.period_start_time,
-   rail_ridership.season,
-   rail_ridership.line_id,
-   stations.station_name,
-   MAX(rail_ridership.total_offs) as largest_total_offs
-FROM
-   rail_ridership
-JOIN
-   stations ON rail_ridership.station_id = stations.station_id
-JOIN
-   time_periods ON rail_ridership.time_period_id = time_periods.time_period_id
-GROUP BY
-    time_periods.day_type,
-    time_periods.period_start_time,
-    rail_ridership.season,
-    rail_ridership.line_id,
-    stations.station_name
-ORDER BY 
-    largest_total_offs DESC
-LIMIT 1;
-
-Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
-
-time taken: 6.183614015579224 seconds
+time taken: 4.5604918003082275 seconds
 ===============
 total number of tokens in the current prompt:491
 
@@ -105,67 +129,63 @@ SELECT
     tp.day_type, 
     tp.period_start_time, 
     rr.season, 
-    rr.line_id,
+    rr.line_id, 
     st.station_name, 
     rr.total_offs
 FROM 
-    rail_ridership AS rr
+    rail_ridership rr
 JOIN 
-    time_periods AS tp 
-ON 
-    rr.time_period_id = tp.time_period_id
-JOIN
-    stations AS st
-ON 
-    rr.station_id = st.station_id
+    stations st ON rr.station_id = st.station_id
+JOIN 
+    time_periods tp ON rr.time_period_id = tp.time_period_id
 WHERE 
     rr.total_offs = (
         SELECT 
             MAX(total_offs) 
         FROM 
-            rail_ridership);
+            rail_ridership
+    );
+
+Test results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
+
+Target results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
 
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 6.045893907546997 seconds
+time taken: 5.482129812240601 seconds
 ===============
 total number of tokens in the current prompt:491
 
 Generated query:
 SELECT 
-    TP.day_type, 
-    TP.period_start_time, 
-    RR.season, 
-    RR.line_id, 
-    S.station_name, 
-    RR.total_offs
+    tp.day_type, 
+    tp.period_start_time, 
+    rr.season, 
+    rr.line_id, 
+    s.station_name, 
+    rr.total_offs
 FROM 
-    rail_ridership RR
+    rail_ridership rr 
 JOIN 
-    stations S ON RR.station_id = S.station_id
+    stations s ON rr.station_id = s.station_id 
 JOIN 
-    time_periods TP ON RR.time_period_id = TP.time_period_id
+    time_periods tp ON rr.time_period_id = tp.time_period_id 
 WHERE 
-    RR.total_offs = (
+    rr.total_offs = (
         SELECT 
-            MAX(total_offs)
+            MAX(total_offs) 
         FROM 
             rail_ridership
     )
 
-Note that the statement considers all stations and lines independently and not as a combined unit. If you want the maximum total offs from any station, regardless of line or direction, this should work.
+Test results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
 
-error running sql query: near "Note": syntax error
-===============
-total number of tokens in the current prompt:491
-
-Generated query:
-SELECT tp.day_type, tp.period_start_time, rr.season, rr.line_id, st.station_name, rr.total_offs 
-FROM rail_ridership rr 
-JOIN stations st ON rr.station_id = st.station_id 
-JOIN time_periods tp ON rr.time_period_id = tp.time_period_id 
-WHERE rr.total_offs = (SELECT MAX(total_offs) FROM rail_ridership);
+Target results:
+[('weekday', '16:00:00', 'Fall 2017', 'green', 'Park Street', 517722)]
 
 Accuracy of test results (length 1) vs target results (length 1) is 1.0, 0 incorrect
 
-time taken: 4.357209205627441 seconds
+time taken: 4.742440938949585 seconds

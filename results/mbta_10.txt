@@ -2,24 +2,83 @@
 total number of tokens in the current prompt:555
 
 Generated query:
-SELECT
-    s.station_name,
-    l.line_name,
-    MAX((CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.average_ons) + SUM(rr.average_offs))) / CAST(SUM(rr.average_flow) AS REAL)) as bypass_ratio
-FROM
-    rail_ridership rr
-JOIN
-    stations s ON rr.station_id = s.station_id
-JOIN
-    lines l ON rr.line_id = l.line_id
-WHERE
-    rr.season = 'Fall 2019'
-GROUP BY
-    rr.station_id, rr.line_id
-ORDER BY
-    l.line_name ASC;
+SELECT MAX((CAST(SUM(average_flow) AS REAL) - (SUM(average_ons) + SUM(average_offs)))/CAST(SUM(average_flow) AS REAL)) as bypassed_ratio, station_name, L.line_name
+FROM rail_ridership R
+JOIN stations S ON R.station_id = S.station_id
+JOIN lines L ON R.line_id = L.line_id
+WHERE season = 'Fall 2019'
+GROUP BY R.station_id, L.line_name
+ORDER BY L.line_name;
 
 error running sql query: misuse of aggregate function SUM()
+===============
+total number of tokens in the current prompt:555
+
+Generated query:
+SELECT 
+  st.station_name, 
+  ln.line_name, 
+  MAX((
+    CAST(SUM(rr.average_flow) AS REAL) - 
+    (SUM(rr.average_ons) + SUM(rr.average_offs))
+  ) / CAST(SUM(rr.average_flow) AS REAL)) AS bypassed_ratio
+FROM 
+  rail_ridership rr
+JOIN 
+  stations st ON st.station_id = rr.station_id
+JOIN 
+  lines ln ON ln.line_id = rr.line_id
+WHERE 
+  rr.season = 'Fall 2019'
+GROUP BY 
+  rr.station_id, 
+  rr.line_id
+ORDER BY 
+  ln.line_name ASC;
+
+error running sql query: misuse of aggregate function SUM()
+===============
+total number of tokens in the current prompt:555
+
+Generated query:
+SELECT 
+    stations.station_name,
+    lines.line_name,
+    (total_flow - total_on_offs) / total_flow AS bypass_ratio
+FROM 
+    (SELECT 
+        rail_ridership.station_id,
+        rail_ridership.line_id,
+        SUM(CAST(rail_ridership.average_flow AS REAL)) AS total_flow,
+        (SUM(rail_ridership.average_ons) + SUM(rail_ridership.average_offs)) AS total_on_offs
+    FROM 
+        rail_ridership 
+    WHERE 
+        rail_ridership.season = 'Fall 2019' 
+    GROUP BY 
+        rail_ridership.station_id,
+        rail_ridership.line_id
+     ) AS temp_table
+LEFT JOIN 
+    stations
+ON
+    temp_table.station_id = stations.station_id
+LEFT JOIN
+    lines
+ON
+    temp_table.line_id = lines.line_id
+ORDER BY
+    lines.line_name ASC;
+
+Test results:
+[('Airport', 'Blue Line', 0.6018782268114652), ('Aquarium', 'Blue Line', 0.8175751858073126), ('Beachmont', 'Blue Line', 0.6866799033149171), ('Bowdoin', 'Blue Line', -1.0571660796532105), ('Government Center', 'Blue Line', -0.508499743983615), ('Maverick', 'Blue Line', 0.5271817924455463), ('Orient Heights', 'Blue Line', 0.722133050755014), ('Revere Beach', 'Blue Line', 0.5112529288444938), ('Suffolk Downs', 'Blue Line', 0.9342706567406206), ('State Street', 'Blue Line', 0.34463522580224226), ('Wood Island', 'Blue Line', 0.8762640884424275), ('Wonderland', 'Blue Line', -1.034669385834183), ('Allston Street', 'Green Line', 0.7769650528271218), ('Arlington', 'Green Line', 0.7900104966296966), ('Babcock Street', 'Green Line', 0.8469353390211046), ('Back of the Hill', 'Green Line', 0.6404332129963899), ('Beaconsfield', 'Green Line', 0.9035439652290204), ('Washington Square', 'Green Line', 0.6914536534985799), ('Blandford Street', 'Green Line', 0.9290946911458804), ('Brandon Hall', 'Green Line', 0.9214588961790814), ('Boylston', 'Green Line', 0.7842324941994638), ('Packards Corner', 'Green Line', 0.8046262902624052), ('Brookline Hills', 'Green Line', 0.9153447341948464), ('Brigham Circle', 'Green Line', 0.540902193405987), ('Boston Univ. Central', 'Green Line', 0.8998981387165478), ('Boston Univ. East', 'Green Line', 0.9297652753676134), ('Boston Univ. West', 'Green Line', 0.9446824537451156), ('Brookline Village', 'Green Line', 0.7978853484859383), ('Chestnut Hill', 'Green Line', 0.8860490958682695), ('Chestnut Hill Ave.', 'Green Line', 0.30990415335463256), ('Chiswick Road', 'Green Line', 0.4339622641509434), ('Cleveland Circle', 'Green Line', -0.9130434782608695), ('Copley', 'Green Line', 0.5088616367616359), ('Coolidge Corner', 'Green Line', 0.44012563800549664), ('Dean Road', 'Green Line', 0.6309164149043303), ('Eliot', 'Green Line', 0.9097162510748066), ('Englewood Ave.', 'Green Line', -0.4570230607966457), ('Fairbanks Street', 'Green Line', 0.8524032326669503), ('Fenwood Road', 'Green Line', 0.8067275909002528), ('Fenway', 'Green Line', 0.8370542733161437), ('Government Center', 'Green Line', 0.19412943454946432), ('Griggs Street', 'Green Line', 0.7737254522588759), ('Haymarket', 'Green Line', 0.5029221833399473), ('Harvard Ave.', 'Green Line', 0.5056528662420382), ('Heath Street', 'Green Line', -1.0757314974182444), ('Hawes Street', 'Green Line', 0.954870506378044), ('Hynes Convention Center', 'Green Line', 0.5925445044155677), ('Kenmore', 'Green Line', 0.01846208643343359), ('Kent Street', 'Green Line', 0.9523335655289084), ('Boston College', 'Green Line', -0.8510028653295129), ('Lechmere', 'Green Line', -0.6929108398674318), ('Longwood Medical Area', 'Green Line', 0.6632862018527548), ('Longwood', 'Green Line', 0.8806814400745325), ('Museum of Fine Arts', 'Green Line', 0.8043344604980018), ('Mission Park', 'Green Line', 0.5661671323342646), ('Newton Highlands', 'Green Line', 0.8435840994432215), ('Newton Centre', 'Green Line', 0.8577523296283822), ('North Station', 'Green Line', 0.15139570193879934), ('Northeastern University', 'Green Line', 0.6608086680761099), ('Park Street', 'Green Line', 0.09098856857386346), ('Pleasant Street', 'Green Line', 0.9149066421793695), ('Prudential', 'Green Line', 0.5179361492185759), ('Riverside', 'Green Line', -0.5438996579247435), ('Reservoir', 'Green Line', 0.8005922087535856), ('Riverway', 'Green Line', 0.2670157068062827), ('Saint Mary Street', 'Green Line', 0.785681962168522), ('South Street', 'Green Line', -0.28289473684210525), ('Science Park', 'Green Line', -0.08103624920720105), ('Sutherland Road', 'Green Line', 0.6558739255014326), ('Saint Paul Street', 'Green Line', 0.9006615562322797), ('Summit Ave.', 'Green Line', 0.7938109078474953), ('Symphony', 'Green Line', 0.5629375492605128), ('Tappan Street', 'Green Line', 0.6418389166072701), ('Waban', 'Green Line', 0.9335696670776819), ('Washington Street', 'Green Line', 0.5119189511323003), ('Woodland', 'Green Line', 0.853542234332425), ('Warren Street', 'Green Line', 0.6905638156926248), ('Assembly', 'Orange Line', 0.779187474692941), ('Back Bay', 'Orange Line', 0.5300606873253172), ('Community College', 'Orange Line', 0.8474001879978231), ('Chinatown', 'Orange Line', 0.831138714538618), ('Downtown Crossing', 'Orange Line', 0.3294665479695953), ('Forest Hills', 'Orange Line', -0.9594850870639619), ('Green Street', 'Orange Line', 0.7543332014246141), ('Haymarket', 'Orange Line', 0.7631603756481381), ('Jackson Square', 'Orange Line', 0.7321544937388823), ('Massachusetts Ave.', 'Orange Line', 0.7493851225162521), ('Malden Center', 'Orange Line', -0.09461021222945996), ('North Station', 'Orange Line', 0.701529890211384), ('Oak Grove', 'Orange Line', -0.6963517305893359), ('Roxbury Crossing', 'Orange Line', 0.8011051424525543), ('Ruggles', 'Orange Line', 0.5146018984889578), ('Stony Brook', 'Orange Line', 0.7793116857865059), ('State Street', 'Orange Line', 0.6015339241075381), ('Sullivan Square', 'Orange Line', 0.7127598098611241), ('Tufts Medical Center', 'Orange Line', 0.83472180323177), ('Wellington', 'Orange Line', 0.6072310355592133), ('Alewife', 'Red Line', -1.0121996303142329), ('Andrew', 'Red Line', 0.849075125864221), ('Ashmont', 'Red Line', -0.8780199122745944), ('Broadway', 'Red Line', 0.8619420309080056), ('Braintree', 'Red Line', -0.8298527443105757), ('Charles/MGH', 'Red Line', 0.8108198363666722), ('Central', 'Red Line', 0.6197499134418196), ('Davis', 'Red Line', 0.2439936775553214), ('Downtown Crossing', 'Red Line', 0.40939329117792245), ('Fields Corner', 'Red Line', 0.5352676826885502), ('Harvard', 'Red Line', 0.4512738776203691), ('JFK/Umass', 'Red Line', 0.6698814826598791), ('Kendall/MIT', 'Red Line', 0.6932365845021816), ('North Quincy', 'Red Line', 0.6915859239870812), ('Park Street', 'Red Line', 0.2903280047777256), ('Porter', 'Red Line', 0.6428340487206645), ('Quincy Adams', 'Red Line', 0.34085583290881305), ('Quincy Center', 'Red Line', 0.3064446483510552), ('Savin Hill', 'Red Line', 0.8433599526767228), ('Shawmut', 'Red Line', 0.7125432668534696), ('South Station', 'Red Line', 0.5279224998523244), ('Wollaston', 'Red Line', 0.7698063791974558)]
+
+Target results:
+[('Suffolk Downs', 'Blue Line', 0.9342706567406206), ('Hawes Street', 'Green Line', 0.954870506378044), ('Community College', 'Orange Line', 0.8474001879978231), ('Broadway', 'Red Line', 0.8619420309080056)]
+
+Accuracy of test results (length 119) vs target results (length 4) is -27.75, 115 incorrect
+
+time taken: 11.77508807182312 seconds
 ===============
 total number of tokens in the current prompt:555
 
@@ -27,123 +86,84 @@ Generated query:
 SELECT
     stations.station_name,
     lines.line_name,
-    MAX((CAST(sums.sum_avg_flow AS REAL) - (sums.sum_avg_ons + sums.sum_avg_offs)) / CAST(sums.sum_avg_flow AS REAL)) AS bypassed_ratio
+    MAX((CAST(SUM(rail_ridership.average_flow) AS REAL) - (SUM(rail_ridership.average_ons) + SUM(rail_ridership.average_offs))) / CAST(SUM(rail_ridership.average_flow) AS REAL)) AS bypassed_ratio
 FROM
+    rail_ridership
+JOIN
     stations
-INNER JOIN
-    (
-        SELECT
-            rail_ridership.station_id,
-            rail_ridership.line_id,
-            SUM(rail_ridership.average_flow) AS sum_avg_flow,
-            SUM(rail_ridership.average_ons) AS sum_avg_ons,
-            SUM(rail_ridership.average_offs) AS sum_avg_offs
-        FROM
-            rail_ridership
-        WHERE
-            rail_ridership.season = 'Fall 2019'
-        GROUP BY
-            rail_ridership.station_id, rail_ridership.line_id
-    ) sums
 ON
-    stations.station_id = sums.station_id
-INNER JOIN
+    stations.station_id = rail_ridership.station_id
+JOIN
     lines
 ON
-    sums.line_id = lines.line_id
+    lines.line_id = rail_ridership.line_id
+WHERE
+    rail_ridership.season = 'Fall 2019'
 GROUP BY
-    stations.station_name, lines.line_name
+    rail_ridership.station_id, stations.station_name, lines.line_name
 ORDER BY
     lines.line_name ASC;
 
-Accuracy of test results (length 119) vs target results (length 4) is -27.75, 115 incorrect
-
-time taken: 10.69800615310669 seconds
+error running sql query: misuse of aggregate function SUM()
 ===============
 total number of tokens in the current prompt:555
 
 Generated query:
-SELECT bypassed_max.station_name, bypassed_max.line_name, bypassed_max.bypassed_ratio
-FROM 
-    (SELECT station_name, line_name, MAX(bypassed_ratio) AS bypassed_ratio
-    FROM
-        (SELECT st.station_name, ln.line_name, 
-        (CAST(SUM(average_flow) AS REAL) - (SUM(average_ons) + SUM(average_offs))) / CAST(SUM(average_flow) AS REAL) AS bypassed_ratio
-        FROM rail_ridership rr
-        INNER JOIN stations st ON rr.station_id = st.station_id
-        INNER JOIN lines ln ON rr.line_id = ln.line_id
-        WHERE rr.season = 'Fall 2019'
-        GROUP BY rr.station_id, rr.line_id)) AS bypassed_max 
-ORDER BY bypassed_max.line_name ASC;
-
-
-Accuracy of test results (length 1) vs target results (length 4) is 0.25, 3 incorrect
-
-time taken: 9.4949471950531 seconds
-===============
-total number of tokens in the current prompt:555
-
-Generated query:
-SELECT
-    s.station_name,
-    l.line_name,
-    MAX((CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.average_ons) + SUM(rr.average_offs))) / CAST(SUM(rr.average_flow) AS REAL)) as 'maximally_bypassed_ratio'
+SELECT 
+  MAX(bypassed_ratio) as max_bypassed_ratio, 
+  stations.station_name, 
+  lines.line_name 
 FROM
-    rail_ridership rr
-INNER JOIN lines l ON rr.line_id = l.line_id
-INNER JOIN stations s ON rr.station_id = s.station_id
-WHERE
-    rr.season = 'Fall 2019'
-GROUP BY
-    rr.station_id,
-    rr.line_id
-ORDER BY
-    l.line_name ASC;
+(
+SELECT 
+  stations.station_id,
+  rail_ridership.line_id,
+  (CAST(SUM(average_flow) AS REAL) - (SUM(average_ons) + SUM(average_offs)))/CAST(SUM(average_flow) AS REAL) as bypassed_ratio 
+  FROM rail_ridership 
+  JOIN stations ON rail_ridership.station_id = stations.station_id
+  WHERE season = 'Fall 2019'
+  GROUP BY stations.station_id, rail_ridership.line_id
+) as bypass_inners
+JOIN stations ON bypass_inners.station_id = stations.station_id
+JOIN lines ON bypass_inners.line_id = lines.line_id
+GROUP BY 
+  stations.station_name, 
+  lines.line_name 
+ORDER BY 
+  lines.line_name ASC;
 
-error running sql query: misuse of aggregate function SUM()
+Test results:
+[(0.6018782268114652, 'Airport', 'Blue Line'), (0.8175751858073126, 'Aquarium', 'Blue Line'), (0.6866799033149171, 'Beachmont', 'Blue Line'), (-1.0571660796532105, 'Bowdoin', 'Blue Line'), (-0.508499743983615, 'Government Center', 'Blue Line'), (0.5271817924455463, 'Maverick', 'Blue Line'), (0.722133050755014, 'Orient Heights', 'Blue Line'), (0.5112529288444938, 'Revere Beach', 'Blue Line'), (0.34463522580224226, 'State Street', 'Blue Line'), (0.9342706567406206, 'Suffolk Downs', 'Blue Line'), (-1.034669385834183, 'Wonderland', 'Blue Line'), (0.8762640884424275, 'Wood Island', 'Blue Line'), (0.7769650528271218, 'Allston Street', 'Green Line'), (0.7900104966296966, 'Arlington', 'Green Line'), (0.8469353390211046, 'Babcock Street', 'Green Line'), (0.6404332129963899, 'Back of the Hill', 'Green Line'), (0.9035439652290204, 'Beaconsfield', 'Green Line'), (0.9290946911458804, 'Blandford Street', 'Green Line'), (-0.8510028653295129, 'Boston College', 'Green Line'), (0.8998981387165478, 'Boston Univ. Central', 'Green Line'), (0.9297652753676134, 'Boston Univ. East', 'Green Line'), (0.9446824537451156, 'Boston Univ. West', 'Green Line'), (0.7842324941994638, 'Boylston', 'Green Line'), (0.9214588961790814, 'Brandon Hall', 'Green Line'), (0.540902193405987, 'Brigham Circle', 'Green Line'), (0.9153447341948464, 'Brookline Hills', 'Green Line'), (0.7978853484859383, 'Brookline Village', 'Green Line'), (0.8860490958682695, 'Chestnut Hill', 'Green Line'), (0.30990415335463256, 'Chestnut Hill Ave.', 'Green Line'), (0.4339622641509434, 'Chiswick Road', 'Green Line'), (-0.9130434782608695, 'Cleveland Circle', 'Green Line'), (0.44012563800549664, 'Coolidge Corner', 'Green Line'), (0.5088616367616359, 'Copley', 'Green Line'), (0.6309164149043303, 'Dean Road', 'Green Line'), (0.9097162510748066, 'Eliot', 'Green Line'), (-0.4570230607966457, 'Englewood Ave.', 'Green Line'), (0.8524032326669503, 'Fairbanks Street', 'Green Line'), (0.8370542733161437, 'Fenway', 'Green Line'), (0.8067275909002528, 'Fenwood Road', 'Green Line'), (0.19412943454946432, 'Government Center', 'Green Line'), (0.7737254522588759, 'Griggs Street', 'Green Line'), (0.5056528662420382, 'Harvard Ave.', 'Green Line'), (0.954870506378044, 'Hawes Street', 'Green Line'), (0.5029221833399473, 'Haymarket', 'Green Line'), (-1.0757314974182444, 'Heath Street', 'Green Line'), (0.5925445044155677, 'Hynes Convention Center', 'Green Line'), (0.01846208643343359, 'Kenmore', 'Green Line'), (0.9523335655289084, 'Kent Street', 'Green Line'), (-0.6929108398674318, 'Lechmere', 'Green Line'), (0.8806814400745325, 'Longwood', 'Green Line'), (0.6632862018527548, 'Longwood Medical Area', 'Green Line'), (0.5661671323342646, 'Mission Park', 'Green Line'), (0.8043344604980018, 'Museum of Fine Arts', 'Green Line'), (0.8577523296283822, 'Newton Centre', 'Green Line'), (0.8435840994432215, 'Newton Highlands', 'Green Line'), (0.15139570193879934, 'North Station', 'Green Line'), (0.6608086680761099, 'Northeastern University', 'Green Line'), (0.8046262902624052, 'Packards Corner', 'Green Line'), (0.09098856857386346, 'Park Street', 'Green Line'), (0.9149066421793695, 'Pleasant Street', 'Green Line'), (0.5179361492185759, 'Prudential', 'Green Line'), (0.8005922087535856, 'Reservoir', 'Green Line'), (-0.5438996579247435, 'Riverside', 'Green Line'), (0.2670157068062827, 'Riverway', 'Green Line'), (0.785681962168522, 'Saint Mary Street', 'Green Line'), (0.9006615562322797, 'Saint Paul Street', 'Green Line'), (-0.08103624920720105, 'Science Park', 'Green Line'), (-0.28289473684210525, 'South Street', 'Green Line'), (0.7938109078474953, 'Summit Ave.', 'Green Line'), (0.6558739255014326, 'Sutherland Road', 'Green Line'), (0.5629375492605128, 'Symphony', 'Green Line'), (0.6418389166072701, 'Tappan Street', 'Green Line'), (0.9335696670776819, 'Waban', 'Green Line'), (0.6905638156926248, 'Warren Street', 'Green Line'), (0.6914536534985799, 'Washington Square', 'Green Line'), (0.5119189511323003, 'Washington Street', 'Green Line'), (0.853542234332425, 'Woodland', 'Green Line'), (0.779187474692941, 'Assembly', 'Orange Line'), (0.5300606873253172, 'Back Bay', 'Orange Line'), (0.831138714538618, 'Chinatown', 'Orange Line'), (0.8474001879978231, 'Community College', 'Orange Line'), (0.3294665479695953, 'Downtown Crossing', 'Orange Line'), (-0.9594850870639619, 'Forest Hills', 'Orange Line'), (0.7543332014246141, 'Green Street', 'Orange Line'), (0.7631603756481381, 'Haymarket', 'Orange Line'), (0.7321544937388823, 'Jackson Square', 'Orange Line'), (-0.09461021222945996, 'Malden Center', 'Orange Line'), (0.7493851225162521, 'Massachusetts Ave.', 'Orange Line'), (0.701529890211384, 'North Station', 'Orange Line'), (-0.6963517305893359, 'Oak Grove', 'Orange Line'), (0.8011051424525543, 'Roxbury Crossing', 'Orange Line'), (0.5146018984889578, 'Ruggles', 'Orange Line'), (0.6015339241075381, 'State Street', 'Orange Line'), (0.7793116857865059, 'Stony Brook', 'Orange Line'), (0.7127598098611241, 'Sullivan Square', 'Orange Line'), (0.83472180323177, 'Tufts Medical Center', 'Orange Line'), (0.6072310355592133, 'Wellington', 'Orange Line'), (-1.0121996303142329, 'Alewife', 'Red Line'), (0.849075125864221, 'Andrew', 'Red Line'), (-0.8780199122745944, 'Ashmont', 'Red Line'), (-0.8298527443105757, 'Braintree', 'Red Line'), (0.8619420309080056, 'Broadway', 'Red Line'), (0.6197499134418196, 'Central', 'Red Line'), (0.8108198363666722, 'Charles/MGH', 'Red Line'), (0.2439936775553214, 'Davis', 'Red Line'), (0.40939329117792245, 'Downtown Crossing', 'Red Line'), (0.5352676826885502, 'Fields Corner', 'Red Line'), (0.4512738776203691, 'Harvard', 'Red Line'), (0.6698814826598791, 'JFK/Umass', 'Red Line'), (0.6932365845021816, 'Kendall/MIT', 'Red Line'), (0.6915859239870812, 'North Quincy', 'Red Line'), (0.2903280047777256, 'Park Street', 'Red Line'), (0.6428340487206645, 'Porter', 'Red Line'), (0.34085583290881305, 'Quincy Adams', 'Red Line'), (0.3064446483510552, 'Quincy Center', 'Red Line'), (0.8433599526767228, 'Savin Hill', 'Red Line'), (0.7125432668534696, 'Shawmut', 'Red Line'), (0.5279224998523244, 'South Station', 'Red Line'), (0.7698063791974558, 'Wollaston', 'Red Line')]
+
+Target results:
+[('Suffolk Downs', 'Blue Line', 0.9342706567406206), ('Hawes Street', 'Green Line', 0.954870506378044), ('Community College', 'Orange Line', 0.8474001879978231), ('Broadway', 'Red Line', 0.8619420309080056)]
+
+Accuracy of test results (length 119) vs target results (length 4) is -29.75, 123 incorrect
+
+time taken: 8.636811971664429 seconds
 ===============
 total number of tokens in the current prompt:555
 
 Generated query:
 SELECT 
-    s.station_name,
-    l.line_name,
-    MAX((CAST(SUM(r.average_flow) AS REAL) - (SUM(r.average_ons) + SUM(r.average_offs))) / CAST(SUM(r.average_flow) AS REAL)) AS bypassed_ratio
-FROM 
-    rail_ridership r
-    INNER JOIN stations s ON r.station_id = s.station_id
-    INNER JOIN lines l ON r.line_id = l.line_id
-WHERE 
-    r.season = 'Fall 2019'
-GROUP BY 
     s.station_name, 
-    l.line_name
-ORDER BY 
-    l.line_name ASC;
-
-error running sql query: misuse of aggregate function SUM()
-===============
-total number of tokens in the current prompt:555
-
-Generated query:
-SELECT 
-    S.station_name AS "Station Name", 
-    L.line_name AS "Line Name", 
-    ((cast(sum(R.average_flow) as real) - sum(R.average_ons + R.average_offs))/cast(sum(R.average_flow) as real)) AS "Bypassed Ratio"
+    l.line_name, 
+    ((CAST(SUM(rr.average_flow) AS REAL) - (SUM(rr.average_ons) + SUM(rr.average_offs))) / CAST(SUM(rr.average_flow) AS REAL)) AS bypassed_ratio
 FROM 
-    rail_ridership R
+    rail_ridership AS rr
 JOIN 
-    stations S ON R.station_id = S.station_id
+    stations AS s ON rr.station_id = s.station_id
 JOIN 
-    lines L ON R.line_id = L.line_id
+    lines AS l ON rr.line_id = l.line_id
 WHERE 
-    R.season = 'Fall 2019'
+    rr.season = 'Fall 2019'
 GROUP BY 
-    S.station_name, 
-    L.line_name
+    rr.station_id, 
+    rr.line_id
+HAVING 
+    SUM(rr.average_flow) != 0
 ORDER BY 
-    "Line Name" ASC;
+     MAX(bypassed_ratio) DESC,
+     l.line_name ASC;
 
-Accuracy of test results (length 119) vs target results (length 4) is -27.75, 115 incorrect
-
-time taken: 6.389132976531982 seconds
+error running sql query: misuse of aliased aggregate bypassed_ratio

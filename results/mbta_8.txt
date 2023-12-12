@@ -2,154 +2,167 @@
 total number of tokens in the current prompt:450
 
 Generated query:
-SELECT s.station_name, r.total_ons
-FROM stations s
-JOIN rail_ridership r ON s.station_id = r.station_id
-JOIN lines l ON r.line_id = l.line_id
-WHERE l.line_name = 'Orange Line'
-AND r.season = 'Fall 2018'
-AND r.time_period_id = '01'
-AND r.direction = 0
-AND r.total_ons >
-    (SELECT AVG(total_ons)
-     FROM rail_ridership
-     WHERE line_id = 'Orange Line'
-     AND season = 'Fall 2018'
-     AND time_period_id = '01'
-     AND direction = 0)
-ORDER BY r.total_ons DESC, s.station_name ASC
-
-Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
-
-time taken: 6.148132085800171 seconds
-===============
-total number of tokens in the current prompt:450
-
-Generated query:
-SELECT s.station_name, r.total_ons
-FROM rail_ridership r
-JOIN stations s ON s.station_id = r.station_id
-JOIN lines l ON l.line_id = r.line_id
-WHERE r.season = 'Fall 2018' 
-    AND r.direction = 0 
-    AND r.time_period_id = '01' 
-    AND l.line_name = 'Orange Line' 
-    AND r.total_ons > (
-        SELECT AVG(total_ons)
-        FROM rail_ridership
-        WHERE line_id = r.line_id 
-            AND season = r.season 
-            AND direction = r.direction 
-            AND time_period_id = r.time_period_id
-    )
-ORDER BY r.total_ons DESC, s.station_name ASC;
-
-Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
-
-time taken: 7.915126085281372 seconds
-===============
-total number of tokens in the current prompt:450
-
-Generated query:
-SELECT S.station_name, RR.total_ons
+SELECT S.station_name, R.total_ons
 FROM stations S
-JOIN rail_ridership RR ON S.station_id = RR.station_id
-JOIN lines L ON RR.line_id = L.line_id
-WHERE 
-    RR.season = 'Fall 2018'
+JOIN (
+    SELECT RR.station_id, RR.total_ons
+    FROM rail_ridership RR
+    JOIN lines L
+    ON RR.line_id = L.line_id
+    WHERE RR.season = 'Fall 2018'
     AND RR.time_period_id = '01'
     AND RR.direction = 0
     AND L.line_name = 'Orange Line'
-    AND RR.total_ons > (
-        SELECT AVG(total_ons) 
+    GROUP BY RR.station_id
+    HAVING total_ons > (
+        SELECT AVG(total_ons)
         FROM rail_ridership
-        JOIN lines ON rail_ridership.line_id = lines.line_id
-        WHERE 
-            season = 'Fall 2018'
-            AND time_period_id = '01'
-            AND direction = 0
-            AND line_name = 'Orange Line'
+        WHERE season = 'Fall 2018' AND time_period_id = '01' AND direction = 0 AND line_id = L.line_id
     )
-ORDER BY RR.total_ons DESC, S.station_name ASC;
+) R
+ON S.station_id = R.station_id
+ORDER BY R.total_ons DESC, S.station_name ASC;
+
+Test results:
+[]
+
+Target results:
+[('Malden Center', 7496), ('Sullivan Square', 6735), ('Wellington', 4608), ('Oak Grove', 3211), ('State Street', 3210)]
 
 Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
 
-time taken: 8.397564172744751 seconds
+time taken: 7.383745193481445 seconds
 ===============
 total number of tokens in the current prompt:450
 
 Generated query:
-SELECT stations.station_name, rail_ridership.total_ons
-FROM rail_ridership
-JOIN stations ON rail_ridership.station_id = stations.station_id
-JOIN lines ON rail_ridership.line_id = lines.line_id
-WHERE rail_ridership.line_id = 'Orange'
-AND rail_ridership.season = 'Fall 2018'
-AND rail_ridership.time_period_id = '01'
-AND rail_ridership.direction = 0
-AND rail_ridership.total_ons > (
-SELECT AVG(r.total_ons)
-FROM rail_ridership r
-WHERE r.line_id = 'Orange'
-AND r.season = 'Fall 2018'
-AND r.time_period_id = '01'
-AND r.direction = 0 )
-ORDER BY rail_ridership.total_ons DESC, stations.station_name ASC;
+SELECT sta.station_name, rid.total_ons
+FROM station_orders sta
+JOIN rail_ridership rid ON sta.station_id = rid.station_id
+JOIN lines li ON li.line_id = rid.line_id
+WHERE rid.season = 'Fall 2018'
+AND rid.time_period_id = '01'
+AND rid.direction = 0
+AND li.line_name = 'Orange Line'
+AND rid.total_ons > (
+    SELECT AVG(total_ons) 
+    FROM rail_ridership avg_rid
+    JOIN lines avg_li ON avg_li.line_id = avg_rid.line_id
+    WHERE avg_rid.season = 'Fall 2018'
+    AND avg_rid.time_period_id = '01'
+    AND avg_rid.direction = 0
+    AND avg_li.line_name = 'Orange Line')
+ORDER BY rid.total_ons DESC, sta.station_name ASC;
+
+error running sql query: no such column: sta.station_name
+===============
+total number of tokens in the current prompt:450
+
+Generated query:
+SELECT s.station_name, r.total_ons
+FROM stations s
+INNER JOIN rail_ridership r ON s.station_id = r.station_id
+INNER JOIN lines l ON r.line_id = l.line_id
+WHERE r.time_period_id = '01' 
+AND r.direction = 0
+AND r.season = 'Fall 2018' 
+AND l.line_name = 'Orange Line'
+AND r.total_ons > (
+  SELECT AVG(total_ons)
+  FROM rail_ridership 
+  WHERE time_period_id = '01' 
+  AND direction = 0
+  AND season = 'Fall 2018' 
+  AND line_id = r.line_id
+)
+ORDER BY r.total_ons DESC, s.station_name ASC
+
+Test results:
+[]
+
+Target results:
+[('Malden Center', 7496), ('Sullivan Square', 6735), ('Wellington', 4608), ('Oak Grove', 3211), ('State Street', 3210)]
 
 Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
 
-time taken: 7.942942380905151 seconds
+time taken: 6.372297286987305 seconds
+===============
+total number of tokens in the current prompt:450
+
+Generated query:
+SELECT s.station_name, r.total_ons
+FROM rail_ridership r
+JOIN stations s ON r.station_id = s.station_id
+JOIN lines l ON r.line_id = l.line_id
+WHERE r.line_id = 'Orange' AND r.season = 'Fall 2018' AND r.time_period_id = '01' AND r.direction = 0 AND r.total_ons > (SELECT AVG(total_ons) FROM rail_ridership WHERE line_id = 'Orange' AND season = 'Fall 2018' AND time_period_id = '01' AND direction = 0)
+ORDER BY r.total_ons DESC, s.station_name ASC;
+
+Test results:
+[]
+
+Target results:
+[('Malden Center', 7496), ('Sullivan Square', 6735), ('Wellington', 4608), ('Oak Grove', 3211), ('State Street', 3210)]
+
+Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
+
+time taken: 6.332393169403076 seconds
+===============
+total number of tokens in the current prompt:450
+
+Generated query:
+SELECT s.station_name, rr.total_ons
+FROM stations AS s 
+JOIN rail_ridership AS rr 
+ON s.station_id = rr.station_id
+JOIN lines AS ln 
+ON rr.line_id = ln.line_id 
+WHERE rr.season = 'Fall 2018' 
+AND rr.time_period_id = '01' 
+AND rr.direction = 0
+AND ln.line_name = 'Orange Line' 
+AND rr.total_ons > (SELECT AVG(total_ons) 
+                    FROM rail_ridership 
+                    WHERE season = 'Fall 2018' 
+                    AND time_period_id = '01' 
+                    AND direction = 0 
+                    AND line_id = rr.line_id)
+ORDER BY rr.total_ons DESC, s.station_name ASC;
+
+Test results:
+[]
+
+Target results:
+[('Malden Center', 7496), ('Sullivan Square', 6735), ('Wellington', 4608), ('Oak Grove', 3211), ('State Street', 3210)]
+
+Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
+
+time taken: 6.333821058273315 seconds
 ===============
 total number of tokens in the current prompt:450
 
 Generated query:
 SELECT S.station_name, R.total_ons
 FROM stations S
-JOIN (
-  SELECT RR.station_id, RR.total_ons
-  FROM rail_ridership RR
-  JOIN lines L ON RR.line_id = L.line_id
-  WHERE L.line_name = 'Orange Line'
-  AND RR.season = 'Fall 2018'
-  AND RR.time_period_id = '01'
-  AND RR.direction = 0
-  AND RR.total_ons > (
-    SELECT AVG(RR2.total_ons)
-    FROM rail_ridership RR2
-    JOIN lines L2 ON RR2.line_id = L2.line_id
-    WHERE L2.line_name = 'Orange Line'
-    AND RR2.season = 'Fall 2018'
-    AND RR2.time_period_id = '01'
-    AND RR2.direction = 0
-  )
+INNER JOIN (
+    SELECT R.station_id, R.total_ons
+    FROM rail_ridership R
+    INNER JOIN lines L ON R.line_id = L.line_id
+    WHERE L.line_name = 'Orange Line' AND R.season = 'Fall 2018' AND R.time_period_id = '01' AND R.direction = 0
 ) R ON S.station_id = R.station_id
-ORDER BY R.total_ons DESC, S.station_name ASC;
-
-Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
-
-time taken: 9.2791109085083 seconds
-===============
-total number of tokens in the current prompt:450
-
-Generated query:
-SELECT stations.station_name, rail_ridership.total_ons
-FROM stations
-JOIN rail_ridership ON stations.station_id = rail_ridership.station_id
-JOIN lines ON rail_ridership.line_id = lines.line_id
-WHERE rail_ridership.season = 'Fall 2018' 
-AND rail_ridership.time_period_id = '01'
-AND rail_ridership.direction = 0
-AND lines.line_name = 'Orange Line'
-AND rail_ridership.total_ons > (
+WHERE R.total_ons > (
     SELECT AVG(total_ons)
     FROM rail_ridership
-    WHERE season = 'Fall 2018' 
-    AND time_period_id = '01'
-    AND direction = 0
-    AND line_id = 'Orange Line'
+    INNER JOIN lines ON rail_ridership.line_id = lines.line_id
+    WHERE lines.line_name = 'Orange Line' AND rail_ridership.season = 'Fall 2018' AND rail_ridership.time_period_id = '01' AND rail_ridership.direction = 0
 )
-ORDER BY rail_ridership.total_ons DESC, stations.station_name ASC;
+ORDER BY R.total_ons DESC, S.station_name ASC;
+
+Test results:
+[]
+
+Target results:
+[('Malden Center', 7496), ('Sullivan Square', 6735), ('Wellington', 4608), ('Oak Grove', 3211), ('State Street', 3210)]
 
 Accuracy of test results (length 0) vs target results (length 5) is 0.0, 5 incorrect
 
-time taken: 9.304284811019897 seconds
+time taken: 11.792942762374878 seconds

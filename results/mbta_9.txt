@@ -2,166 +2,189 @@
 total number of tokens in the current prompt:443
 
 Generated query:
-SELECT s.station_name, so.route_id, r.line_id, MAX(route_cnt) as total_routes
-FROM stations s
-JOIN (
-  SELECT station_id, COUNT(DISTINCT route_id) as route_cnt
-  FROM station_orders
-  GROUP BY station_id
-) so ON s.station_id = so.station_id
+SELECT st.station_name, so.route_id, r.line_id, COUNT(*) AS route_cnt
+FROM station_orders so
+JOIN stations st ON so.station_id = st.station_id
 JOIN routes r ON so.route_id = r.route_id
-ORDER BY r.line_id ASC, so.route_id ASC
-LIMIT 1;
+GROUP BY st.station_name, so.route_id, r.line_id
+HAVING route_cnt = (
+  SELECT MAX(count)
+  FROM (
+    SELECT COUNT(*) as count
+    FROM station_orders
+    GROUP BY station_id
+  )
+)
+ORDER BY r.line_id ASC, so.route_id ASC;
 
-error running sql query: no such column: so.route_id
-===============
-total number of tokens in the current prompt:443
+Test results:
+[]
 
-Generated query:
-SELECT 
-    s.station_name,
-    so.route_id,
-    r.line_id,
-    COUNT(so.route_id) AS route_cnt
-FROM 
-    station_orders AS so
-    JOIN stations AS s ON so.station_id = s.station_id
-    JOIN routes AS r ON so.route_id = r.route_id
-GROUP BY 
-    s.station_name,
-    so.route_id,
-    r.line_id
-HAVING
-    COUNT(so.route_id) = (
-        SELECT 
-            MAX(route_cnt)
-        FROM (
-            SELECT
-                COUNT(route_id) AS route_cnt
-            FROM 
-                station_orders
-            GROUP BY 
-                station_id
-        ) AS subqry
-    )
-ORDER BY
-    r.line_id ASC,
-    so.route_id ASC;
+Target results:
+[('Park Street', 2, 'green', 12), ('Park Street', 3, 'green', 12), ('Park Street', 4, 'green', 12), ('Park Street', 5, 'green', 12), ('Park Street', 6, 'green', 12), ('Park Street', 7, 'green', 12), ('Park Street', 8, 'green', 12), ('Park Street', 9, 'green', 12), ('Park Street', 14, 'red', 12), ('Park Street', 15, 'red', 12), ('Park Street', 16, 'red', 12), ('Park Street', 17, 'red', 12)]
 
 Accuracy of test results (length 0) vs target results (length 12) is 0.0, 12 incorrect
 
-time taken: 6.929072141647339 seconds
+time taken: 5.082778215408325 seconds
 ===============
 total number of tokens in the current prompt:443
 
 Generated query:
 SELECT 
-  s.station_name,
-  so.route_id,
-  r.line_id,
-  COUNT(so.route_id) AS route_cnt
+  s.station_name, 
+  so.route_id, 
+  r.line_id, 
+  COUNT(*) AS route_cnt
 FROM 
-  stations s
-JOIN
-  station_orders so ON s.station_id = so.station_id
-JOIN
+  station_orders so
+INNER JOIN 
   routes r ON so.route_id = r.route_id
-GROUP BY
-  s.station_id
-ORDER BY
+INNER JOIN 
+  stations s ON so.station_id = s.station_id
+GROUP BY 
+  s.station_name, 
+  so.route_id, 
+  r.line_id
+ORDER BY 
   route_cnt DESC,
   r.line_id ASC,
-  so.route_id ASC
+  so.route_id Asc
 LIMIT 1;
 
-Accuracy of test results (length 1) vs target results (length 12) is 0.08333333333333333, 11 incorrect
+Test results:
+[('Wood Island', 0, 'blue', 1)]
 
-time taken: 4.789290904998779 seconds
-===============
-total number of tokens in the current prompt:443
+Target results:
+[('Park Street', 2, 'green', 12), ('Park Street', 3, 'green', 12), ('Park Street', 4, 'green', 12), ('Park Street', 5, 'green', 12), ('Park Street', 6, 'green', 12), ('Park Street', 7, 'green', 12), ('Park Street', 8, 'green', 12), ('Park Street', 9, 'green', 12), ('Park Street', 14, 'red', 12), ('Park Street', 15, 'red', 12), ('Park Street', 16, 'red', 12), ('Park Street', 17, 'red', 12)]
 
-Generated query:
-SELECT station_name, route_id, line_id, MAX(route_cnt) AS total_routes
-FROM (
-  SELECT s.station_name, r.route_id, r.line_id, COUNT(*) AS route_cnt
-  FROM stations s
-  JOIN station_orders so ON s.station_id = so.station_id
-  JOIN routes r ON r.route_id = so.route_id
-  GROUP BY s.station_id, r.route_id, r.line_id
-) AS subquery
-GROUP BY station_name, route_id, line_id
-ORDER BY line_id ASC, route_id ASC;
+Accuracy of test results (length 1) vs target results (length 12) is -0.08333333333333333, 13 incorrect
 
-Accuracy of test results (length 324) vs target results (length 12) is -27.0, 336 incorrect
-
-time taken: 5.740595817565918 seconds
+time taken: 6.637797832489014 seconds
 ===============
 total number of tokens in the current prompt:443
 
 Generated query:
 SELECT 
-    s.station_name, 
-    r.route_id,
+  S.station_name,
+  SO.route_id,
+  R.line_id,
+  COUNT(SO.route_id) as route_count
+FROM 
+  station_orders AS SO
+JOIN 
+  stations AS S ON SO.station_id = S.station_id
+JOIN
+  routes AS R ON SO.route_id = R.route_id
+GROUP BY 
+  SO.station_id
+ORDER BY 
+  R.line_id ASC, 
+  SO.route_id ASC
+HAVING
+  COUNT(SO.route_id) = (
+    SELECT 
+      MAX(route_cnt)
+    FROM (
+      SELECT 
+        station_id, 
+        COUNT(route_id) as route_cnt
+      FROM 
+        station_orders
+      GROUP BY 
+        station_id
+    )
+);
+
+error running sql query: near "HAVING": syntax error
+===============
+total number of tokens in the current prompt:443
+
+Generated query:
+SELECT 
+    st.station_name,
+    so.route_id,
     r.line_id,
-    COUNT(*) AS route_cnt
+    COUNT(*) as route_cnt
 FROM 
     station_orders so
 JOIN 
-    stations s ON so.station_id = s.station_id
-JOIN 
     routes r ON so.route_id = r.route_id
+JOIN 
+    stations st ON so.station_id = st.station_id
 GROUP BY 
-    s.station_id, 
-    r.route_id,
-    r.line_id
-HAVING 
-    COUNT(*) = (
-SELECT 
-    MAX(route_cnt)
-FROM 
-    (
-SELECT 
-    COUNT(*) as route_cnt
-FROM 
-    station_orders 
-GROUP BY 
-    station_id
-    ) subquery
-)
+    so.station_id
 ORDER BY 
-    r.line_id ASC, 
-    r.route_id ASC;
+    route_cnt DESC, r.line_id ASC, so.route_id ASC
+LIMIT 1;
 
-Accuracy of test results (length 0) vs target results (length 12) is 0.0, 12 incorrect
+Test results:
+[('Park Street', 2, 'green', 12)]
 
-time taken: 6.842194080352783 seconds
+Target results:
+[('Park Street', 2, 'green', 12), ('Park Street', 3, 'green', 12), ('Park Street', 4, 'green', 12), ('Park Street', 5, 'green', 12), ('Park Street', 6, 'green', 12), ('Park Street', 7, 'green', 12), ('Park Street', 8, 'green', 12), ('Park Street', 9, 'green', 12), ('Park Street', 14, 'red', 12), ('Park Street', 15, 'red', 12), ('Park Street', 16, 'red', 12), ('Park Street', 17, 'red', 12)]
+
+Accuracy of test results (length 1) vs target results (length 12) is 0.08333333333333333, 11 incorrect
+
+time taken: 4.197427749633789 seconds
+===============
+total number of tokens in the current prompt:443
+
+Generated query:
+SELECT station_name, route_id, line_id, MAX(route_cnt) as route_cnt
+FROM (
+  SELECT s.station_name, r.route_id, r.line_id, COUNT(*) as route_cnt
+  FROM stations AS s
+  JOIN station_orders AS so ON s.station_id = so.station_id
+  JOIN routes AS r ON so.route_id = r.route_id
+  GROUP BY s.station_id, r.route_id, r.line_id
+) AS stat_route_group
+GROUP BY station_name
+ORDER BY line_id ASC, route_id ASC;
+
+Test results:
+[('Airport', 0, 'blue', 1), ('Aquarium', 0, 'blue', 1), ('Beachmont', 0, 'blue', 1), ('Bowdoin', 0, 'blue', 1), ('Government Center', 0, 'blue', 1), ('Maverick', 0, 'blue', 1), ('Orient Heights', 0, 'blue', 1), ('Revere Beach', 0, 'blue', 1), ('State Street', 0, 'blue', 1), ('Suffolk Downs', 0, 'blue', 1), ('Wonderland', 0, 'blue', 1), ('Wood Island', 0, 'blue', 1), ('Allston Street', 2, 'green', 1), ('Arlington', 2, 'green', 1), ('Babcock Street', 2, 'green', 1), ('Blandford Street', 2, 'green', 1), ('Boston College', 2, 'green', 1), ('Boston Univ. Central', 2, 'green', 1), ('Boston Univ. East', 2, 'green', 1), ('Boston Univ. West', 2, 'green', 1), ('Boylston', 2, 'green', 1), ('Chestnut Hill Ave.', 2, 'green', 1), ('Chiswick Road', 2, 'green', 1), ('Copley', 2, 'green', 1), ('Griggs Street', 2, 'green', 1), ('Harvard Ave.', 2, 'green', 1), ('Hynes Convention Center', 2, 'green', 1), ('Kenmore', 2, 'green', 1), ('Packards Corner', 2, 'green', 1), ('Park Street', 2, 'green', 1), ('Pleasant Street', 2, 'green', 1), ('Saint Paul Street', 2, 'green', 1), ('South Street', 2, 'green', 1), ('Sutherland Road', 2, 'green', 1), ('Warren Street', 2, 'green', 1), ('Washington Street', 2, 'green', 1), ('Brandon Hall', 3, 'green', 1), ('Cleveland Circle', 3, 'green', 1), ('Coolidge Corner', 3, 'green', 1), ('Dean Road', 3, 'green', 1), ('Englewood Ave.', 3, 'green', 1), ('Fairbanks Street', 3, 'green', 1), ('Hawes Street', 3, 'green', 1), ('Kent Street', 3, 'green', 1), ('Saint Mary Street', 3, 'green', 1), ('Summit Ave.', 3, 'green', 1), ('Tappan Street', 3, 'green', 1), ('Washington Square', 3, 'green', 1), ('Beaconsfield', 4, 'green', 1), ('Brookline Hills', 4, 'green', 1), ('Brookline Village', 4, 'green', 1), ('Chestnut Hill', 4, 'green', 1), ('Eliot', 4, 'green', 1), ('Fenway', 4, 'green', 1), ('Haymarket', 4, 'green', 1), ('Longwood', 4, 'green', 1), ('Newton Centre', 4, 'green', 1), ('Newton Highlands', 4, 'green', 1), ('North Station', 4, 'green', 1), ('Reservoir', 4, 'green', 1), ('Riverside', 4, 'green', 1), ('Waban', 4, 'green', 1), ('Woodland', 4, 'green', 1), ('Back of the Hill', 5, 'green', 1), ('Brigham Circle', 5, 'green', 1), ('Fenwood Road', 5, 'green', 1), ('Heath Street', 5, 'green', 1), ('Lechmere', 5, 'green', 1), ('Longwood Medical Area', 5, 'green', 1), ('Mission Park', 5, 'green', 1), ('Museum of Fine Arts', 5, 'green', 1), ('Northeastern University', 5, 'green', 1), ('Prudential', 5, 'green', 1), ('Riverway', 5, 'green', 1), ('Science Park', 5, 'green', 1), ('Symphony', 5, 'green', 1), ('Ashmont', 10, 'mattapan', 1), ('Butler', 10, 'mattapan', 1), ('Capen Street', 10, 'mattapan', 1), ('Cedar Grove', 10, 'mattapan', 1), ('Central Ave.', 10, 'mattapan', 1), ('Mattapan', 10, 'mattapan', 1), ('Milton', 10, 'mattapan', 1), ('Valley Road', 10, 'mattapan', 1), ('Assembly', 12, 'orange', 1), ('Back Bay', 12, 'orange', 1), ('Chinatown', 12, 'orange', 1), ('Community College', 12, 'orange', 1), ('Downtown Crossing', 12, 'orange', 1), ('Forest Hills', 12, 'orange', 1), ('Green Street', 12, 'orange', 1), ('Jackson Square', 12, 'orange', 1), ('Malden Center', 12, 'orange', 1), ('Massachusetts Ave.', 12, 'orange', 1), ('Oak Grove', 12, 'orange', 1), ('Roxbury Crossing', 12, 'orange', 1), ('Ruggles', 12, 'orange', 1), ('Stony Brook', 12, 'orange', 1), ('Sullivan Square', 12, 'orange', 1), ('Tufts Medical Center', 12, 'orange', 1), ('Wellington', 12, 'orange', 1), ('Alewife', 14, 'red', 1), ('Andrew', 14, 'red', 1), ('Broadway', 14, 'red', 1), ('Central', 14, 'red', 1), ('Charles/MGH', 14, 'red', 1), ('Davis', 14, 'red', 1), ('Fields Corner', 14, 'red', 1), ('Harvard', 14, 'red', 1), ('JFK/Umass', 14, 'red', 1), ('Kendall/MIT', 14, 'red', 1), ('Porter', 14, 'red', 1), ('Savin Hill', 14, 'red', 1), ('Shawmut', 14, 'red', 1), ('South Station', 14, 'red', 1), ('Braintree', 15, 'red', 1), ('North Quincy', 15, 'red', 1), ('Quincy Adams', 15, 'red', 1), ('Quincy Center', 15, 'red', 1), ('Wollaston', 15, 'red', 1)]
+
+Target results:
+[('Park Street', 2, 'green', 12), ('Park Street', 3, 'green', 12), ('Park Street', 4, 'green', 12), ('Park Street', 5, 'green', 12), ('Park Street', 6, 'green', 12), ('Park Street', 7, 'green', 12), ('Park Street', 8, 'green', 12), ('Park Street', 9, 'green', 12), ('Park Street', 14, 'red', 12), ('Park Street', 15, 'red', 12), ('Park Street', 16, 'red', 12), ('Park Street', 17, 'red', 12)]
+
+Accuracy of test results (length 120) vs target results (length 12) is -10.0, 132 incorrect
+
+time taken: 5.029950141906738 seconds
 ===============
 total number of tokens in the current prompt:443
 
 Generated query:
 SELECT 
-  stations.station_name,
-  station_orders.route_id,
-  routes.line_id,
-  COUNT(station_orders.route_id) AS route_cnt
+  s.station_name, 
+  r.route_id, 
+  r.line_id, 
+  COUNT(*) as route_cnt
 FROM 
-  stations
-JOIN
-  station_orders
-ON
-  stations.station_id = station_orders.station_id
-JOIN
-  routes
-ON
-  station_orders.route_id = routes.route_id
+  stations s
+JOIN 
+  station_orders so
+ON 
+  s.station_id = so.station_id
+JOIN 
+  routes r
+ON 
+  so.route_id = r.route_id
 GROUP BY 
-  stations.station_name, 
-  station_orders.route_id, 
-  routes.line_id
+  s.station_id, s.station_name, r.route_id, r.line_id
 ORDER BY 
-  MAX(routes.line_id) ASC,
-  MAX(station_orders.route_id) ASC;
+  r.line_id ASC, 
+  r.route_id ASC
+HAVING 
+  COUNT(*) = (
+    SELECT 
+      MAX(route_cnt)
+    FROM (
+      SELECT 
+        station_id,
+        COUNT(*) as route_cnt
+      FROM 
+        station_orders
+      GROUP BY 
+        station_id));
 
-Accuracy of test results (length 324) vs target results (length 12) is -27.0, 336 incorrect
-
-time taken: 5.290937185287476 seconds
+error running sql query: near "HAVING": syntax error

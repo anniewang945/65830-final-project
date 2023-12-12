@@ -3,168 +3,180 @@ total number of tokens in the current prompt:451
 
 Generated query:
 SELECT 
-    r.route_id,
-    r.direction,
-    r.route_name,
-    COUNT(so.station_id) AS number_of_stations,
-    SUM(so.distance_from_last_station_miles) AS length_in_miles
+    r.route_id, 
+    r.direction, 
+    r.route_name, 
+    COUNT(so.station_id) AS number_of_stations, 
+    SUM(so.distance_from_last_station_miles) as total_length_in_miles
 FROM 
     routes r
-LEFT JOIN 
+JOIN 
     station_orders so ON r.route_id = so.route_id
-LEFT JOIN 
+JOIN 
     lines l ON r.line_id = l.line_id
 WHERE 
     l.line_name <> 'Green Line'
-GROUP BY 
-    r.route_id,
-    r.direction,
-    r.route_name
-ORDER BY 
-    COUNT(so.station_id) DESC, 
-    SUM(so.distance_from_last_station_miles) DESC;
-
-Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
-
-time taken: 6.481182098388672 seconds
-===============
-total number of tokens in the current prompt:451
-
-Generated query:
-SELECT
-    r.route_id,
-    r.direction,
-    r.route_name,
-    COUNT(so.station_id) as num_stations,
-    IFNULL(SUM(so.distance_from_last_station_miles), 0) as total_length_miles
-FROM
-    routes r
-    INNER JOIN station_orders so ON r.route_id = so.route_id
-    INNER JOIN lines l ON r.line_id = l.line_id
-WHERE
-    l.line_name <> 'Green Line'
-GROUP BY
-    r.route_id, r.direction, r.route_name
-ORDER BY
-    num_stations DESC, total_length_miles DESC;
-
-Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
-
-time taken: 5.215013027191162 seconds
-===============
-total number of tokens in the current prompt:451
-
-Generated query:
-SELECT 
-  r.route_id, 
-  r.direction, 
-  r.route_name, 
-  COUNT(s.station_id) as number_of_stations, 
-  SUM(so.distance_from_last_station_miles) as total_length_in_miles
-FROM 
-  routes r 
-  JOIN station_orders so ON r.route_id = so.route_id 
-  JOIN stations s ON so.station_id = s.station_id 
-  JOIN lines l ON r.line_id = l.line_id
-WHERE 
-  l.line_name != 'Green Line'
-GROUP BY 
-  r.route_id, 
-  r.direction, 
-  r.route_name
-ORDER BY 
-  COUNT(s.station_id) DESC, 
-  SUM(so.distance_from_last_station_miles) DESC;
-
-Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
-
-time taken: 7.123546838760376 seconds
-===============
-total number of tokens in the current prompt:451
-
-Generated query:
-SELECT 
-    r.route_id AS route_id, 
-    r.direction AS direction, 
-    r.route_name AS route_name, 
-    COUNT(s.station_id) AS number_of_stations, 
-    SUM(so.distance_from_last_station_miles) AS total_length_miles
-FROM 
-    routes r
-JOIN 
-    station_orders so
-    ON r.route_id = so.route_id
-JOIN 
-    stations s
-    ON so.station_id = s.station_id
-JOIN 
-    lines l 
-    ON r.line_id = l.line_id
-WHERE 
-    l.line_name != 'Green Line'
 GROUP BY 
     r.route_id, 
     r.direction, 
     r.route_name
 ORDER BY 
-    COUNT(s.station_id) DESC,
-    SUM(so.distance_from_last_station_miles) DESC;
+    number_of_stations DESC, 
+    total_length_in_miles DESC;
 
-Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
+Test results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
 
-time taken: 7.350928068161011 seconds
+Target results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
+
+time taken: 7.063719987869263 seconds
+===============
+total number of tokens in the current prompt:451
+
+Generated query:
+SELECT ro.route_id, 
+       ro.direction, 
+       ro.route_name, 
+       COUNT(so.station_id) AS num_stations, 
+       SUM(so.distance_from_last_station_miles) AS total_miles
+FROM routes AS ro
+JOIN station_orders AS so ON ro.route_id = so.route_id
+JOIN lines AS li ON ro.line_id = li.line_id
+WHERE li.line_name != 'Green Line'
+GROUP BY ro.route_id, 
+         ro.direction, 
+         ro.route_name
+ORDER BY num_stations DESC, 
+         total_miles DESC;
+
+Test results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Target results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
+
+time taken: 5.508563995361328 seconds
 ===============
 total number of tokens in the current prompt:451
 
 Generated query:
 SELECT 
-  r.route_id, 
-  r.direction, 
-  r.route_name, 
-  COUNT(s.station_id) AS number_of_stations, 
-  SUM(so.distance_from_last_station_miles) AS length_in_miles
-FROM 
-  routes r
-  JOIN station_orders so ON r.route_id = so.route_id
-  JOIN stations s ON s.station_id = so.station_id
-  JOIN lines l ON l.line_id = r.line_id
+    routes.route_id, 
+    routes.direction, 
+    routes.route_name, 
+    COUNT(station_orders.station_id) AS number_of_stations, 
+    SUM(station_orders.distance_from_last_station_miles) AS length_in_miles
+FROM
+    routes
+JOIN 
+    station_orders ON routes.route_id = station_orders.route_id
+JOIN 
+    lines ON routes.line_id = lines.line_id
 WHERE 
-  l.line_name != 'Green Line'
+    lines.line_name <> 'Green Line'
 GROUP BY 
-  r.route_id, 
-  r.direction, 
-  r.route_name
+    routes.route_id, 
+    routes.direction, 
+    routes.route_name
 ORDER BY 
-  number_of_stations DESC, 
-  length_in_miles DESC;
+    number_of_stations DESC, 
+    length_in_miles DESC;
 
-Accuracy of test results (length 10) vs target results (length 10) is 0.8, 2 incorrect
+Test results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
 
-time taken: 7.596928834915161 seconds
+Target results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
+
+time taken: 6.155568838119507 seconds
 ===============
 total number of tokens in the current prompt:451
 
 Generated query:
 SELECT 
-  r.route_id,
+    r.route_id, 
+    r.direction, 
+    r.route_name, 
+    COUNT(so.station_id) as number_of_stations, 
+    SUM(so.distance_from_last_station_miles) as length_in_miles
+FROM 
+    routes as r
+JOIN 
+    station_orders as so ON r.route_id = so.route_id
+JOIN 
+    lines as l ON r.line_id = l.line_id
+WHERE 
+    l.line_name <> 'Green Line'
+GROUP BY 
+    r.route_id, r.direction, r.route_name
+ORDER BY 
+    number_of_stations DESC, length_in_miles DESC
+
+Test results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Target results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
+
+time taken: 6.290629863739014 seconds
+===============
+total number of tokens in the current prompt:451
+
+Generated query:
+SELECT r.route_id, r.direction, r.route_name, COUNT(so.station_id) AS number_of_stations, SUM(so.distance_from_last_station_miles) AS length_in_miles
+FROM routes r
+JOIN station_orders so ON r.route_id = so.route_id
+JOIN lines l ON r.line_id = l.line_id
+WHERE l.line_name != 'Green Line'
+GROUP BY r.route_id, r.direction, r.route_name
+ORDER BY COUNT(so.station_id) DESC, SUM(so.distance_from_last_station_miles) DESC;
+
+Test results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Target results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
+
+time taken: 5.344306945800781 seconds
+===============
+total number of tokens in the current prompt:451
+
+Generated query:
+SELECT 
+  r.route_id, 
   r.direction,
   r.route_name,
-  COUNT(so.station_id) AS num_stations,
-  SUM(so.distance_from_last_station_miles) AS total_miles
-FROM
-  routes r 
+  COUNT(so.station_id) AS number_of_stations,
+  SUM(so.distance_from_last_station_miles) AS total_length_miles
+FROM 
+  routes r
   JOIN station_orders so ON r.route_id = so.route_id
   JOIN lines l ON r.line_id = l.line_id
 WHERE 
   l.line_name != 'Green Line'
 GROUP BY 
-  r.route_id,
-  r.direction,
-  r.route_name
+  r.route_id, r.direction, r.route_name
 ORDER BY 
-  num_stations DESC, 
-  total_miles DESC;
+  COUNT(so.station_id) DESC, 
+  SUM(so.distance_from_last_station_miles) DESC;
+
+Test results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
+
+Target results:
+[(12, 0, 'Oak Grove to Forest Hills', 20, 11.159999999999998), (13, 1, 'Forest Hills to Oak Grove', 20, 11.100000000000001), (15, 0, 'Alewife to Braintree', 18, 17.64), (17, 1, 'Braintree to Alewife', 18, 17.64), (16, 1, 'Ashmont to Alewife', 17, 11.71), (14, 0, 'Alewife to Ashmont', 17, 11.709999999999999), (0, 0, 'Wonderland to Bowdoin', 12, 5.94), (1, 1, 'Bowdoin to Wonderland', 12, 5.93), (11, 1, 'Mattapan to Ashmont', 8, 2.65), (10, 0, 'Ashmont to Mattapan', 8, 2.55)]
 
 Accuracy of test results (length 10) vs target results (length 10) is 1.0, 0 incorrect
 
-time taken: 5.612836122512817 seconds
+time taken: 5.81430983543396 seconds

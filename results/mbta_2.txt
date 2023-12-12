@@ -2,71 +2,79 @@
 total number of tokens in the current prompt:418
 
 Generated query:
-SELECT L.line_name, R.direction_desc, FS.station_name AS first_station, LS.station_name AS last_station
-FROM routes R 
-JOIN lines L ON R.line_id = L.line_id 
-JOIN stations FS ON R.first_station_id = FS.station_id 
-JOIN stations LS ON R.last_station_id = LS.station_id
-ORDER BY L.line_name, R.direction_desc, FS.station_name, LS.station_name;
-
-Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
-
-time taken: 3.660390853881836 seconds
-===============
-total number of tokens in the current prompt:418
-
-Generated query:
 SELECT 
-    lines.line_name, 
-    routes.direction_desc, 
-    fs.station_name AS first_station_name, 
-    ls.station_name AS last_station_name
-FROM 
-    routes
-INNER JOIN 
-    lines 
-ON 
-    routes.line_id = lines.line_id
-INNER JOIN 
-    stations AS fs
-ON 
-    routes.first_station_id = fs.station_id
-INNER JOIN 
-    stations AS ls
-ON 
-    routes.last_station_id = ls.station_id
+    lines.line_name,
+    routes.direction_desc,
+    firstStations.station_name AS first_station_name,
+    lastStations.station_name AS last_station_name
+FROM routes
+JOIN lines ON routes.line_id = lines.line_id
+JOIN stations AS firstStations ON routes.first_station_id = firstStations.station_id
+JOIN stations AS lastStations ON routes.last_station_id = lastStations.station_id
 ORDER BY 
     lines.line_name ASC, 
     routes.direction_desc ASC, 
-    fs.station_name ASC, 
-    ls.station_name ASC;
+    firstStations.station_name ASC, 
+    lastStations.station_name ASC;
+
+Test results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Target results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
 
 Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
 
-time taken: 5.717454195022583 seconds
+time taken: 6.7125842571258545 seconds
+===============
+total number of tokens in the current prompt:418
+
+Generated query:
+SELECT L.line_name, R.direction_desc, FS.station_name AS first_station, LS.station_name AS last_station
+FROM routes R
+INNER JOIN lines L ON R.line_id = L.line_id
+INNER JOIN stations FS ON R.first_station_id = FS.station_id
+INNER JOIN stations LS ON R.last_station_id = LS.station_id
+ORDER BY L.line_name ASC, R.direction_desc ASC, FS.station_name ASC, LS.station_name ASC;
+
+Test results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Target results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
+
+time taken: 4.327868938446045 seconds
 ===============
 total number of tokens in the current prompt:418
 
 Generated query:
 SELECT 
-  L.line_name, 
-  R.direction_desc, 
-  FS.station_name AS first_station_name, 
-  LS.station_name AS last_station_name 
+  l.line_name,
+  r.direction_desc,
+  s1.station_name as first_station_name,
+  s2.station_name as last_station_name
 FROM 
-  routes R 
-  INNER JOIN lines L ON R.line_id = L.line_id 
-  INNER JOIN stations FS ON R.first_station_id = FS.station_id 
-  INNER JOIN stations LS ON R.last_station_id = LS.station_id 
+  routes r
+JOIN 
+  lines l ON r.line_id = l.line_id
+JOIN 
+  stations s1 ON r.first_station_id = s1.station_id
+JOIN 
+  stations s2 ON r.last_station_id = s2.station_id
 ORDER BY 
-  L.line_name ASC, 
-  R.direction_desc ASC, 
-  FS.station_name ASC, 
-  LS.station_name ASC;
+  l.line_name, r.direction_desc, s1.station_name, s2.station_name;
+
+Test results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Target results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
 
 Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
 
-time taken: 4.798672914505005 seconds
+time taken: 5.4709789752960205 seconds
 ===============
 total number of tokens in the current prompt:418
 
@@ -78,58 +86,76 @@ JOIN stations FS ON R.first_station_id = FS.station_id
 JOIN stations LS ON R.last_station_id = LS.station_id
 ORDER BY L.line_name, R.direction_desc, FS.station_name, LS.station_name;
 
+Test results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Target results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
 Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
 
-time taken: 4.444679021835327 seconds
+time taken: 4.678650856018066 seconds
 ===============
 total number of tokens in the current prompt:418
 
 Generated query:
 SELECT 
-    l.line_name,
-    r.direction_desc,
-    fs.station_name AS first_station_name,
-    ls.station_name AS last_station_name
-FROM 
-    routes r
-JOIN 
-    lines l ON r.line_id = l.line_id
-JOIN 
-    stations fs ON r.first_station_id = fs.station_id
-JOIN 
-    stations ls ON r.last_station_id = ls.station_id
-ORDER BY 
     l.line_name, 
     r.direction_desc, 
-    fs.station_name, 
-    ls.station_name;
+    fs.station_name AS first_station, 
+    ls.station_name AS last_station
+FROM 
+    routes AS r
+JOIN 
+    lines AS l ON r.line_id = l.line_id
+JOIN 
+    stations AS fs ON r.first_station_id = fs.station_id
+JOIN 
+    stations AS ls ON r.last_station_id = ls.station_id
+ORDER BY 
+    l.line_name ASC,
+    r.direction_desc ASC,
+    fs.station_name ASC,
+    ls.station_name ASC;
+
+Test results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Target results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
 
 Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
 
-time taken: 4.431654930114746 seconds
+time taken: 5.47554087638855 seconds
 ===============
 total number of tokens in the current prompt:418
 
 Generated query:
 SELECT 
-    lines.line_name,
-    routes.direction_desc,
-    fs.station_name AS first_station_name,
-    ls.station_name AS last_station_name
+    L.line_name, 
+    R.direction_desc, 
+    FS.station_name AS first_station_name, 
+    LS.station_name AS last_station_name
 FROM 
-    routes
+    routes R 
 JOIN 
-    lines ON routes.line_id = lines.line_id
+    lines L ON L.line_id = R.line_id
 JOIN 
-    stations AS fs ON routes.first_station_id = fs.station_id
+    stations FS ON FS.station_id = R.first_station_id
 JOIN 
-    stations AS ls ON routes.last_station_id = ls.station_id
+    stations LS ON LS.station_id = R.last_station_id
 ORDER BY 
-    line_name ASC, 
-    direction_desc ASC, 
-    first_station_name ASC, 
-    last_station_name ASC;
+    L.line_name, 
+    R.direction_desc, 
+    FS.station_name, 
+    LS.station_name;
+
+Test results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
+
+Target results:
+[('Blue Line', 'East', 'Bowdoin', 'Wonderland'), ('Blue Line', 'West', 'Wonderland', 'Bowdoin'), ('Green Line', 'East', 'Boston College', 'Government Center'), ('Green Line', 'East', 'Cleveland Circle', 'Government Center'), ('Green Line', 'East', 'Heath Street', 'Lechmere'), ('Green Line', 'East', 'Riverside', 'North Station'), ('Green Line', 'West', 'Government Center', 'Boston College'), ('Green Line', 'West', 'Government Center', 'Cleveland Circle'), ('Green Line', 'West', 'Lechmere', 'Heath Street'), ('Green Line', 'West', 'North Station', 'Riverside'), ('Mattapan Trolley', 'Inbound', 'Mattapan', 'Ashmont'), ('Mattapan Trolley', 'Outbound', 'Ashmont', 'Mattapan'), ('Orange Line', 'North', 'Forest Hills', 'Oak Grove'), ('Orange Line', 'South', 'Oak Grove', 'Forest Hills'), ('Red Line', 'North', 'Ashmont', 'Alewife'), ('Red Line', 'North', 'Braintree', 'Alewife'), ('Red Line', 'South', 'Alewife', 'Ashmont'), ('Red Line', 'South', 'Alewife', 'Braintree')]
 
 Accuracy of test results (length 18) vs target results (length 18) is 1.0, 0 incorrect
 
-time taken: 5.750219106674194 seconds
+time taken: 4.650365829467773 seconds
