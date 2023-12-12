@@ -12,7 +12,7 @@ mbta_db = 'mbta.sqlite' # replace with your path to mbta
 conn = sqlite3.connect(mbta_db)
 c = conn.cursor()
 
-results_dir = 'results_db_description/'
+results_dir = 'results/'
 if not os.path.exists(results_dir):
   os.mkdir(results_dir)
 
