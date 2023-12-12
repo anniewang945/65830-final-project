@@ -933,7 +933,7 @@ WHERE s.Sex = 'F' AND p.PetType = 'Dog';
 
 time taken with running model query: 7.605552673339844e-05 seconds
 COMPARING QUERY ACCURACY WITH TARGET
-accuracy of test results (length 1) vs target results (length 1) is 1.0
+accuracy of test results (length 1) vs target results (length 1) is -1.0
 
 ===================================
 
