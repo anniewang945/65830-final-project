@@ -37,6 +37,7 @@ This branch uses schema only (aka no context). You need to run the file spider_p
 #### spider-db-description-context
 This branch adds database descriptions as the context. You need to run the file spider_pipeline.py 3 times (or as many trials as you wish). This branch does not generate a results folder and prints out its results in stdout. Each run will contain the results for all questions. Existing results are in a folder named results_db_description with files named for each trial run, starting with index 1.
 
+#### Summary to run the following branches
 For the remaining contexts, you need to run the file spider_pipeline.py 3 times (or as many trials as you wish). The branches do not generate a results folder and print out their results in stdout. Each run will contain the results for all questions using the context from the branch. Existing results in each branch are in a folder named results with files named for each trial run, starting with index 1.
 #### spider-example-row-context
 This branch adds example rows as the context. 
@@ -47,7 +48,7 @@ This branch adds required columns and tables as the context.
 #### spider-db-desc-w-example-row
 This branch adds database descriptions and example rows as the context.
 #### spider-db-desc-w-req-cols
-This branch adds database descriptions and required columns as the context.
+This branch adds database descriptions and required columns as the context. If you clicked from a hyperlink, view how to run the pipeline on this branch [here](#summary-to-run-the-following-branches).
 #### spider-db-desc-w-example-row-w-req-cols
 This branch adds database descriptions, example rows, and required columns as the context.
 #### spider-db-desc-w-example-row-w-req-tables-and-cols
