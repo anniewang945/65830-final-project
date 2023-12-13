@@ -1,4 +1,4 @@
-# 6.5830 Final Project: Leveraging GPT-4 for Enhanced SQL Query Generation using Natural Language Prompts
+# 6.5830 Final Project: Leveraging GPT-4 for Enhanced SQL Query Generation Using Natural Language Prompts
 
 This repository contains the pipeline code and data to run our experiments as described in our accompanying paper. We utilize 3 base contexts and their permutations:
 - Example Rows
@@ -8,7 +8,7 @@ This repository contains the pipeline code and data to run our experiments as de
 We have a total of 17 branches where each branch represents a context. Underneath each branch name, there will be an explanation of how to run the code. Our pipeline has evolved throughout the contexts, so the same file on a different branch may behave differently. We utilize 2 datasets: MBTA from class and Spider as benchmarks. 
 
 ## Branches
-The naming convention of the branches is datasetname_context. The main is the base branch for all other branches. There is nothing to run on this branch.
+The naming convention of the branches is datasetname_context. The main branch is the base branch for all other branches. There is nothing to run on this branch.
 
 ### MBTA Dataset
 The MBTA dataset we used from class is not present in this repo, however, we will denote the line in each branch where one needs to replace the path to their local copy to run it. All questions from PSET1 of the class are used for evaluation. 
@@ -31,22 +31,24 @@ This branch adds database descriptions, example rows, and required columns as th
 This branch adds database descriptions, example rows, required columns, and required tables as the context. You only need to run the file mbta_pipeline.py (change the path to the MBTA database to your local copy on line 11) 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all 10 questions in one file.
 
 ### Spider Dataset
-The Spider dataset is available on this repo, so no downloads are necessary for it. Out of the 1034 questions available to benchmark, we chose 15 questions available in dev_questions.txt to evaluate.
+The Spider dataset is available on this repo, so no downloads are necessary for it. Out of the 1034 questions available to benchmark, we chose 15 questions available in dev_questions.txt to evaluate. Instead of going through each branch to explore each context in detail, you can also go to branch [spider-db-desc-w-req-cols](#spider-db-desc-w-req-cols) and change lines 11-13 in the spider_pipeline.py to feed in different contexts.
 #### spider
 This branch uses schema only (aka no context). You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
 #### spider-db-description-context
 This branch adds database descriptions as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results_db_description folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+
+For the remaining contexts, you only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
 #### spider-example-row-context
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds example rows as the context. 
 #### spider-req-cols-only
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds only the required columns as the context.
 #### spider-cols-and-tables
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds required columns and tables as the context.
 #### spider-db-desc-w-example-row
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds database descriptions and example rows as the context.
 #### spider-db-desc-w-req-cols
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds database descriptions and required columns as the context.
 #### spider-db-desc-w-example-row-w-req-cols
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds database descriptions, example rows, and required columns as the context.
 #### spider-db-desc-w-example-row-w-req-tables-and-cols
-This branch adds example rows as the context. You only need to run the file spider_pipeline.py 3 times (or as many trials as you wish) and it will populate a results folder with files named for each trial run, starting with index 1. Each file for a trial will contain the results for all questions in one file.
+This branch adds database descriptions, example rows, required columns, and required tables as the context.
